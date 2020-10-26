@@ -35,18 +35,11 @@ namespace Main
             });
 
             services.AddControllers();
-            services.AddEntityFrameworkNpgsql()
-                .AddDbContext<KindContext>(
+            services.AddDbContext<KindContext>(
                     opt => opt
                             .UseNpgsql(Configuration.GetConnectionString("DefaultConnetion"))
                             .UseSnakeCaseNamingConvention()
             );
-            // services
-            //     .AddDbContext<KindContext>(options =>
-            //         options
-            //             .UseNpgsql(Configuration.GetConnectionString("DefaultConnetion"))
-            //             .UseSnakeCaseNamingConvention()
-            //     );
             services.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;

@@ -30,7 +30,7 @@ namespace Main.Controllers
         {
             var item = await Context.Company
                .AsNoTracking()
-               .SingleOrDefaultAsync(lang => lang.id == id);
+               .SingleOrDefaultAsync(lang => lang.Id == id);
 
             if (item == null)
             {
@@ -56,7 +56,7 @@ namespace Main.Controllers
 
             var item = await Context.Company
                 .AsNoTracking()
-                .SingleOrDefaultAsync(cp => cp.name == company.name);
+                .SingleOrDefaultAsync(cp => cp.Name == company.Name);
 
             if (item == null)
             {
@@ -69,13 +69,13 @@ namespace Main.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateCompany(Company company)
         {
-            var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.id == company.id);
+            var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == company.Id);
             if (aliveCompany == null)
             {
                 return NotFound(aliveCompany);
             }
 
-            aliveCompany.name = aliveCompany.name;
+            aliveCompany.Name = aliveCompany.Name;
             await Context.SaveChangesAsync();
 
             return Ok();
