@@ -11,6 +11,8 @@ namespace Main.PostgreSQL
     {
         public string text { get; set; }
         public DateTime timeStart { get; set; }
+        public DateTime timeEnd { get; set; }
         public int companyId { get; set; }
+        public int[] usersId { get; set; }
     }
 }

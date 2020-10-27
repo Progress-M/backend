@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 using System;
+using System.Linq;
 
 namespace Main.Controllers
 {
@@ -42,7 +43,7 @@ namespace Main.Controllers
 
         [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult> GetLanguages()
+        public async Task<ActionResult> GetOffers()
         {
             return Ok(await Context.Offer.ToListAsync());
         }
@@ -59,7 +60,11 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            var Offer = new Offer(offerRequest.text, DateTime.UtcNow, company);
+            var users = await Context.User
+                 .Where(user => offerRequest.usersId.Contains(user.Id))
+                 .ToListAsync();
+
+            var Offer = new Offer(offerRequest, users, company);
             Context.Offer.Add(Offer);
             await Context.SaveChangesAsync();
 

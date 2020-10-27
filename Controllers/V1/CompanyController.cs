@@ -42,7 +42,7 @@ namespace Main.Controllers
 
         [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult> GetLanguages()
+        public async Task<ActionResult> GetCompanys()
         {
             return Ok(await Context.Company.ToListAsync());
         }
