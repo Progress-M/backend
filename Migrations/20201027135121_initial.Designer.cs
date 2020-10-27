@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace registry.Migrations
 {
     [DbContext(typeof(KindContext))]
-    [Migration("20201027132321_initial")]
+    [Migration("20201027135121_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,34 @@ namespace registry.Migrations
                     b.ToTable("offer");
                 });
 
+            modelBuilder.Entity("Main.PostgreSQL.OfferUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("OfferId")
+                        .HasColumnName("offer_id")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnName("user_id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id")
+                        .HasName("pk_offer_user");
+
+                    b.HasIndex("OfferId")
+                        .HasName("ix_offer_user_offer_id");
+
+                    b.HasIndex("UserId")
+                        .HasName("ix_offer_user_user_id");
+
+                    b.ToTable("offer_user");
+                });
+
             modelBuilder.Entity("Main.PostgreSQL.User", b =>
                 {
                     b.Property<int>("Id")
@@ -92,19 +120,12 @@ namespace registry.Migrations
                         .HasColumnName("name")
                         .HasColumnType("text");
 
-                    b.Property<int?>("OfferId")
-                        .HasColumnName("offer_id")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Surname")
                         .HasColumnName("surname")
                         .HasColumnType("text");
 
                     b.HasKey("Id")
                         .HasName("pk_user");
-
-                    b.HasIndex("OfferId")
-                        .HasName("ix_user_offer_id");
 
                     b.ToTable("user");
                 });
@@ -117,12 +138,17 @@ namespace registry.Migrations
                         .HasConstraintName("fk_offer_company_company_id");
                 });
 
-            modelBuilder.Entity("Main.PostgreSQL.User", b =>
+            modelBuilder.Entity("Main.PostgreSQL.OfferUser", b =>
                 {
-                    b.HasOne("Main.PostgreSQL.Offer", null)
-                        .WithMany("Users")
+                    b.HasOne("Main.PostgreSQL.Offer", "Offer")
+                        .WithMany()
                         .HasForeignKey("OfferId")
-                        .HasConstraintName("fk_user_offer_offer_id");
+                        .HasConstraintName("fk_offer_user_offer_offer_id");
+
+                    b.HasOne("Main.PostgreSQL.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("fk_offer_user_user_user_id");
                 });
 #pragma warning restore 612, 618
         }

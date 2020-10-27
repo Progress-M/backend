@@ -64,11 +64,15 @@ namespace Main.Controllers
                  .Where(user => offerRequest.usersId.Contains(user.Id))
                  .ToListAsync();
 
-            var Offer = new Offer(offerRequest, users, company);
-            Context.Offer.Add(Offer);
-            await Context.SaveChangesAsync();
+            var offer = new Offer(offerRequest, company);
+            Context.Offer.Add(offer);
 
-            return Ok(Offer);
+            users
+                .ConvertAll(user => new OfferUser(offer, user))
+                .ForEach(ou => Context.OfferUser.Add(ou));
+
+            await Context.SaveChangesAsync();
+            return Ok(offer);
         }
 
     }

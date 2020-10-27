@@ -22,6 +22,22 @@ namespace registry.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "user",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(nullable: true),
+                    surname = table.Column<string>(nullable: true),
+                    latitude = table.Column<float>(nullable: false),
+                    longitude = table.Column<float>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_user", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "offer",
                 columns: table => new
                 {
@@ -44,24 +60,27 @@ namespace registry.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "user",
+                name: "offer_user",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(nullable: true),
-                    surname = table.Column<string>(nullable: true),
-                    latitude = table.Column<float>(nullable: false),
-                    longitude = table.Column<float>(nullable: false),
-                    offer_id = table.Column<int>(nullable: true)
+                    offer_id = table.Column<int>(nullable: true),
+                    user_id = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user", x => x.id);
+                    table.PrimaryKey("pk_offer_user", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_offer_offer_id",
+                        name: "fk_offer_user_offer_offer_id",
                         column: x => x.offer_id,
                         principalTable: "offer",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_offer_user_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "user",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -72,18 +91,26 @@ namespace registry.Migrations
                 column: "company_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_offer_id",
-                table: "user",
+                name: "ix_offer_user_offer_id",
+                table: "offer_user",
                 column: "offer_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_offer_user_user_id",
+                table: "offer_user",
+                column: "user_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "user");
+                name: "offer_user");
 
             migrationBuilder.DropTable(
                 name: "offer");
+
+            migrationBuilder.DropTable(
+                name: "user");
 
             migrationBuilder.DropTable(
                 name: "company");

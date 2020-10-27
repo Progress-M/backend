@@ -11,6 +11,7 @@ namespace Main.PostgreSQL
         public DbSet<Company> Company { get; set; }
         public DbSet<Offer> Offer { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<OfferUser> OfferUser { get; set; }
     }
 
 
@@ -24,12 +25,11 @@ namespace Main.PostgreSQL
     public class Offer
     {
         public Offer() { }
-        public Offer(OfferRequest request, List<User> users, Company company)
+        public Offer(OfferRequest request, Company company)
         {
             Text = request.text;
             TimeStart = request.timeStart;
             TimeEnd = request.timeEnd;
-            Users = users;
             Company = company;
         }
 
@@ -38,7 +38,6 @@ namespace Main.PostgreSQL
         public string Text { get; set; }
         public DateTime TimeStart { get; set; }
         public DateTime TimeEnd { get; set; }
-        public ICollection<User> Users { get; set; }
         public Company Company { get; set; }
     }
 
@@ -51,5 +50,20 @@ namespace Main.PostgreSQL
         public float Latitude { get; set; }
         public float Longitude { get; set; }
 
+    }
+
+    public class OfferUser
+    {
+        public OfferUser() { }
+        public OfferUser(Offer offer, User user)
+        {
+            Offer = offer;
+            User = user;
+        }
+
+        [Key]
+        public int Id { get; set; }
+        public Offer Offer { get; set; }
+        public User User { get; set; }
     }
 }
