@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -35,7 +34,7 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound(id);
+                return NotFound($"Not found offer with id = {id}");
             }
 
             return Ok(item);
@@ -53,19 +52,14 @@ namespace Main.Controllers
         public async Task<ActionResult> CreateOffer(OfferRequest offerRequest)
         {
             var company = await Context.Company
-              .AsNoTracking()
-              .SingleOrDefaultAsync(company => company.Id == offerRequest.companyId);
+                .SingleOrDefaultAsync(company => company.Id == offerRequest.companyId);
 
             if (company == null)
             {
-                return NotFound(offerRequest.companyId);
+                return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            Console.WriteLine(company.Name);
             var Offer = new Offer(offerRequest.text, DateTime.UtcNow, company);
-
-            Console.WriteLine(Offer.Text);
-
             Context.Offer.Add(Offer);
             await Context.SaveChangesAsync();
 

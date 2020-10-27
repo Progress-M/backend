@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -32,9 +31,10 @@ namespace Main.Controllers
                .AsNoTracking()
                .SingleOrDefaultAsync(lang => lang.Id == id);
 
+
             if (item == null)
             {
-                return NotFound(id);
+                return NotFound($"Not found comapny with id = {id}");
             }
 
             return Ok(item);
