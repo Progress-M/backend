@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
-using System;
-using System.Linq;
 
 namespace Main.Controllers
 {

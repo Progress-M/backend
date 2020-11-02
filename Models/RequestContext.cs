@@ -15,4 +15,19 @@ namespace Main.PostgreSQL
         public int companyId { get; set; }
         public int[] usersId { get; set; }
     }
+    public class AuthRequest
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+
+    public class AuthResponse
+    {
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
+    }
 }
