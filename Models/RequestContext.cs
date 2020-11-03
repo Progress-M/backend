@@ -5,6 +5,12 @@ namespace Main.PostgreSQL
     public class CompanyRequest
     {
         public string name { get; set; }
+        public string representative { get; set; }
+        public string email { get; set; }
+        public string inn { get; set; }
+        public string password { get; set; }
+        public string address { get; set; }
+        public int productCategoryId { get; set; }
     }
 
     public class OfferRequest

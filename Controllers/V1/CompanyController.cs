@@ -49,18 +49,34 @@ namespace Main.Controllers
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult> CreateCompany(Company company)
+        public async Task<ActionResult> CreateCompany(CompanyRequest companyRequest)
         {
-            Context.Company.Add(company);
+            var productСategory = await Context.ProductСategory
+                .SingleOrDefaultAsync(cp => cp.Id == companyRequest.productCategoryId);
+            if (productСategory == null)
+            {
+                return NotFound(companyRequest.productCategoryId);
+            }
+
+            Context.Company.Add(new Company
+            {
+                Name = companyRequest.name,
+                Representative = companyRequest.representative,
+                Password = companyRequest.password,
+                INN = companyRequest.inn,
+                Address = companyRequest.address,
+                Email = companyRequest.email,
+                ProductСategory = productСategory,
+            });
             await Context.SaveChangesAsync();
 
             var item = await Context.Company
                 .AsNoTracking()
-                .SingleOrDefaultAsync(cp => cp.Name == company.Name);
+                .SingleOrDefaultAsync(cp => cp.INN == companyRequest.inn);
 
             if (item == null)
             {
-                return NotFound(company);
+                return BadRequest(companyRequest);
             }
 
             return Ok(item);

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,10 +11,23 @@ namespace Main.PostgreSQL
         public DbSet<Offer> Offer { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<OfferUser> OfferUser { get; set; }
+        public DbSet<ProductСategory> ProductСategory { get; set; }
     }
 
-
     public class Company
+    {
+        [Key]
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Representative { get; set; }
+        public string Email { get; set; }
+        public string INN { get; set; }
+        public string Password { get; set; }
+        public string Address { get; set; }
+        public ProductСategory ProductСategory { get; set; }
+    }
+
+    public class ProductСategory
     {
         [Key]
         public int Id { get; set; }
@@ -49,8 +61,6 @@ namespace Main.PostgreSQL
         public string Password { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public float Latitude { get; set; }
-        public float Longitude { get; set; }
 
     }
 

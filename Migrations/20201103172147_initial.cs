@@ -9,7 +9,7 @@ namespace registry.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "company",
+                name: "product_сategory",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -18,7 +18,7 @@ namespace registry.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_company", x => x.id);
+                    table.PrimaryKey("pk_product_сategory", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -27,14 +27,39 @@ namespace registry.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    username = table.Column<string>(nullable: true),
+                    password = table.Column<string>(nullable: true),
                     name = table.Column<string>(nullable: true),
-                    surname = table.Column<string>(nullable: true),
-                    latitude = table.Column<float>(nullable: false),
-                    longitude = table.Column<float>(nullable: false)
+                    surname = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_user", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "company",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(nullable: true),
+                    representative = table.Column<string>(nullable: true),
+                    email = table.Column<string>(nullable: true),
+                    inn = table.Column<string>(nullable: true),
+                    password = table.Column<string>(nullable: true),
+                    address = table.Column<string>(nullable: true),
+                    product_сategory_id = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_company", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_company_product_сategory_product_сategory_id",
+                        column: x => x.product_сategory_id,
+                        principalTable: "product_сategory",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -86,6 +111,11 @@ namespace registry.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "ix_company_product_сategory_id",
+                table: "company",
+                column: "product_сategory_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_offer_company_id",
                 table: "offer",
                 column: "company_id");
@@ -114,6 +144,9 @@ namespace registry.Migrations
 
             migrationBuilder.DropTable(
                 name: "company");
+
+            migrationBuilder.DropTable(
+                name: "product_сategory");
         }
     }
 }

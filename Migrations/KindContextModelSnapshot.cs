@@ -27,12 +27,39 @@ namespace registry.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("Address")
+                        .HasColumnName("address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnName("email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("INN")
+                        .HasColumnName("inn")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .HasColumnName("name")
                         .HasColumnType("text");
 
+                    b.Property<string>("Password")
+                        .HasColumnName("password")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProductСategoryId")
+                        .HasColumnName("product_сategory_id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Representative")
+                        .HasColumnName("representative")
+                        .HasColumnType("text");
+
                     b.HasKey("Id")
                         .HasName("pk_company");
+
+                    b.HasIndex("ProductСategoryId")
+                        .HasName("ix_company_product_сategory_id");
 
                     b.ToTable("company");
                 });
@@ -98,7 +125,7 @@ namespace registry.Migrations
                     b.ToTable("offer_user");
                 });
 
-            modelBuilder.Entity("Main.PostgreSQL.User", b =>
+            modelBuilder.Entity("Main.PostgreSQL.ProductСategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,13 +133,23 @@ namespace registry.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<float>("Latitude")
-                        .HasColumnName("latitude")
-                        .HasColumnType("real");
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasColumnType("text");
 
-                    b.Property<float>("Longitude")
-                        .HasColumnName("longitude")
-                        .HasColumnType("real");
+                    b.HasKey("Id")
+                        .HasName("pk_product_сategory");
+
+                    b.ToTable("product_сategory");
+                });
+
+            modelBuilder.Entity("Main.PostgreSQL.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Name")
                         .HasColumnName("name")
@@ -134,6 +171,14 @@ namespace registry.Migrations
                         .HasName("pk_user");
 
                     b.ToTable("user");
+                });
+
+            modelBuilder.Entity("Main.PostgreSQL.Company", b =>
+                {
+                    b.HasOne("Main.PostgreSQL.ProductСategory", "ProductСategory")
+                        .WithMany()
+                        .HasForeignKey("ProductСategoryId")
+                        .HasConstraintName("fk_company_product_сategory_product_сategory_id");
                 });
 
             modelBuilder.Entity("Main.PostgreSQL.Offer", b =>

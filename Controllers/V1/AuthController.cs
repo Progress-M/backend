@@ -26,12 +26,9 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> SignIn(AuthRequest auth)
         {
-            _logger.LogInformation($"Hello world {auth.username} {auth.password}");
-            
             var item = await Context.User
               .AsNoTracking()
               .SingleOrDefaultAsync(user => user.Username == auth.username);
-
 
             if (item == null || item.Password != auth.password)
             {
@@ -42,9 +39,7 @@ namespace Main.Controllers
                 Id = item.Id,
                 Username = item.Username,
                 Name = item.Name,
-                Surname = item.Surname,
-                Latitude = item.Latitude,
-                Longitude = item.Longitude
+                Surname = item.Surname
             });
         }
 

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace registry.Migrations
 {
     [DbContext(typeof(KindContext))]
-    [Migration("20201027135121_initial")]
+    [Migration("20201103172147_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,12 +29,39 @@ namespace registry.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("Address")
+                        .HasColumnName("address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnName("email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("INN")
+                        .HasColumnName("inn")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .HasColumnName("name")
                         .HasColumnType("text");
 
+                    b.Property<string>("Password")
+                        .HasColumnName("password")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProductСategoryId")
+                        .HasColumnName("product_сategory_id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Representative")
+                        .HasColumnName("representative")
+                        .HasColumnType("text");
+
                     b.HasKey("Id")
                         .HasName("pk_company");
+
+                    b.HasIndex("ProductСategoryId")
+                        .HasName("ix_company_product_сategory_id");
 
                     b.ToTable("company");
                 });
@@ -100,6 +127,24 @@ namespace registry.Migrations
                     b.ToTable("offer_user");
                 });
 
+            modelBuilder.Entity("Main.PostgreSQL.ProductСategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id")
+                        .HasName("pk_product_сategory");
+
+                    b.ToTable("product_сategory");
+                });
+
             modelBuilder.Entity("Main.PostgreSQL.User", b =>
                 {
                     b.Property<int>("Id")
@@ -108,26 +153,34 @@ namespace registry.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<float>("Latitude")
-                        .HasColumnName("latitude")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Longitude")
-                        .HasColumnName("longitude")
-                        .HasColumnType("real");
-
                     b.Property<string>("Name")
                         .HasColumnName("name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .HasColumnName("password")
                         .HasColumnType("text");
 
                     b.Property<string>("Surname")
                         .HasColumnName("surname")
                         .HasColumnType("text");
 
+                    b.Property<string>("Username")
+                        .HasColumnName("username")
+                        .HasColumnType("text");
+
                     b.HasKey("Id")
                         .HasName("pk_user");
 
                     b.ToTable("user");
+                });
+
+            modelBuilder.Entity("Main.PostgreSQL.Company", b =>
+                {
+                    b.HasOne("Main.PostgreSQL.ProductСategory", "ProductСategory")
+                        .WithMany()
+                        .HasForeignKey("ProductСategoryId")
+                        .HasConstraintName("fk_company_product_сategory_product_сategory_id");
                 });
 
             modelBuilder.Entity("Main.PostgreSQL.Offer", b =>
