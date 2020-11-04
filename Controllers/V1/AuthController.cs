@@ -22,9 +22,25 @@ namespace Main.Controllers
             _logger = logger;
         }
 
+        [HttpPost("company")]
+        [Produces("application/json")]
+        public async Task<ActionResult> SignInCompany(AuthRequest auth)
+        {
+            var item = await Context.Company
+              .AsNoTracking()
+              .SingleOrDefaultAsync(company => company.Email == auth.username);
+
+            if (item == null || item.Password != auth.password)
+            {
+                return Forbid(auth.username);
+            }
+
+            return Ok(item);
+        }
+
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult> SignIn(AuthRequest auth)
+        public async Task<ActionResult> SignInUser(AuthRequest auth)
         {
             var item = await Context.User
               .AsNoTracking()
@@ -35,7 +51,8 @@ namespace Main.Controllers
                 return Forbid(auth.username);
             }
 
-            return Ok(new AuthResponse {
+            return Ok(new AuthResponse
+            {
                 Id = item.Id,
                 Username = item.Username,
                 Name = item.Name,

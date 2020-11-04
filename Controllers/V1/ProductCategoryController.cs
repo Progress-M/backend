@@ -11,12 +11,12 @@ namespace Main.Controllers
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class ProductСategoryController : Controller
+    public class ProductCategoryController : Controller
     {
         readonly KindContext Context;
-        readonly ILogger<ProductСategory> _logger;
+        readonly ILogger<ProductCategory> _logger;
 
-        public ProductСategoryController(KindContext KindContext, ILogger<ProductСategory> logger)
+        public ProductCategoryController(KindContext KindContext, ILogger<ProductCategory> logger)
         {
             Context = KindContext;
             _logger = logger;
@@ -24,9 +24,9 @@ namespace Main.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetProductСategory(int id)
+        public async Task<ActionResult> GetProductCategory(int id)
         {
-            var item = await Context.ProductСategory
+            var item = await Context.ProductCategory
                .AsNoTracking()
                .SingleOrDefaultAsync(category => category.Id == id);
 
@@ -40,18 +40,18 @@ namespace Main.Controllers
 
         [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult> GetProductСategory()
+        public async Task<ActionResult> GetProductCategory()
         {
-            return Ok(await Context.ProductСategory.ToListAsync());
+            return Ok(await Context.ProductCategory.ToListAsync());
         }
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult> CreateProductСategory(ProductСategory productСategory)
+        public async Task<ActionResult> CreateProductCategory(ProductCategory ProductCategory)
         {
-            Context.ProductСategory.Add(productСategory);
+            Context.ProductCategory.Add(ProductCategory);
             await Context.SaveChangesAsync();
-            return Ok(productСategory);
+            return Ok(ProductCategory);
         }
 
     }

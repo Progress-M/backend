@@ -6,15 +6,26 @@ namespace Main.PostgreSQL
 {
     public class KindContext : DbContext
     {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Company>()
+                .HasIndex(p => new { p.Email })
+                .IsUnique(true);
+
+             modelBuilder.Entity<Company>()
+                .HasIndex(p => new { p.INN })
+                .IsUnique(true);
+        }
+
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
         public DbSet<Company> Company { get; set; }
         public DbSet<Offer> Offer { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<OfferUser> OfferUser { get; set; }
-        public DbSet<ProductСategory> ProductСategory { get; set; }
+        public DbSet<ProductCategory> ProductCategory { get; set; }
     }
 
-    public class ProductСategory
+    public class ProductCategory
     {
         [Key]
         public int Id { get; set; }
@@ -24,7 +35,7 @@ namespace Main.PostgreSQL
     public class Company
     {
         public Company() { }
-        public Company(CompanyRequest request, ProductСategory productСategory)
+        public Company(CompanyRequest request, ProductCategory productСategory)
         {
             Name = request.name;
             Representative = request.representative;
@@ -45,7 +56,7 @@ namespace Main.PostgreSQL
         public string Password { get; set; }
         public string Address { get; set; }
         public string TimeOfWork { get; set; }
-        public ProductСategory ProductСategory { get; set; }
+        public ProductCategory ProductСategory { get; set; }
     }
 
     public class Offer

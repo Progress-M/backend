@@ -62,6 +62,14 @@ namespace registry.Migrations
                     b.HasKey("Id")
                         .HasName("pk_company");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasName("ix_company_email");
+
+                    b.HasIndex("INN")
+                        .IsUnique()
+                        .HasName("ix_company_inn");
+
                     b.HasIndex("ProductСategoryId")
                         .HasName("ix_company_product_сategory_id");
 
@@ -129,7 +137,7 @@ namespace registry.Migrations
                     b.ToTable("offer_user");
                 });
 
-            modelBuilder.Entity("Main.PostgreSQL.ProductСategory", b =>
+            modelBuilder.Entity("Main.PostgreSQL.ProductCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -142,9 +150,9 @@ namespace registry.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id")
-                        .HasName("pk_product_сategory");
+                        .HasName("pk_product_category");
 
-                    b.ToTable("product_сategory");
+                    b.ToTable("product_category");
                 });
 
             modelBuilder.Entity("Main.PostgreSQL.User", b =>
@@ -179,10 +187,10 @@ namespace registry.Migrations
 
             modelBuilder.Entity("Main.PostgreSQL.Company", b =>
                 {
-                    b.HasOne("Main.PostgreSQL.ProductСategory", "ProductСategory")
+                    b.HasOne("Main.PostgreSQL.ProductCategory", "ProductСategory")
                         .WithMany()
                         .HasForeignKey("ProductСategoryId")
-                        .HasConstraintName("fk_company_product_сategory_product_сategory_id");
+                        .HasConstraintName("fk_company_product_category_product_сategory_id");
                 });
 
             modelBuilder.Entity("Main.PostgreSQL.Offer", b =>

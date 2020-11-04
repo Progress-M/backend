@@ -9,7 +9,7 @@ namespace registry.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "product_сategory",
+                name: "product_category",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -18,7 +18,7 @@ namespace registry.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_product_сategory", x => x.id);
+                    table.PrimaryKey("pk_product_category", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,9 +56,9 @@ namespace registry.Migrations
                 {
                     table.PrimaryKey("pk_company", x => x.id);
                     table.ForeignKey(
-                        name: "fk_company_product_сategory_product_сategory_id",
+                        name: "fk_company_product_category_product_сategory_id",
                         column: x => x.product_сategory_id,
-                        principalTable: "product_сategory",
+                        principalTable: "product_category",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -112,6 +112,18 @@ namespace registry.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "ix_company_email",
+                table: "company",
+                column: "email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_company_inn",
+                table: "company",
+                column: "inn",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_company_product_сategory_id",
                 table: "company",
                 column: "product_сategory_id");
@@ -147,7 +159,7 @@ namespace registry.Migrations
                 name: "company");
 
             migrationBuilder.DropTable(
-                name: "product_сategory");
+                name: "product_category");
         }
     }
 }

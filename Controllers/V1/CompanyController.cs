@@ -51,14 +51,14 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> CreateCompany(CompanyRequest companyRequest)
         {
-            var productСategory = await Context.ProductСategory
+            var productCategory = await Context.ProductCategory
                 .SingleOrDefaultAsync(cp => cp.Id == companyRequest.productCategoryId);
-            if (productСategory == null)
+            if (productCategory == null)
             {
                 return NotFound(companyRequest.productCategoryId);
             }
 
-            Context.Company.Add(new Company(companyRequest, productСategory));
+            Context.Company.Add(new Company(companyRequest, productCategory));
             await Context.SaveChangesAsync();
 
             var item = await Context.Company
