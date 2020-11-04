@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace registry.Migrations
 {
     [DbContext(typeof(KindContext))]
-    [Migration("20201103172147_initial")]
+    [Migration("20201104062643_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,10 @@ namespace registry.Migrations
 
                     b.Property<string>("Representative")
                         .HasColumnName("representative")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TimeOfWork")
+                        .HasColumnName("time_of_work")
                         .HasColumnType("text");
 
                     b.HasKey("Id")

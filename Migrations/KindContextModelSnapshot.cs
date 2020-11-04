@@ -55,6 +55,10 @@ namespace registry.Migrations
                         .HasColumnName("representative")
                         .HasColumnType("text");
 
+                    b.Property<string>("TimeOfWork")
+                        .HasColumnName("time_of_work")
+                        .HasColumnType("text");
+
                     b.HasKey("Id")
                         .HasName("pk_company");
 

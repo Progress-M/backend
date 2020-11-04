@@ -49,6 +49,7 @@ namespace registry.Migrations
                     inn = table.Column<string>(nullable: true),
                     password = table.Column<string>(nullable: true),
                     address = table.Column<string>(nullable: true),
+                    time_of_work = table.Column<string>(nullable: true),
                     product_сategory_id = table.Column<int>(nullable: true)
                 },
                 constraints: table =>

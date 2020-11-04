@@ -10,6 +10,7 @@ namespace Main.PostgreSQL
         public string inn { get; set; }
         public string password { get; set; }
         public string address { get; set; }
+        public string timeOfWork { get; set; }
         public int productCategoryId { get; set; }
     }
 

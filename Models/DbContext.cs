@@ -14,8 +14,28 @@ namespace Main.PostgreSQL
         public DbSet<ProductСategory> ProductСategory { get; set; }
     }
 
+    public class ProductСategory
+    {
+        [Key]
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class Company
     {
+        public Company() { }
+        public Company(CompanyRequest request, ProductСategory productСategory)
+        {
+            Name = request.name;
+            Representative = request.representative;
+            Email = request.email;
+            INN = request.inn;
+            Password = request.password;
+            Address = request.address;
+            TimeOfWork = request.timeOfWork;
+            ProductСategory = productСategory;
+        }
+
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
@@ -24,14 +44,8 @@ namespace Main.PostgreSQL
         public string INN { get; set; }
         public string Password { get; set; }
         public string Address { get; set; }
+        public string TimeOfWork { get; set; }
         public ProductСategory ProductСategory { get; set; }
-    }
-
-    public class ProductСategory
-    {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 
     public class Offer

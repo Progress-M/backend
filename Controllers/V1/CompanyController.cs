@@ -58,16 +58,7 @@ namespace Main.Controllers
                 return NotFound(companyRequest.productCategoryId);
             }
 
-            Context.Company.Add(new Company
-            {
-                Name = companyRequest.name,
-                Representative = companyRequest.representative,
-                Password = companyRequest.password,
-                INN = companyRequest.inn,
-                Address = companyRequest.address,
-                Email = companyRequest.email,
-                ProductСategory = productСategory,
-            });
+            Context.Company.Add(new Company(companyRequest, productСategory));
             await Context.SaveChangesAsync();
 
             var item = await Context.Company
