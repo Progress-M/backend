@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using SignalRChat.Hubs;
 
 using Main.PostgreSQL;
 
@@ -27,14 +28,17 @@ namespace Main
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("OpenPolicy",
-                                builder => builder
-                                        .AllowAnyOrigin()
-                                        .AllowAnyHeader()
-                                        .AllowAnyMethod());
+                options.AddPolicy(
+                    "OpenPolicy",
+                    builder => builder
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                );
             });
 
             services.AddControllers();
+            services.AddSignalR();
             services.AddDbContext<KindContext>(
                     opt => opt
                             .UseNpgsql(Configuration.GetConnectionString("DefaultConnetion"))
@@ -66,6 +70,7 @@ namespace Main
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
             });
 
         }
