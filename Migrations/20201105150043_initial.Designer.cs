@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace registry.Migrations
 {
     [DbContext(typeof(KindContext))]
-    [Migration("20201104093057_initial")]
+    [Migration("20201105150043_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,6 +165,14 @@ namespace registry.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<DateTime>("BirthYear")
+                        .HasColumnName("birth_year")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasColumnName("email")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .HasColumnName("name")
                         .HasColumnType("text");
@@ -173,13 +181,9 @@ namespace registry.Migrations
                         .HasColumnName("password")
                         .HasColumnType("text");
 
-                    b.Property<string>("Surname")
-                        .HasColumnName("surname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Username")
-                        .HasColumnName("username")
-                        .HasColumnType("text");
+                    b.Property<bool>("isMan")
+                        .HasColumnName("is_man")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id")
                         .HasName("pk_user");

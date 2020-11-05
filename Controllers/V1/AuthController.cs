@@ -44,20 +44,14 @@ namespace Main.Controllers
         {
             var item = await Context.User
               .AsNoTracking()
-              .SingleOrDefaultAsync(user => user.Username == auth.username);
+              .SingleOrDefaultAsync(user => user.Email == auth.username);
 
             if (item == null || item.Password != auth.password)
             {
                 return Forbid(auth.username);
             }
 
-            return Ok(new AuthResponse
-            {
-                Id = item.Id,
-                Username = item.Username,
-                Name = item.Name,
-                Surname = item.Surname
-            });
+            return Ok(item);
         }
 
     }

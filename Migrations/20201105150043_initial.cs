@@ -27,10 +27,11 @@ namespace registry.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    username = table.Column<string>(nullable: true),
+                    email = table.Column<string>(nullable: true),
                     password = table.Column<string>(nullable: true),
                     name = table.Column<string>(nullable: true),
-                    surname = table.Column<string>(nullable: true)
+                    is_man = table.Column<bool>(nullable: false),
+                    birth_year = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
