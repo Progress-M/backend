@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 
+using System.Linq;
+
 namespace Main.Controllers
 {
     [ApiController]
@@ -37,6 +39,28 @@ namespace Main.Controllers
             }
 
             return Ok(item);
+        }
+
+        [HttpGet("{id}/offers")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetUserOffers(int id)
+        {
+            var item = await Context.User
+               .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            var offers = Context.OfferUser
+                .Where(uo => uo.User == item)
+                .Include(uo => uo.User)
+                .Include(uo => uo.Offer)
+                    .ThenInclude(offer => offer.Company)
+                        .ThenInclude(company => company.ProductСategory);
+
+            return Ok(offers);
         }
 
         [HttpGet]

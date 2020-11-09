@@ -12,9 +12,9 @@ namespace Main.PostgreSQL
                 .HasIndex(p => new { p.Email })
                 .IsUnique(true);
 
-             modelBuilder.Entity<Company>()
-                .HasIndex(p => new { p.INN })
-                .IsUnique(true);
+            modelBuilder.Entity<Company>()
+               .HasIndex(p => new { p.INN })
+               .IsUnique(true);
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
@@ -97,10 +97,12 @@ namespace Main.PostgreSQL
         {
             Offer = offer;
             User = user;
+            Date = DateTime.Now;
         }
 
         [Key]
         public int Id { get; set; }
+        public DateTime Date { get; set; }
         public Offer Offer { get; set; }
         public User User { get; set; }
     }

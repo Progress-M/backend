@@ -60,9 +60,7 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            var users = await Context.User
-                 .Where(user => offerRequest.usersId.Contains(user.Id))
-                 .ToListAsync();
+            var users = await Context.User.ToListAsync();
 
             var offer = new Offer(offerRequest, company);
             Context.Offer.Add(offer);
