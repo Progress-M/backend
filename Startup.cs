@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using SignalRChat.Hubs;
 
 using Main.PostgreSQL;
-
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Main
 {
@@ -64,6 +64,11 @@ namespace Main
             app.UseRouting();
 
             app.UseCors(this.MyAllowSpecificOrigins);
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseAuthorization();
 
