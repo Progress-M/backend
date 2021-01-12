@@ -42,7 +42,7 @@ namespace Main.Controllers
 
         [HttpGet("{id}/offer")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetOfferByCompany(int id)
+        public async Task<ActionResult<System.Collections.Generic.List<Offer>>> GetOfferByCompany(int id)
         {
             var item = await Context.Company
                .AsNoTracking()
