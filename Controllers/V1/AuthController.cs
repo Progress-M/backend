@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
+using Main.Models;
 using Microsoft.AspNetCore.Cors;
+using System;
 
 namespace Main.Controllers
 {
@@ -14,9 +16,9 @@ namespace Main.Controllers
     public class AuthController : Controller
     {
         readonly KindContext Context;
-        readonly ILogger<AuthController> _logger;
+        readonly ILogger<User> _logger;
 
-        public AuthController(KindContext KindContext, ILogger<AuthController> logger)
+        public AuthController(KindContext KindContext, ILogger<User> logger)
         {
             Context = KindContext;
             _logger = logger;
@@ -26,32 +28,84 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> SignInCompany(AuthRequest auth)
         {
-            var item = await Context.Company
-              .AsNoTracking()
-              .SingleOrDefaultAsync(company => company.Email == auth.username);
-
-            if (item == null || item.Password != auth.password)
+            try
             {
-                return Forbid(auth.username);
-            }
+                var item = await Context.Company
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(company => company.Email == auth.username);
 
-            return Ok(item);
+                if (item == null)
+                {
+                    return Ok(
+                        new AuthResponse
+                        {
+                            status = AuthStatus.Fail,
+                            message = "Authentication failed"
+                        }
+                    );
+                }
+
+                return Ok(
+                    new AuthResponse
+                    {
+                        status = AuthStatus.Success,
+                        message = ""
+                    }
+                );
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError($"SignInUser: {e}");
+                return Ok(
+                    new AuthResponse
+                    {
+                        status = AuthStatus.Fail,
+                        message = $"Authentication failed: 'InvalidOperationException'"
+                    }
+                );
+            }
         }
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult> SignInUser(AuthRequest auth)
+        public async Task<ActionResult<AuthResponse>> SignInUser(AuthRequest auth)
         {
-            var item = await Context.User
-              .AsNoTracking()
-              .SingleOrDefaultAsync(user => user.Email == auth.username);
-
-            if (item == null || item.Password != auth.password)
+            try
             {
-                return Forbid(auth.username);
-            }
+                var item = await Context.User
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(user => user.Email == auth.username && user.Password == auth.password);
 
-            return Ok(item);
+                if (item == null)
+                {
+                    return Ok(
+                        new AuthResponse
+                        {
+                            status = AuthStatus.Fail,
+                            message = "Authentication failed"
+                        }
+                    );
+                }
+
+                return Ok(
+                    new AuthResponse
+                    {
+                        status = AuthStatus.Success,
+                        message = ""
+                    }
+                );
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError($"Error: {e}");
+                return Ok(
+                    new AuthResponse
+                    {
+                        status = AuthStatus.Fail,
+                        message = $"Authentication failed: 'InvalidOperationException'"
+                    }
+                );
+            }
         }
 
     }
