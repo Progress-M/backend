@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
+using System.Linq;
 
 namespace Main.Controllers
 {
@@ -31,13 +32,30 @@ namespace Main.Controllers
                .AsNoTracking()
                .SingleOrDefaultAsync(lang => lang.Id == id);
 
-
             if (item == null)
             {
                 return NotFound($"Not found comapny with id = {id}");
             }
 
             return Ok(item);
+        }
+
+        [HttpGet("{id}/offer")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetOfferByCompany(int id)
+        {
+            var item = await Context.Company
+               .AsNoTracking()
+               .SingleOrDefaultAsync(lang => lang.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found comapny with id = {id}");
+            }
+
+            var offers = await Context.Offer.Where(offer => offer.Company.Id == id).ToListAsync();
+
+            return Ok(offers);
         }
 
         [HttpGet]
