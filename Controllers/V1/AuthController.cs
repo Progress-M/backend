@@ -48,6 +48,7 @@ namespace Main.Controllers
                 return Ok(
                     new AuthResponse
                     {
+                        Id = item.Id,
                         status = AuthStatus.Success,
                         message = ""
                     }
@@ -90,6 +91,7 @@ namespace Main.Controllers
                 return Ok(
                     new AuthResponse
                     {
+                        Id = item.Id,
                         status = AuthStatus.Success,
                         message = ""
                     }
