@@ -26,7 +26,7 @@ namespace Main.Controllers
 
         [HttpPost("company")]
         [Produces("application/json")]
-        public async Task<ActionResult> SignInCompany(AuthRequest auth)
+        public async Task<ActionResult<AuthCompanyResponse>> SignInCompany(AuthRequest auth)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace Main.Controllers
                 if (item == null)
                 {
                     return Ok(
-                        new AuthResponse
+                        new AuthCompanyResponse
                         {
                             status = AuthStatus.Fail,
                             message = "Authentication failed"
@@ -46,9 +46,9 @@ namespace Main.Controllers
                 }
 
                 return Ok(
-                    new AuthResponse
+                    new AuthCompanyResponse
                     {
-                        Id = item.Id,
+                        company = item,
                         status = AuthStatus.Success,
                         message = ""
                     }
@@ -58,7 +58,7 @@ namespace Main.Controllers
             {
                 _logger.LogError($"SignInUser: {e}");
                 return Ok(
-                    new AuthResponse
+                    new AuthCompanyResponse
                     {
                         status = AuthStatus.Fail,
                         message = $"Authentication failed: 'InvalidOperationException'"
@@ -69,7 +69,7 @@ namespace Main.Controllers
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult<AuthResponse>> SignInUser(AuthRequest auth)
+        public async Task<ActionResult<AuthUserResponse>> SignInUser(AuthRequest auth)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Main.Controllers
                 if (item == null)
                 {
                     return Ok(
-                        new AuthResponse
+                        new AuthUserResponse
                         {
                             status = AuthStatus.Fail,
                             message = "Authentication failed"
@@ -89,9 +89,9 @@ namespace Main.Controllers
                 }
 
                 return Ok(
-                    new AuthResponse
+                    new AuthUserResponse
                     {
-                        Id = item.Id,
+                        user = item,
                         status = AuthStatus.Success,
                         message = ""
                     }
@@ -101,7 +101,7 @@ namespace Main.Controllers
             {
                 _logger.LogError($"Error: {e}");
                 return Ok(
-                    new AuthResponse
+                    new AuthUserResponse
                     {
                         status = AuthStatus.Fail,
                         message = $"Authentication failed: 'InvalidOperationException'"

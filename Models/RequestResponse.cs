@@ -1,8 +1,17 @@
+using Main.PostgreSQL;
+
 namespace Main.Models
 {
-    public class AuthResponse
+    public class AuthCompanyResponse
     {
-        public int? Id { get; set; }
+        public Company company { get; set; }
+        public string status { get; set; }
+        public string message { get; set; }
+    }
+
+    public class AuthUserResponse
+    {
+        public User user { get; set; }
         public string status { get; set; }
         public string message { get; set; }
     }
