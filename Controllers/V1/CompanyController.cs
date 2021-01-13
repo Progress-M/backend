@@ -47,14 +47,18 @@ namespace Main.Controllers
         {
             var item = await Context.Company
                .AsNoTracking()
-               .SingleOrDefaultAsync(lang => lang.Id == id);
+               .SingleOrDefaultAsync(company => company.Id == id);
 
             if (item == null)
             {
                 return NotFound($"Not found comapny with id = {id}");
             }
 
-            var offers = await Context.Offer.Where(offer => offer.Company.Id == id).ToListAsync();
+            var offers = await Context.Offer
+                .Include(offer => offer.Company)
+                .ThenInclude(company => company.ProductСategory)
+                .Where(offer => offer.Company.Id == id)
+                .ToListAsync();
 
             return Ok(offers);
         }
