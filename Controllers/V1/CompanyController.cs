@@ -30,6 +30,7 @@ namespace Main.Controllers
         {
             var item = await Context.Company
                .AsNoTracking()
+               .Include(company => company.ProductСategory)
                .SingleOrDefaultAsync(lang => lang.Id == id);
 
             if (item == null)
@@ -62,7 +63,10 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetCompanys()
         {
-            return Ok(await Context.Company.ToListAsync());
+            return Ok(await Context.Company
+                .Include(company => company.ProductСategory)
+                .ToListAsync()
+            );
         }
 
         [HttpPost]

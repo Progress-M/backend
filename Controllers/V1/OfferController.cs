@@ -30,7 +30,9 @@ namespace Main.Controllers
         public async Task<ActionResult> GetOffer(int id)
         {
             var item = await Context.Offer
-               .AsNoTracking()
+                .AsNoTracking()
+                .Include(offer => offer.Company)
+                    .ThenInclude(company => company.ProductСategory)
                .SingleOrDefaultAsync(offer => offer.Id == id);
 
             if (item == null)
@@ -45,7 +47,10 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetOffers()
         {
-            return Ok(await Context.Offer.ToListAsync());
+            return Ok(await Context.Offer
+                .Include(offer => offer.Company)
+                    .ThenInclude(company => company.ProductСategory)
+                .ToListAsync());
         }
 
         [HttpPost]

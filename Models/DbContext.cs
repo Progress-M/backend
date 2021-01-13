@@ -87,7 +87,6 @@ namespace Main.PostgreSQL
         public string Name { get; set; }
         public bool isMan { get; set; }
         public DateTime BirthYear { get; set; }
-
     }
 
     public class OfferUser
