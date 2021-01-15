@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Cors;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Dadata;
+using System;
 
 namespace Main.Controllers
 {
@@ -24,9 +27,9 @@ namespace Main.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{text}")]
+        [HttpGet("address/{text}")]
         [Produces("application/json")]
-        public ActionResult Searsh(string text)
+        public ActionResult<List<string>> Searsh(string text)
         {
             System.Net.WebClient webClient = new System.Net.WebClient();
             webClient.QueryString.Add("text", text);
@@ -35,6 +38,18 @@ namespace Main.Controllers
             _logger.LogInformation("FIAS", data);
 
             return Ok(data.Select(d => d["PresentRow"]).ToArray());
+        }
+
+        [HttpGet("inn/{inn}")]
+        [Produces("application/json")]
+        public async Task<ActionResult<List<Dadata.Model.Party>>> SearshINN(string inn)
+        {
+            var token = "32a50c1c500a4196a0d9ebfe04ba44b2724c83e3";
+            var api = new SuggestClientAsync(token);
+            var result = await api.FindParty(inn);
+            _logger.LogInformation("INN", result.suggestions);
+
+            return Ok(result.suggestions);
         }
     }
 }
