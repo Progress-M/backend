@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Main.Controllers
 {
@@ -65,7 +66,7 @@ namespace Main.Controllers
 
         [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult> GetCompanys()
+        public async Task<ActionResult<List<Company>>> GetCompanys()
         {
             return Ok(await Context.Company
                 .Include(company => company.ProductСategory)
@@ -81,7 +82,7 @@ namespace Main.Controllers
                 .SingleOrDefaultAsync(cp => cp.Id == companyRequest.productCategoryId);
             if (productCategory == null)
             {
-                return NotFound(companyRequest.productCategoryId);
+                return NotFound($"Not found productCategory with id = {companyRequest.productCategoryId}");
             }
 
             Context.Company.Add(new Company(companyRequest, productCategory));

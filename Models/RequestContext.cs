@@ -2,6 +2,16 @@ using System;
 
 namespace Main.PostgreSQL
 {
+
+    public class UserRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+        public bool isMan { get; set; }
+        public DateTime BirthYear { get; set; }
+    }
+
     public class CompanyRequest
     {
         public string name { get; set; }

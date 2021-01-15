@@ -23,6 +23,8 @@ namespace Main.PostgreSQL
         public DbSet<User> User { get; set; }
         public DbSet<OfferUser> OfferUser { get; set; }
         public DbSet<ProductCategory> ProductCategory { get; set; }
+        public DbSet<UserEmailCode> UserEmailCode { get; set; }
+        public DbSet<CompanyEmailCode> CompanyEmailCode { get; set; }
     }
 
     public class ProductCategory
@@ -45,6 +47,7 @@ namespace Main.PostgreSQL
             Address = request.address;
             TimeOfWork = request.timeOfWork;
             ProductСategory = productСategory;
+            EmailConfirmed = false;
         }
 
         [Key]
@@ -56,6 +59,7 @@ namespace Main.PostgreSQL
         public string Password { get; set; }
         public string Address { get; set; }
         public string TimeOfWork { get; set; }
+        public bool EmailConfirmed { get; set; }
         public ProductCategory ProductСategory { get; set; }
     }
 
@@ -80,13 +84,45 @@ namespace Main.PostgreSQL
 
     public class User
     {
+        public User() { }
+        public User(UserRequest user)
+        {
+            Email = user.Email;
+            Password = user.Password;
+            Name = user.Name;
+            isMan = user.isMan;
+            EmailConfirmed = false;
+            BirthYear = user.BirthYear;
+        }
+
         [Key]
         public int Id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string Name { get; set; }
         public bool isMan { get; set; }
+        public bool EmailConfirmed { get; set; }
         public DateTime BirthYear { get; set; }
+    }
+
+    public class UserEmailCode
+    {
+        public UserEmailCode() { }
+
+        [Key]
+        public int Id { get; set; }
+        public string code { get; set; }
+        public User user { get; set; }
+    }
+
+    public class CompanyEmailCode
+    {
+        public CompanyEmailCode() { }
+
+        [Key]
+        public int Id { get; set; }
+        public string code { get; set; }
+        public Company company { get; set; }
     }
 
     public class OfferUser

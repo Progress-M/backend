@@ -72,9 +72,9 @@ namespace Main.Controllers
 
         [HttpPost]
         [Produces("application/json")]
-        public async Task<ActionResult> CreateUser(User user)
+        public async Task<ActionResult> CreateUser(UserRequest user)
         {
-            Context.User.Add(user);
+            Context.User.Add(new User(user));
             await Context.SaveChangesAsync();
             return Ok(user);
         }
