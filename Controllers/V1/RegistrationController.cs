@@ -20,10 +20,6 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<AuthController> _logger;
-        private const string emailServerURL = "smtp.mail.ru";
-        private const int emailServerPort = 465;
-        private const string emailBdobr = "bedobr@mail.ru";
-        private const string passwordBdobr = "AkBOE-rcio14";
 
         public RegistrationController(KindContext KindContext, ILogger<AuthController> logger)
         {
@@ -108,9 +104,9 @@ namespace Main.Controllers
             {
                 return NotFound($"Not found comapny with id = {id}");
             }
-            var code = RandomCode();
-            MimeMessage message = BuildMessageСonfirmation(item.Name, item.Email, code);
-            SendEmail(message);
+            var code = Utils.RandomCode();
+            MimeMessage message = Utils.BuildMessageСonfirmation(item.Name, item.Email, code);
+            Utils.SendEmail(message);
 
             foreach (var ce in Context.CompanyEmailCode.Where(ce => ce.company == item))
             {
@@ -138,9 +134,9 @@ namespace Main.Controllers
             {
                 return NotFound($"Not found user with id = {id}");
             }
-            var code = RandomCode();
-            MimeMessage message = BuildMessageСonfirmation(item.Name, item.Email, code);
-            SendEmail(message);
+            var code = Utils.RandomCode();
+            MimeMessage message = Utils.BuildMessageСonfirmation(item.Name, item.Email, code);
+            Utils.SendEmail(message);
 
             foreach (var ue in Context.UserEmailCode.Where(ue => ue.user == item))
             {
@@ -157,7 +153,18 @@ namespace Main.Controllers
             return Ok();
         }
 
-        public string RandomCode()
+
+    }
+
+    public static class Utils
+    {
+
+        private const string emailServerURL = "smtp.mail.ru";
+        private const int emailServerPort = 465;
+        private const string emailBdobr = "bedobr@mail.ru";
+        private const string passwordBdobr = "AkBOE-rcio14";
+
+        public static string RandomCode()
         {
             const int min = 1000;
             const int max = 9999;
@@ -165,7 +172,7 @@ namespace Main.Controllers
             return _random.Next(min, max).ToString();
         }
 
-        public MimeMessage BuildMessageСonfirmation(string name, string email, string code)
+        public static MimeMessage BuildMessageСonfirmation(string name, string email, string code)
         {
             MimeMessage message = new MimeMessage();
 
@@ -183,7 +190,7 @@ namespace Main.Controllers
             return message;
         }
 
-        public void SendEmail(MimeMessage message)
+        public static void SendEmail(MimeMessage message)
         {
             using (SmtpClient client = new SmtpClient())
             {
