@@ -23,8 +23,7 @@ namespace Main.PostgreSQL
         public DbSet<User> User { get; set; }
         public DbSet<OfferUser> OfferUser { get; set; }
         public DbSet<ProductCategory> ProductCategory { get; set; }
-        public DbSet<UserEmailCode> UserEmailCode { get; set; }
-        public DbSet<CompanyEmailCode> CompanyEmailCode { get; set; }
+        public DbSet<EmailCode> EmailCode { get; set; }
     }
 
     public class ProductCategory
@@ -105,24 +104,14 @@ namespace Main.PostgreSQL
         public DateTime BirthYear { get; set; }
     }
 
-    public class UserEmailCode
+    public class EmailCode
     {
-        public UserEmailCode() { }
+        public EmailCode() { }
 
         [Key]
         public int Id { get; set; }
         public string code { get; set; }
-        public User user { get; set; }
-    }
-
-    public class CompanyEmailCode
-    {
-        public CompanyEmailCode() { }
-
-        [Key]
-        public int Id { get; set; }
-        public string code { get; set; }
-        public Company company { get; set; }
+        public string email { get; set; }
     }
 
     public class OfferUser

@@ -27,57 +27,16 @@ namespace Main.Controllers
             _logger = logger;
         }
 
-
-        [HttpGet("email-acceptance/company/{id}/{code}")]
+        [HttpGet("email-acceptance/{email}/{code}")]
         [Produces("application/json")]
-        public async Task<ActionResult> CompanyAcceptance(int id, string code)
+        public async Task<ActionResult> UserAcceptance(string email, string code)
         {
-            var item = await Context.Company
-               .SingleOrDefaultAsync(company => company.Id == id);
-
-            if (item == null)
-            {
-                return NotFound($"Not found comapny with id = {id}");
-            }
-
-            var ce = await Context.CompanyEmailCode
-                .SingleOrDefaultAsync(ce => ce.company.Id == id);
-
-            if (ce == null)
-            {
-                return NotFound($"Not found email-confirmation to company with id = {id}");
-            }
-
-            if (ce.code != code)
-            {
-                return BadRequest($"Incorrect code");
-            }
-
-            Context.CompanyEmailCode.Remove(ce);
-            item.EmailConfirmed = true;
-            await Context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        [HttpGet("email-acceptance/user/{id}/{code}")]
-        [Produces("application/json")]
-        public async Task<ActionResult> UserAcceptance(int id, string code)
-        {
-            var item = await Context.User
-               .SingleOrDefaultAsync(user => user.Id == id);
-
-            if (item == null)
-            {
-                return NotFound($"Not found user with id = {id}");
-            }
-
-            var ue = await Context.UserEmailCode
-                .SingleOrDefaultAsync(ue => ue.user.Id == id);
+            var ue = await Context.EmailCode
+                .SingleOrDefaultAsync(ue => ue.email == email);
 
             if (ue == null)
             {
-                return NotFound($"Not found email-confirmation to user with id = {id}");
+                return NotFound($"Not found email-confirmation to user with email = {email}");
             }
 
             if (ue.code != code)
@@ -85,75 +44,35 @@ namespace Main.Controllers
                 return BadRequest($"Incorrect code");
             }
 
-            Context.UserEmailCode.Remove(ue);
-            item.EmailConfirmed = true;
+            Context.EmailCode.Remove(ue);
             await Context.SaveChangesAsync();
 
             return Ok();
         }
 
 
-        [HttpGet("email-confirmation/company/{id}")]
+        [HttpGet("email-confirmation/{email}")]
         [Produces("application/json")]
-        public async Task<ActionResult> CompanyEmailСonfirmation(int id)
+        public async Task<ActionResult> EmailСonfirmation(string email)
         {
-            var item = await Context.Company
-               .SingleOrDefaultAsync(company => company.Id == id);
-
-            if (item == null)
-            {
-                return NotFound($"Not found comapny with id = {id}");
-            }
             var code = Utils.RandomCode();
-            MimeMessage message = Utils.BuildMessageСonfirmation(item.Name, item.Email, code);
+            MimeMessage message = Utils.BuildMessageСonfirmation(email, code);
             Utils.SendEmail(message);
 
-            foreach (var ce in Context.CompanyEmailCode.Where(ce => ce.company == item))
+            foreach (var ce in Context.EmailCode.Where(ce => ce.email == email))
             {
-                Context.CompanyEmailCode.Remove(ce);
+                Context.EmailCode.Remove(ce);
             }
 
-            Context.CompanyEmailCode.Add(new CompanyEmailCode
+            Context.EmailCode.Add(new EmailCode
             {
                 code = code,
-                company = item
+                email = email
             });
             await Context.SaveChangesAsync();
 
             return Ok();
         }
-
-        [HttpGet("email-confirmation/user/{id}")]
-        [Produces("application/json")]
-        public async Task<ActionResult> UserEmailСonfirmation(int id)
-        {
-            var item = await Context.User
-               .SingleOrDefaultAsync(user => user.Id == id);
-
-            if (item == null)
-            {
-                return NotFound($"Not found user with id = {id}");
-            }
-            var code = Utils.RandomCode();
-            MimeMessage message = Utils.BuildMessageСonfirmation(item.Name, item.Email, code);
-            Utils.SendEmail(message);
-
-            foreach (var ue in Context.UserEmailCode.Where(ue => ue.user == item))
-            {
-                Context.UserEmailCode.Remove(ue);
-            }
-
-            Context.UserEmailCode.Add(new UserEmailCode
-            {
-                code = code,
-                user = item
-            });
-            await Context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-
     }
 
     public static class Utils
@@ -172,20 +91,20 @@ namespace Main.Controllers
             return _random.Next(min, max).ToString();
         }
 
-        public static MimeMessage BuildMessageСonfirmation(string name, string email, string code)
+        public static MimeMessage BuildMessageСonfirmation(string email, string code)
         {
             MimeMessage message = new MimeMessage();
 
             MailboxAddress from = new MailboxAddress("Будьдобр", emailBdobr);
             message.From.Add(from);
 
-            MailboxAddress to = new MailboxAddress(name, email);
+            MailboxAddress to = new MailboxAddress("Пользователь", email);
             message.To.Add(to);
 
             message.Subject = "Добро пожаловать в Будьдобр";
 
             BodyBuilder bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = $"<div>Приветсвуем в сообществе Будьдобр, {name}. Код подтверждения: {code}</div>";
+            bodyBuilder.HtmlBody = $"<div>Приветсвуем в сообществе Будьдобр. Код подтверждения: {code}</div>";
             message.Body = bodyBuilder.ToMessageBody();
             return message;
         }
