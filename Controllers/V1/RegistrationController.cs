@@ -80,8 +80,8 @@ namespace Main.Controllers
 
         private const string emailServerURL = "smtp.mail.ru";
         private const int emailServerPort = 465;
-        private const string emailBdobr = "bedobr@mail.ru";
-        private const string passwordBdobr = "AkBOE-rcio14";
+        private const string emailBdobr = "bdobr-test@mail.ru";
+        private const string passwordBdobr = "POty2TUuu4a*";
 
         public static string RandomCode()
         {
