@@ -78,6 +78,15 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> CreateCompany(CompanyRequest companyRequest)
         {
+            var old = await Context.Company
+                .AsNoTracking()
+                .SingleOrDefaultAsync(cp => cp.INN == companyRequest.inn || cp.Email == companyRequest.email);
+
+            if (old != null)
+            {
+                return BadRequest($"Company with INN = '{companyRequest.inn}' or Email = '{companyRequest.email}' already exist.");
+            }
+
             var productCategory = await Context.ProductCategory
                 .SingleOrDefaultAsync(cp => cp.Id == companyRequest.productCategoryId);
             if (productCategory == null)
