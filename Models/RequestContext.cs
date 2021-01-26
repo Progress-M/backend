@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace Main.PostgreSQL
 {
@@ -10,6 +11,7 @@ namespace Main.PostgreSQL
         public string Name { get; set; }
         public bool isMan { get; set; }
         public DateTime BirthYear { get; set; }
+        public IFormFile image { get; set; }
     }
 
     public class CompanyRequest
@@ -22,6 +24,7 @@ namespace Main.PostgreSQL
         public string address { get; set; }
         public string timeOfWork { get; set; }
         public int productCategoryId { get; set; }
+        public IFormFile image { get; set; }
     }
 
     public class OfferRequest
@@ -30,6 +33,7 @@ namespace Main.PostgreSQL
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public int companyId { get; set; }
+        public IFormFile image { get; set; }
     }
     public class AuthRequest
     {

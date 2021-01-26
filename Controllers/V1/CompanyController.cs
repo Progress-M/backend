@@ -7,6 +7,9 @@ using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Reflection;
 
 namespace Main.Controllers
 {
@@ -42,6 +45,30 @@ namespace Main.Controllers
             return Ok(item);
         }
 
+
+        [HttpGet("image/{id}")]
+        public async Task<ActionResult> GeCompanyAvatar(int id)
+        {
+            var item = await Context.Company
+                .AsNoTracking()
+                .SingleOrDefaultAsync(company => company.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found company with id = {id}");
+            }
+
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            if (!System.IO.File.Exists(@$"{filePath}\image\company\{item.AvatarName}"))
+            {
+                return NotFound($"Not found file with name = '{item.AvatarName}'");
+            }
+
+            var stream = System.IO.File.OpenRead(@$"{filePath}\image\company\{item.AvatarName}");
+            return new FileStreamResult(stream, "image/jpeg");
+        }
+
         [HttpGet("{id}/offer")]
         [Produces("application/json")]
         public async Task<ActionResult<System.Collections.Generic.List<Offer>>> GetOfferByCompany(int id)
@@ -75,14 +102,14 @@ namespace Main.Controllers
         }
 
         [HttpPost]
-        [Produces("application/json")]
-        public async Task<ActionResult> CreateCompany(CompanyRequest companyRequest)
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> CreateCompany([FromForm] CompanyRequest companyRequest)
         {
-            var old = await Context.Company
+            var exist = await Context.Company
                 .AsNoTracking()
                 .SingleOrDefaultAsync(cp => cp.INN == companyRequest.inn || cp.Email == companyRequest.email);
 
-            if (old != null)
+            if (exist != null)
             {
                 return BadRequest($"Company with INN = '{companyRequest.inn}' or Email = '{companyRequest.email}' already exist.");
             }
@@ -94,19 +121,14 @@ namespace Main.Controllers
                 return NotFound($"Not found productCategory with id = {companyRequest.productCategoryId}");
             }
 
-            Context.Company.Add(new Company(companyRequest, productCategory));
+            var company = new Company(companyRequest, productCategory);
+            Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
-            var item = await Context.Company
-                .AsNoTracking()
-                .SingleOrDefaultAsync(cp => cp.INN == companyRequest.inn);
+            company.AvatarName = await saveCompanyAvatar(companyRequest.image, company.Id);
+            await Context.SaveChangesAsync();
 
-            if (item == null)
-            {
-                return BadRequest(companyRequest);
-            }
-
-            return Ok(item);
+            return Ok(company);
         }
 
         [HttpPut]
@@ -156,7 +178,6 @@ namespace Main.Controllers
             return Ok(item);
         }
 
-
         public async Task deleteOfferByCompany(Company item)
         {
             var items = await Context.Offer
@@ -177,9 +198,26 @@ namespace Main.Controllers
             var items = await Context.OfferUser
                 .Where(offer => offer.Offer.Id == offer.Id)
                 .ToListAsync();
-            
+
             Context.OfferUser.RemoveRange(items);
             await Context.SaveChangesAsync();
+        }
+
+        public async Task<string> saveCompanyAvatar(IFormFile file, int companyId)
+        {
+            if (file.Length > 0)
+            {
+                var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                Directory.CreateDirectory($@"{filePath}\image\company\");
+                using (var stream = System.IO.File.Create($@"{filePath}\image\company\{companyId}-{file.FileName}"))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return $"{companyId}-{file.FileName}";
+            }
+
+            return "";
         }
     }
 }

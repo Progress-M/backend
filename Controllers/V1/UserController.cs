@@ -7,6 +7,9 @@ using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 
 using System.Linq;
+using System.IO;
+using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace Main.Controllers
 {
@@ -70,13 +73,57 @@ namespace Main.Controllers
             return Ok(await Context.User.ToListAsync());
         }
 
-        [HttpPost]
-        [Produces("application/json")]
-        public async Task<ActionResult> CreateUser(UserRequest user)
+        [HttpGet("image/{id}")]
+        public async Task<ActionResult> GetUserAvatar(int id)
         {
-            Context.User.Add(new User(user));
+            var item = await Context.User
+                .AsNoTracking()
+                .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            if (!System.IO.File.Exists(@$"{filePath}\image\user\{item.AvatarName}"))
+            {
+                return NotFound($"Not found file with name = '{item.AvatarName}'");
+            }
+
+            var stream = System.IO.File.OpenRead(@$"{filePath}\image\user\{item.AvatarName}");
+            return new FileStreamResult(stream, "image/jpeg");
+        }
+
+        [HttpPost]
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> CreateUser([FromForm] UserRequest user)
+        {
+            var item = new User(user);
+            Context.User.Add(item);
             await Context.SaveChangesAsync();
-            return Ok(user);
+            item.AvatarName = await saveUserAvatar(user.image, item.Id);
+            await Context.SaveChangesAsync();
+
+            return Ok(item);
+        }
+
+        public async Task<string> saveUserAvatar(IFormFile file, int userId)
+        {
+            if (file != null && file.Length > 0)
+            {
+                var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                Directory.CreateDirectory($@"{filePath}\image\user\");
+                using (var stream = System.IO.File.Create($@"{filePath}\image\user\{userId}-{file.FileName}"))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return $"{userId}-{file.FileName}";
+            }
+
+            return "";
         }
 
     }

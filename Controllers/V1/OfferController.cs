@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
-using System;
-using System.Linq;
+
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.Reflection;
 
 namespace Main.Controllers
 {
@@ -53,9 +55,32 @@ namespace Main.Controllers
                 .ToListAsync());
         }
 
+        [HttpGet("image/{id}")]
+        public async Task<ActionResult> GetOfferImage(int id)
+        {
+            var item = await Context.Offer
+                .AsNoTracking()
+                .SingleOrDefaultAsync(offer => offer.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found offer with id = {id}");
+            }
+
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            if (!System.IO.File.Exists(@$"{filePath}\image\offer\{item.ImageName}"))
+            {
+                return NotFound($"Not found file with name = '{item.ImageName}'");
+            }
+
+            var stream = System.IO.File.OpenRead(@$"{filePath}\image\offer\{item.ImageName}");
+            return new FileStreamResult(stream, "image/jpeg");
+        }
+
         [HttpPost]
-        [Produces("application/json")]
-        public async Task<ActionResult> CreateOffer(OfferRequest offerRequest)
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> CreateOffer([FromForm] OfferRequest offerRequest)
         {
             var company = await Context.Company
                 .SingleOrDefaultAsync(company => company.Id == offerRequest.companyId);
@@ -68,14 +93,34 @@ namespace Main.Controllers
             var users = await Context.User.ToListAsync();
 
             var offer = new Offer(offerRequest, company);
-            Context.Offer.Add(offer);
+            await Context.Offer.AddAsync(offer);
 
             users
                 .ConvertAll(user => new OfferUser(offer, user))
                 .ForEach(ou => Context.OfferUser.Add(ou));
 
             await Context.SaveChangesAsync();
+            offer.ImageName = await saveOfferImage(offerRequest.image, offer.Id);
+            await Context.SaveChangesAsync();
+
             return Ok(offer);
+        }
+
+        public async Task<string> saveOfferImage(IFormFile file, int offerId)
+        {
+            if (file.Length > 0)
+            {
+                var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                Directory.CreateDirectory($@"{filePath}\image\offer\");
+                using (var stream = System.IO.File.Create($@"{filePath}\image\offer\{offerId}-{file.FileName}"))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return $"{offerId}-{file.FileName}";
+            }
+
+            return "";
         }
 
     }

@@ -47,6 +47,7 @@ namespace Main.PostgreSQL
             TimeOfWork = request.timeOfWork;
             ProductСategory = productСategory;
             EmailConfirmed = false;
+            AvatarName = "";
         }
 
         [Key]
@@ -60,6 +61,7 @@ namespace Main.PostgreSQL
         public string TimeOfWork { get; set; }
         public bool EmailConfirmed { get; set; }
         public ProductCategory ProductСategory { get; set; }
+        public string AvatarName { get; set; }
     }
 
     public class Offer
@@ -71,6 +73,7 @@ namespace Main.PostgreSQL
             TimeStart = request.timeStart;
             TimeEnd = request.timeEnd;
             Company = company;
+            ImageName = "";
         }
 
         [Key]
@@ -79,6 +82,7 @@ namespace Main.PostgreSQL
         public DateTime TimeStart { get; set; }
         public DateTime TimeEnd { get; set; }
         public Company Company { get; set; }
+        public string ImageName { get; set; }
     }
 
     public class User
@@ -92,6 +96,7 @@ namespace Main.PostgreSQL
             isMan = user.isMan;
             EmailConfirmed = false;
             BirthYear = user.BirthYear;
+            AvatarName = "";
         }
 
         [Key]
@@ -102,6 +107,7 @@ namespace Main.PostgreSQL
         public bool isMan { get; set; }
         public bool EmailConfirmed { get; set; }
         public DateTime BirthYear { get; set; }
+        public string AvatarName { get; set; }
     }
 
     public class EmailCode
