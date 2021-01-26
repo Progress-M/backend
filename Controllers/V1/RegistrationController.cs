@@ -3,12 +3,11 @@ using Microsoft.Extensions.Logging;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 
-using MailKit.Net.Smtp;
 using MimeKit;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System;
+using Main.Function;
 
 namespace Main.Controllers
 {
@@ -74,52 +73,5 @@ namespace Main.Controllers
             return Ok();
         }
     }
-
-    public static class Utils
-    {
-
-        private const string emailServerURL = "smtp.mail.ru";
-        private const int emailServerPort = 465;
-        private const string emailBdobr = "bedobr@mail.ru";
-        private const string passwordBdobr = "AkBOE-rcio14";
-
-        public static string RandomCode()
-        {
-            const int min = 1000;
-            const int max = 9999;
-            Random _random = new Random();
-            return _random.Next(min, max).ToString();
-        }
-
-        public static MimeMessage BuildMessageСonfirmation(string email, string code)
-        {
-            MimeMessage message = new MimeMessage();
-
-            MailboxAddress from = new MailboxAddress("Будьдобр", emailBdobr);
-            message.From.Add(from);
-
-            MailboxAddress to = new MailboxAddress("Пользователь", email);
-            message.To.Add(to);
-
-            message.Subject = "Добро пожаловать в Будьдобр";
-
-            BodyBuilder bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = $"<div>Приветсвуем в сообществе Будьдобр. Код подтверждения: {code}</div>";
-            message.Body = bodyBuilder.ToMessageBody();
-            return message;
-        }
-
-        public static void SendEmail(MimeMessage message)
-        {
-            using (SmtpClient client = new SmtpClient())
-            {
-                client.Connect(emailServerURL, emailServerPort, true);
-                client.Authenticate(emailBdobr, passwordBdobr);
-
-                client.Send(message);
-                client.Disconnect(true);
-                client.Dispose();
-            }
-        }
-    }
+    
 }

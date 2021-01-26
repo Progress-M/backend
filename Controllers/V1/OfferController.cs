@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Reflection;
+using Main.Function;
 
 namespace Main.Controllers
 {
@@ -100,28 +101,10 @@ namespace Main.Controllers
                 .ForEach(ou => Context.OfferUser.Add(ou));
 
             await Context.SaveChangesAsync();
-            offer.ImageName = await saveOfferImage(offerRequest.image, offer.Id);
+            offer.ImageName = await Utils.saveFile(offerRequest.image, @"\image\offer\", offer.Id);
             await Context.SaveChangesAsync();
 
             return Ok(offer);
         }
-
-        public async Task<string> saveOfferImage(IFormFile file, int offerId)
-        {
-            if (file.Length > 0)
-            {
-                var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                Directory.CreateDirectory($@"{filePath}\image\offer\");
-                using (var stream = System.IO.File.Create($@"{filePath}\image\offer\{offerId}-{file.FileName}"))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                return $"{offerId}-{file.FileName}";
-            }
-
-            return "";
-        }
-
     }
 }

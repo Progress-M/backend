@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Reflection;
+using Main.Function;
 
 namespace Main.Controllers
 {
@@ -125,7 +126,7 @@ namespace Main.Controllers
             Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
-            company.AvatarName = await saveCompanyAvatar(companyRequest.image, company.Id);
+            company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company", company.Id);
             await Context.SaveChangesAsync();
 
             return Ok(company);
@@ -170,15 +171,18 @@ namespace Main.Controllers
                 return NotFound(id);
             }
 
-            await deleteOfferByCompany(item);
+            await CompanyUtils.deleteOfferByCompany(Context, item);
 
             Context.Company.Remove(item);
             await Context.SaveChangesAsync();
 
             return Ok(item);
         }
+    }
 
-        public async Task deleteOfferByCompany(Company item)
+    public static class CompanyUtils
+    {
+        public static async Task deleteOfferByCompany(KindContext Context, Company item)
         {
             var items = await Context.Offer
                 .Where(offer => offer.Company.Id == item.Id)
@@ -186,14 +190,14 @@ namespace Main.Controllers
 
             for (int i = 0; i < items.Count; i++)
             {
-                await deleteOfferUserByUser(items[i]);
+                await deleteOfferUserByUser(Context, items[i]);
             }
 
             Context.Offer.RemoveRange(items);
             await Context.SaveChangesAsync();
         }
 
-        public async Task deleteOfferUserByUser(Offer offer)
+        public static async Task deleteOfferUserByUser(KindContext Context, Offer offer)
         {
             var items = await Context.OfferUser
                 .Where(offer => offer.Offer.Id == offer.Id)
@@ -201,23 +205,6 @@ namespace Main.Controllers
 
             Context.OfferUser.RemoveRange(items);
             await Context.SaveChangesAsync();
-        }
-
-        public async Task<string> saveCompanyAvatar(IFormFile file, int companyId)
-        {
-            if (file.Length > 0)
-            {
-                var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                Directory.CreateDirectory($@"{filePath}\image\company\");
-                using (var stream = System.IO.File.Create($@"{filePath}\image\company\{companyId}-{file.FileName}"))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                return $"{companyId}-{file.FileName}";
-            }
-
-            return "";
         }
     }
 }
