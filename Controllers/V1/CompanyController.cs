@@ -138,5 +138,48 @@ namespace Main.Controllers
 
             return Ok(item);
         }
+
+        [HttpDelete("cascade/{id}")]
+        public async Task<ActionResult> CascadeDeleteCompany(int id)
+        {
+            var item = await Context.Company.FindAsync(id);
+            if (item == null)
+            {
+                return NotFound(id);
+            }
+
+            await deleteOfferByCompany(item);
+
+            Context.Company.Remove(item);
+            await Context.SaveChangesAsync();
+
+            return Ok(item);
+        }
+
+
+        public async Task deleteOfferByCompany(Company item)
+        {
+            var items = await Context.Offer
+                .Where(offer => offer.Company.Id == item.Id)
+                .ToListAsync();
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                await deleteOfferUserByUser(items[i]);
+            }
+
+            Context.Offer.RemoveRange(items);
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task deleteOfferUserByUser(Offer offer)
+        {
+            var items = await Context.OfferUser
+                .Where(offer => offer.Offer.Id == offer.Id)
+                .ToListAsync();
+            
+            Context.OfferUser.RemoveRange(items);
+            await Context.SaveChangesAsync();
+        }
     }
 }
