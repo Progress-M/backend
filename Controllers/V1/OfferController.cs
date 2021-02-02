@@ -104,6 +104,8 @@ namespace Main.Controllers
             offer.ImageName = await Utils.saveFile(offerRequest.image, @"\image\offer\", offer.Id);
             await Context.SaveChangesAsync();
 
+            Utils.CreateNotification(offer.Text);
+
             return Ok(offer);
         }
     }

@@ -88,6 +88,7 @@ namespace Main.Function
             {
                 app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
                 contents = new { en = "English Message", ru = message },
+                headings = new { en = "Bdobr", ru = "Будьдобр" },
                 channel_for_external_user_ids = "push",
                 included_segments = new string[] { "Subscribed Users" }
             };
