@@ -109,6 +109,22 @@ namespace Main.Controllers
             return Ok(item);
         }
 
+        [HttpPut("{id}/playerId")]
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> SetUserPlayerId(int id, PlayerIdRequest request)
+        {
+            var item = await Context.User
+              .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+            item.PlayerId = request.playerId;
+            await Context.SaveChangesAsync();
+
+            return Ok(item);
+        }
     }
 
 

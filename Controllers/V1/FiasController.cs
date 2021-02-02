@@ -46,9 +46,12 @@ namespace Main.Controllers
             var token = "32a50c1c500a4196a0d9ebfe04ba44b2724c83e3";
             var api = new SuggestClientAsync(token);
             var result = await api.FindParty(inn);
-            _logger.LogInformation("INN", result.suggestions);
 
-            return Ok(result.suggestions);
+            return Ok(result.suggestions
+                .Select(d =>
+                    new { Name = d.value, Inn = d.data.inn, Management = d.data.management.name }
+                )
+            );
         }
     }
 }

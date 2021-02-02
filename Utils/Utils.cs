@@ -1,11 +1,14 @@
 using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 
 using MailKit.Net.Smtp;
 using MimeKit;
 using System;
+using System.Net;
+using System.Text;
 
 namespace Main.Function
 {
@@ -70,6 +73,52 @@ namespace Main.Function
                 client.Disconnect(true);
                 client.Dispose();
             }
+        }
+
+        public static void CreateNotification(string message)
+        {
+            var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
+
+            request.KeepAlive = true;
+            request.Method = "POST";
+            request.ContentType = "application/json; charset=utf-8";
+            request.Headers.Add("authorization", "Basic MWY2MWY4ODctMjU5NC00ZTZjLTgyMWYtZGEzM2M5NmNhYTJh");
+
+            var obj = new
+            {
+                app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
+                contents = new { en = "English Message", ru = message },
+                channel_for_external_user_ids = "push",
+                included_segments = new string[] { "Subscribed Users" }
+            };
+
+            var param = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            byte[] byteArray = Encoding.UTF8.GetBytes(param);
+
+            string responseContent = null;
+
+            try
+            {
+                using (var writer = request.GetRequestStream())
+                {
+                    writer.Write(byteArray, 0, byteArray.Length);
+                }
+
+                using (var response = request.GetResponse() as HttpWebResponse)
+                {
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        responseContent = reader.ReadToEnd();
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+            }
+
+            System.Diagnostics.Debug.WriteLine(responseContent);
         }
     }
 }

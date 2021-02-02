@@ -34,10 +34,16 @@ namespace Main.PostgreSQL
         public DateTime timeEnd { get; set; }
         public int companyId { get; set; }
         public IFormFile image { get; set; }
+        public int percentage { get; set; }
     }
     public class AuthRequest
     {
         public string username { get; set; }
         public string password { get; set; }
+    }
+
+    public class PlayerIdRequest
+    {
+        public string playerId { get; set; }
     }
 }

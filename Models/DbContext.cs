@@ -72,6 +72,7 @@ namespace Main.PostgreSQL
             Text = request.text;
             TimeStart = request.timeStart;
             TimeEnd = request.timeEnd;
+            Percentage = request.percentage;
             Company = company;
             ImageName = "";
         }
@@ -83,6 +84,7 @@ namespace Main.PostgreSQL
         public DateTime TimeEnd { get; set; }
         public Company Company { get; set; }
         public string ImageName { get; set; }
+        public int Percentage { get; set; }
     }
 
     public class User
@@ -97,6 +99,7 @@ namespace Main.PostgreSQL
             EmailConfirmed = false;
             BirthYear = user.BirthYear;
             AvatarName = "";
+            PlayerId = "";
         }
 
         [Key]
@@ -108,6 +111,7 @@ namespace Main.PostgreSQL
         public bool EmailConfirmed { get; set; }
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
+        public string PlayerId { get; set; }
     }
 
     public class EmailCode
