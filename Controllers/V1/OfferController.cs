@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 
-using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Reflection;
 using Main.Function;
+using System.Linq;
 
 namespace Main.Controllers
 {
@@ -91,20 +91,21 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            var users = await Context.User.ToListAsync();
+            var users = (await Context.User.Include(u => u.Favorites)
+                .ToListAsync())
+                .Where(u => u.Favorites != null && u.Favorites.Contains(company) && u.PlayerId != null);
 
             var offer = new Offer(offerRequest, company);
             await Context.Offer.AddAsync(offer);
 
-            users
-                .ConvertAll(user => new OfferUser(offer, user))
-                .ForEach(ou => Context.OfferUser.Add(ou));
-
             await Context.SaveChangesAsync();
-            offer.ImageName = await Utils.saveFile(offerRequest.image, @"\image\offer\", offer.Id);
-            await Context.SaveChangesAsync();
+            if (offerRequest.image != null)
+            {
+                offer.ImageName = await Utils.saveFile(offerRequest.image, @"\image\offer\", offer.Id);
+                await Context.SaveChangesAsync();
+            }
 
-            Utils.CreateNotification(offer.Text);
+            Utils.CreateNotificationToFavorites(offer.Text, users.Select(u => u.PlayerId).ToArray());
 
             return Ok(offer);
         }

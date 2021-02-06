@@ -31,6 +31,16 @@ namespace Main.Function
             return "";
         }
 
+        public static void deleteFile(string path, string fileName)
+        {
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Directory.CreateDirectory($@"{filePath}{path}");
+            if (File.Exists($@"{filePath}{path}{fileName}"))
+            {
+                File.Delete($@"{filePath}{path}{fileName}");
+            }
+        }
+
         private const string emailServerURL = "smtp.mail.ru";
         private const int emailServerPort = 465;
         private const string emailBdobr = "bedobr@mail.ru";
@@ -91,6 +101,54 @@ namespace Main.Function
                 headings = new { en = "Bdobr", ru = "Будьдобр" },
                 channel_for_external_user_ids = "push",
                 included_segments = new string[] { "Subscribed Users" }
+            };
+
+            var param = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            byte[] byteArray = Encoding.UTF8.GetBytes(param);
+
+            string responseContent = null;
+
+            try
+            {
+                using (var writer = request.GetRequestStream())
+                {
+                    writer.Write(byteArray, 0, byteArray.Length);
+                }
+
+                using (var response = request.GetResponse() as HttpWebResponse)
+                {
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        responseContent = reader.ReadToEnd();
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+            }
+
+            System.Diagnostics.Debug.WriteLine(responseContent);
+        }
+
+        public static void CreateNotificationToFavorites(string message, string[] favorites)
+        {
+            Console.WriteLine($"favorites = {favorites[0]}");
+            var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
+
+            request.KeepAlive = true;
+            request.Method = "POST";
+            request.ContentType = "application/json; charset=utf-8";
+            request.Headers.Add("authorization", "Basic MWY2MWY4ODctMjU5NC00ZTZjLTgyMWYtZGEzM2M5NmNhYTJh");
+
+            var obj = new
+            {
+                app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
+                contents = new { en = "English Message", ru = message },
+                headings = new { en = "Bdobr", ru = "Будьдобр" },
+                channel_for_external_user_ids = "push",
+                include_player_ids = favorites
             };
 
             var param = JsonConvert.SerializeObject(obj, Formatting.Indented);

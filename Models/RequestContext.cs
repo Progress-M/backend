@@ -14,6 +14,22 @@ namespace Main.PostgreSQL
         public IFormFile image { get; set; }
     }
 
+    public class UserUpdateRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+        public bool isMan { get; set; }
+        public bool EmailConfirmed { get; set; }
+        public DateTime BirthYear { get; set; }
+        public string PlayerId { get; set; }
+    }
+
+    public class UserImageRequest
+    {
+        public IFormFile image { get; set; }
+    }
+
     public class CompanyRequest
     {
         public string name { get; set; }
@@ -43,6 +59,11 @@ namespace Main.PostgreSQL
     }
 
     public class PlayerIdRequest
+    {
+        public string playerId { get; set; }
+    }
+
+    public class FavoritesRequest
     {
         public string playerId { get; set; }
     }

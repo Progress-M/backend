@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Cors;
 using System.Linq;
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Main.Controllers
 {
@@ -70,7 +71,7 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetUser()
         {
-            return Ok(await Context.User.ToListAsync());
+            return Ok(await Context.User.Include(u => u.Favorites).ToListAsync());
         }
 
         [HttpGet("image/{id}")]
@@ -109,9 +110,8 @@ namespace Main.Controllers
             return Ok(item);
         }
 
-        [HttpPut("{id}/playerId")]
-        [DisableRequestSizeLimit]
-        public async Task<ActionResult> SetUserPlayerId(int id, PlayerIdRequest request)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UserUpdate(int id, UserUpdateRequest oldUser)
         {
             var item = await Context.User
               .SingleOrDefaultAsync(user => user.Id == id);
@@ -120,7 +120,68 @@ namespace Main.Controllers
             {
                 return NotFound($"Not found user with id = {id}");
             }
-            item.PlayerId = request.playerId;
+
+            item.PlayerId = oldUser.PlayerId;
+            item.Email = oldUser.Email;
+            item.Password = oldUser.Password;
+            item.Name = oldUser.Name;
+            item.isMan = oldUser.isMan;
+            item.EmailConfirmed = oldUser.EmailConfirmed;
+            item.BirthYear = oldUser.BirthYear;
+            item.PlayerId = oldUser.PlayerId;
+
+            await Context.SaveChangesAsync();
+            return Ok(item);
+        }
+
+        [HttpPut("{id}/image")]
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> UserImageUpdate(int id, [FromForm] UserImageRequest oldUser)
+        {
+            var item = await Context.User
+              .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            Utils.deleteFile(@"\image\user\", item.AvatarName);
+            if (oldUser.image != null)
+            {
+                item.AvatarName = await Utils.saveFile(oldUser.image, @"\image\user\", item.Id);
+                await Context.SaveChangesAsync();
+            }
+
+            return Ok(item);
+        }
+
+        [HttpPut("{id}/favorite/{favoriteId}")]
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> AddUserFavorite(int id, int favoriteId)
+        {
+            var item = await Context.User
+              .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            var favorite = await Context.Company
+              .SingleOrDefaultAsync(favorite => favorite.Id == favoriteId);
+
+            if (item == null)
+            {
+                return NotFound($"Not found company with id = {id}");
+            }
+
+            if (item.Favorites == null)
+            {
+                item.Favorites = new HashSet<Company>();
+            }
+
+            item.Favorites.Add(favorite);
             await Context.SaveChangesAsync();
 
             return Ok(item);

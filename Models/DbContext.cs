@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -100,6 +101,7 @@ namespace Main.PostgreSQL
             BirthYear = user.BirthYear;
             AvatarName = "";
             PlayerId = "";
+            Favorites = new HashSet<Company>();
         }
 
         [Key]
@@ -112,6 +114,8 @@ namespace Main.PostgreSQL
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
+        public ICollection<Company> Favorites { get; set; }
+
     }
 
     public class EmailCode
