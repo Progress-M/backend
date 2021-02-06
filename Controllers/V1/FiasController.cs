@@ -49,7 +49,7 @@ namespace Main.Controllers
 
             return Ok(result.suggestions
                 .Select(d =>
-                    new { Name = d.value, Inn = d.data.inn, Management = d.data.management.name }
+                    new { Name = d.value, Inn = d.data.inn, Management = d.data.management?.name }
                 )
             );
         }
