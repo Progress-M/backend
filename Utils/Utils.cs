@@ -43,8 +43,8 @@ namespace Main.Function
 
         private const string emailServerURL = "smtp.mail.ru";
         private const int emailServerPort = 465;
-        private const string emailBdobr = "bedobr@mail.ru";
-        private const string passwordBdobr = "AkBOE-rcio14";
+        private const string emailBdobr = "no-reply@bdobr.ru";
+        private const string passwordBdobr = "uT1r9y(siARI";
 
         public static string RandomCode()
         {
@@ -64,10 +64,15 @@ namespace Main.Function
             MailboxAddress to = new MailboxAddress("Пользователь", email);
             message.To.Add(to);
 
-            message.Subject = "Добро пожаловать в Будьдобр";
+            message.Subject = "[Будьдобр] Пожалуйста, подтвердите свой адрес электронной почты";
+
+            var filePath = Path
+                .GetDirectoryName(Assembly.GetCallingAssembly().Location)
+                .Replace(@"bin\Debug\netcoreapp3.1", "");
+            var body = System.IO.File.ReadAllText(@$"{filePath}\EmailTemplates\confirm.html").Replace("CONFIRM_CODE", code);
 
             BodyBuilder bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = $"<div>Приветсвуем в сообществе Будьдобр. Код подтверждения: {code}</div>";
+            bodyBuilder.HtmlBody = body;
             message.Body = bodyBuilder.ToMessageBody();
             return message;
         }
