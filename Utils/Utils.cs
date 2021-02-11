@@ -139,7 +139,6 @@ namespace Main.Function
 
         public static void CreateNotificationToFavorites(string message, string[] favorites)
         {
-            Console.WriteLine($"favorites = {favorites[0]}");
             var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
 
             request.KeepAlive = true;
