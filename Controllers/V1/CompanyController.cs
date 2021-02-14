@@ -17,7 +17,6 @@ namespace Main.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
-    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class CompanyController : Controller
     {
@@ -31,6 +30,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetCompany(int id)
         {
@@ -49,6 +49,7 @@ namespace Main.Controllers
 
 
         [HttpGet("image/{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> GeCompanyAvatar(int id)
         {
             var item = await Context.Company
@@ -72,6 +73,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}/offer")]
+        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult<System.Collections.Generic.List<Offer>>> GetOfferByCompany(int id)
         {
@@ -134,6 +136,7 @@ namespace Main.Controllers
         }
 
         [HttpPut]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<IActionResult> UpdateCompany(Company company)
         {
             var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == company.Id);
@@ -149,6 +152,7 @@ namespace Main.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> DeleteCompany(int id)
         {
             var item = await Context.Company.FindAsync(id);
@@ -164,6 +168,7 @@ namespace Main.Controllers
         }
 
         [HttpDelete("cascade/{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> CascadeDeleteCompany(int id)
         {
             var item = await Context.Company.FindAsync(id);

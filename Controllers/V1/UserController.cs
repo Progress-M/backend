@@ -18,7 +18,6 @@ namespace Main.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
-    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UserController : Controller
     {
@@ -32,6 +31,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetUser(int id)
         {
@@ -50,6 +50,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}/offer")]
+        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetOffersByUser(int id)
         {
@@ -81,6 +82,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("image/{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> GetUserAvatar(int id)
         {
             var item = await Context.User
@@ -117,6 +119,7 @@ namespace Main.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> UserUpdate(int id, UserUpdateRequest oldUser)
         {
             var item = await Context.User
@@ -142,6 +145,7 @@ namespace Main.Controllers
 
         [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> UserImageUpdate(int id, [FromForm] UserImageRequest oldUser)
         {
             var item = await Context.User
@@ -164,6 +168,7 @@ namespace Main.Controllers
 
         [HttpPut("{id}/favorite/{favoriteId}")]
         [DisableRequestSizeLimit]
+        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> AddUserFavorite(int id, int favoriteId)
         {
             var item = await Context.User
