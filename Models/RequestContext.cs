@@ -30,6 +30,17 @@ namespace Main.PostgreSQL
         public IFormFile image { get; set; }
     }
 
+    public class UserAcceptance
+    {
+        public string email { get; set; }
+        public string code { get; set; }
+    }
+
+    public class EmailСonfirmation
+    {
+        public string email { get; set; }
+    }
+
     public class CompanyRequest
     {
         public string name { get; set; }
@@ -41,6 +52,12 @@ namespace Main.PostgreSQL
         public string timeOfWork { get; set; }
         public int productCategoryId { get; set; }
         public IFormFile image { get; set; }
+    }
+
+    public class LikeRequest
+    {
+        public int offerId { get; set; }
+        public int userId { get; set; }
     }
 
     public class OfferRequest

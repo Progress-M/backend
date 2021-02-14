@@ -26,19 +26,19 @@ namespace Main.Controllers
             _logger = logger;
         }
 
-        [HttpGet("email-acceptance/{email}/{code}")]
+        [HttpPost("email-acceptance")]
         [Produces("application/json")]
-        public async Task<ActionResult> UserAcceptance(string email, string code)
+        public async Task<ActionResult> UserAcceptance(UserAcceptance acceptance)
         {
             var ue = await Context.EmailCode
-                .SingleOrDefaultAsync(ue => ue.email == email);
+                .SingleOrDefaultAsync(ue => ue.email == acceptance.email);
 
             if (ue == null)
             {
-                return NotFound($"Not found email-confirmation to user with email = {email}");
+                return NotFound($"Not found email-confirmation to user with email = {acceptance.email}");
             }
 
-            if (ue.code != code)
+            if (ue.code != acceptance.code)
             {
                 return BadRequest($"Incorrect code");
             }
@@ -50,15 +50,15 @@ namespace Main.Controllers
         }
 
 
-        [HttpGet("email-confirmation/{email}")]
+        [HttpPost("email-confirmation")]
         [Produces("application/json")]
-        public async Task<ActionResult> EmailСonfirmation(string email)
+        public async Task<ActionResult> EmailСonfirmation(EmailСonfirmation сonfirmation)
         {
             var code = Utils.RandomCode();
-            MimeMessage message = Utils.BuildMessageСonfirmation(email, code);
+            MimeMessage message = Utils.BuildMessageСonfirmation(сonfirmation.email, code);
             Utils.SendEmail(message);
 
-            foreach (var ce in Context.EmailCode.Where(ce => ce.email == email))
+            foreach (var ce in Context.EmailCode.Where(ce => ce.email == сonfirmation.email))
             {
                 Context.EmailCode.Remove(ce);
             }
@@ -66,7 +66,7 @@ namespace Main.Controllers
             Context.EmailCode.Add(new EmailCode
             {
                 code = code,
-                email = email
+                email = сonfirmation.email
             });
             await Context.SaveChangesAsync();
 

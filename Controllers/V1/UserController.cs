@@ -35,6 +35,8 @@ namespace Main.Controllers
         {
             var item = await Context.User
                .AsNoTracking()
+               .Include(user => user.LikedPosts)
+               .Include(user => user.Favorites)
                .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
@@ -45,24 +47,26 @@ namespace Main.Controllers
             return Ok(item);
         }
 
-        [HttpGet("{id}/offers")]
+        [HttpGet("{id}/offer")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetUserOffers(int id)
+        public async Task<ActionResult> GetOffersByUser(int id)
         {
             var item = await Context.User
-               .SingleOrDefaultAsync(user => user.Id == id);
+                .Include(offer => offer.Favorites)
+                .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
             {
                 return NotFound($"Not found user with id = {id}");
             }
 
-            var offers = Context.OfferUser
-                .Where(uo => uo.User == item)
-                .Include(uo => uo.User)
-                .Include(uo => uo.Offer)
-                    .ThenInclude(offer => offer.Company)
-                        .ThenInclude(company => company.ProductСategory);
+            var favorites = item.Favorites.ToList();
+
+            var offers = await Context.Offer
+                .Where(offer => favorites.Contains(offer.Company))
+                .Include(offer => offer.Company)
+                    .ThenInclude(company => company.ProductСategory)
+                .ToListAsync();
 
             return Ok(offers);
         }

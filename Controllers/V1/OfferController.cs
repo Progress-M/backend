@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using Main.Function;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Main.Controllers
 {
@@ -50,10 +51,29 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetOffers()
         {
-            return Ok(await Context.Offer
-                .Include(offer => offer.Company)
-                    .ThenInclude(company => company.ProductСategory)
-                .ToListAsync());
+            return Ok(
+                (await Context.Offer
+                    .Include(offer => offer.Company)
+                        .ThenInclude(company => company.ProductСategory)
+                    .ToListAsync())
+                    .OrderBy(order => order.TimeStart)
+            );
+        }
+
+        [HttpGet("category/{id}")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetOffersByCategory(int id)
+        {
+            var category = await Context.ProductCategory.SingleOrDefaultAsync(c => c.Id == id);
+
+            return Ok(
+               (await Context.Offer
+                    .Include(offer => offer.Company)
+                        .ThenInclude(company => company.ProductСategory)
+                    .Where(offer => offer.Company.ProductСategory == category)
+                    .ToListAsync())
+                    .OrderBy(order => order.TimeStart)
+            );
         }
 
         [HttpGet("image/{id}")]
@@ -106,6 +126,68 @@ namespace Main.Controllers
             }
 
             Utils.CreateNotificationToFavorites(offer.Text, users.Select(u => u.PlayerId).ToArray());
+
+            return Ok(offer);
+        }
+
+        [HttpPost("like")]
+        public async Task<ActionResult> LikeOffer(LikeRequest request)
+        {
+            var user = await Context.User
+                .SingleOrDefaultAsync(user => user.Id == request.userId);
+
+            if (user == null)
+            {
+                return NotFound($"Not found user with id = {request.userId}");
+            }
+
+            var offer = await Context.Offer
+                .SingleOrDefaultAsync(offer => offer.Id == request.offerId);
+
+            if (offer == null)
+            {
+                return NotFound($"Not found offer with id = {request.offerId}");
+            }
+
+            if (user.LikedPosts == null)
+            {
+                user.LikedPosts = new HashSet<Offer>();
+            }
+
+            offer.LikeCounter++;
+            user.LikedPosts.Add(offer);
+            await Context.SaveChangesAsync();
+
+            return Ok(offer);
+        }
+
+        [HttpPost("dislike")]
+        public async Task<ActionResult> DislikeOffer(LikeRequest request)
+        {
+            var user = await Context.User
+                .SingleOrDefaultAsync(user => user.Id == request.userId);
+
+            if (user == null)
+            {
+                return NotFound($"Not found user with id = {request.userId}");
+            }
+
+            var offer = await Context.Offer
+                .SingleOrDefaultAsync(offer => offer.Id == request.offerId);
+
+            if (offer == null)
+            {
+                return NotFound($"Not found offer with id = {request.offerId}");
+            }
+
+            if (user.LikedPosts == null)
+            {
+                user.LikedPosts = new HashSet<Offer>();
+            }
+
+            offer.LikeCounter--;
+            user.LikedPosts.Remove(offer);
+            await Context.SaveChangesAsync();
 
             return Ok(offer);
         }

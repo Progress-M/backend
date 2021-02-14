@@ -80,6 +80,7 @@ namespace Main.PostgreSQL
 
         [Key]
         public int Id { get; set; }
+        public int LikeCounter { get; set; }
         public string Text { get; set; }
         public DateTime TimeStart { get; set; }
         public DateTime TimeEnd { get; set; }
@@ -102,6 +103,7 @@ namespace Main.PostgreSQL
             AvatarName = "";
             PlayerId = "";
             Favorites = new HashSet<Company>();
+            LikedPosts = new HashSet<Offer>();
         }
 
         [Key]
@@ -115,6 +117,7 @@ namespace Main.PostgreSQL
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
         public ICollection<Company> Favorites { get; set; }
+        public ICollection<Offer> LikedPosts { get; set; }
 
     }
 
