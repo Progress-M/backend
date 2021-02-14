@@ -11,6 +11,9 @@ using SignalRChat.Hubs;
 
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Main
 {
@@ -43,7 +46,13 @@ namespace Main
             services.AddSignalR();
             services.AddDbContext<KindContext>(
                     opt => opt
-                            .UseNpgsql(Configuration.GetConnectionString("DefaultConnetion"))
+                            .UseNpgsql(
+                                Configuration.GetConnectionString("DefaultConnetion"),
+                                builder =>
+                                {
+                                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                                }
+                            )
                             .UseSnakeCaseNamingConvention()
             );
             services.AddApiVersioning(options =>
@@ -57,8 +66,8 @@ namespace Main
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "BeKind API",
-                    Description = "BeKind server ASP.NET Core Web API",
+                    Title = "Bdobr API",
+                    Description = "Bdobr server ASP.NET Core Web API",
                     Contact = new OpenApiContact
                     {
                         Name = "Demidov Sergey",
@@ -67,6 +76,39 @@ namespace Main
                     }
                 });
             });
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenOptions:Key"]));
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                // here the cookie authentication option and other authentication providers will are added.
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = Configuration["TokenOptions:Issuer"],
+                        ValidAudience = Configuration["TokenOptions:Audience"],
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidateAudience = true,
+                        ValidateIssuer = true,
+                        RequireExpirationTime = true,
+                        RequireSignedTokens = true,
+                        IssuerSigningKey = symmetricSecurityKey,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            services.AddAuthorization(options =>
+                options.AddPolicy("ValidAccessToken", policy =>
+                {
+                    policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                    policy.RequireAuthenticatedUser();
+                }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

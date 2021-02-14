@@ -11,12 +11,14 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Main.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
+    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UserController : Controller
     {

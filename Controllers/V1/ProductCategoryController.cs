@@ -4,12 +4,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Main.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
+    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class ProductCategoryController : Controller
     {

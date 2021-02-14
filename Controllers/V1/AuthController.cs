@@ -6,6 +6,9 @@ using Main.PostgreSQL;
 using Main.Models;
 using Microsoft.AspNetCore.Cors;
 using System;
+using Microsoft.Extensions.Configuration;
+
+using Main.Function;
 
 namespace Main.Controllers
 {
@@ -18,53 +21,72 @@ namespace Main.Controllers
         readonly KindContext Context;
         readonly ILogger<User> _logger;
 
-        public AuthController(KindContext KindContext, ILogger<User> logger)
+        public AuthController(KindContext KindContext, ILogger<User> logger, IConfiguration configuration)
         {
             Context = KindContext;
             _logger = logger;
+            Configuration = configuration;
         }
+        public IConfiguration Configuration { get; }
 
-        [HttpPost("company")]
-        [Produces("application/json")]
-        public async Task<ActionResult<AuthCompanyResponse>> SignInCompany(AuthRequest auth)
+        [HttpPost("token")]
+        public async Task<IActionResult> AccessToken(AuthRequest auth)
         {
-            try
-            {
-                var item = await Context.Company
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(company => company.Email == auth.username);
+            var item = await Context.Company
+                .AsNoTracking()
+                .SingleOrDefaultAsync(
+                    company =>
+                        company.Email == auth.username &&
+                        company.Password == auth.password
+            );
 
-                if (item == null)
-                {
-                    return Ok(
-                        new AuthCompanyResponse
-                        {
-                            status = AuthStatus.Fail,
-                            message = "Authentication failed"
-                        }
-                    );
-                }
-
-                return Ok(
-                    new AuthCompanyResponse
-                    {
-                        company = item,
-                        status = AuthStatus.Success,
-                        message = ""
-                    }
-                );
-            }
-            catch (InvalidOperationException e)
+            if (item == null)
             {
-                _logger.LogError($"SignInUser: {e}");
-                return Ok(
-                    new AuthCompanyResponse
+                return Unauthorized(
+                    new
                     {
                         status = AuthStatus.Fail,
-                        message = $"Authentication failed: 'InvalidOperationException'"
+                        message = "Authentication failed"
                     }
                 );
             }
+
+            // Returns the 'access_token' and the type in lower case
+            return Ok(
+                new
+                {
+                    status = AuthStatus.Success,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                });
+        }
+
+        [HttpPost("token/user/{playerId}")]
+        public async Task<IActionResult> AccessTokenUser(string playerId)
+        {
+            var item = await Context.User
+                .AsNoTracking()
+                .SingleOrDefaultAsync(user => user.PlayerId == playerId);
+
+            if (item == null)
+            {
+                return Unauthorized(
+                    new
+                    {
+                        status = AuthStatus.Fail,
+                        message = "Authentication failed"
+                    }
+                );
+            }
+
+            // Returns the 'access_token' and the type in lower case
+            return Ok(
+                new
+                {
+                    status = AuthStatus.Success,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                });
         }
 
         [HttpPost]
@@ -89,11 +111,13 @@ namespace Main.Controllers
                 }
 
                 return Ok(
-                    new AuthUserResponse
+                    new
                     {
                         user = item,
                         status = AuthStatus.Success,
-                        message = ""
+                        message = "",
+                        access_token = Auth.generateToken(Configuration),
+                        token_type = "bearer"
                     }
                 );
             }
