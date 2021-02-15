@@ -10,6 +10,7 @@ namespace Main.PostgreSQL
         public string Password { get; set; }
         public string Name { get; set; }
         public bool isMan { get; set; }
+        public string playerId { get; set; }
         public DateTime BirthYear { get; set; }
         public IFormFile image { get; set; }
     }
@@ -51,6 +52,7 @@ namespace Main.PostgreSQL
         public string address { get; set; }
         public string timeOfWork { get; set; }
         public int productCategoryId { get; set; }
+        public string playerId { get; set; }
         public IFormFile image { get; set; }
     }
 

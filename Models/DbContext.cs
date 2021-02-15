@@ -49,6 +49,7 @@ namespace Main.PostgreSQL
             ProductСategory = productСategory;
             EmailConfirmed = false;
             AvatarName = "";
+            PlayerId = request.playerId;
         }
 
         [Key]
@@ -61,6 +62,7 @@ namespace Main.PostgreSQL
         public string Address { get; set; }
         public string TimeOfWork { get; set; }
         public bool EmailConfirmed { get; set; }
+        public string PlayerId { get; set; }
         public ProductCategory ProductСategory { get; set; }
         public string AvatarName { get; set; }
     }
@@ -101,7 +103,7 @@ namespace Main.PostgreSQL
             EmailConfirmed = false;
             BirthYear = user.BirthYear;
             AvatarName = "";
-            PlayerId = "";
+            PlayerId = user.playerId;
             Favorites = new HashSet<Company>();
             LikedPosts = new HashSet<Offer>();
         }
