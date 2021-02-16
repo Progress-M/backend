@@ -65,11 +65,16 @@ namespace Main.PostgreSQL
     public class OfferRequest
     {
         public string text { get; set; }
+        public DateTime sendingTime { get; set; }
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public int companyId { get; set; }
         public IFormFile image { get; set; }
         public int percentage { get; set; }
+        public bool forMan { get; set; }
+        public bool forWoman { get; set; }
+        public int UpperAgeLimit { get; set; }
+        public int LowerAgeLimit { get; set; }
     }
     public class AuthRequest
     {

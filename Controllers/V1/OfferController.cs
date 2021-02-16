@@ -12,6 +12,7 @@ using Main.Function;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace Main.Controllers
 {
@@ -58,6 +59,7 @@ namespace Main.Controllers
                     .Include(offer => offer.Company)
                         .ThenInclude(company => company.ProductСategory)
                     .ToListAsync())
+                    .Where(offer => offer.SendingTime >= DateTime.UtcNow)
                     .OrderBy(order => order.TimeStart)
             );
         }
@@ -74,6 +76,7 @@ namespace Main.Controllers
                         .ThenInclude(company => company.ProductСategory)
                     .Where(offer => offer.Company.ProductСategory == category)
                     .ToListAsync())
+                    .Where(offer => offer.SendingTime >= DateTime.UtcNow)
                     .OrderBy(order => order.TimeStart)
             );
         }
@@ -113,7 +116,8 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            var users = (await Context.User.Include(u => u.Favorites)
+            var users = (await Context.User
+                .Include(u => u.Favorites)
                 .ToListAsync())
                 .Where(u => u.Favorites != null && u.Favorites.Contains(company) && u.PlayerId != null);
 
