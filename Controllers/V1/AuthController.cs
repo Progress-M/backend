@@ -56,6 +56,7 @@ namespace Main.Controllers
                 new
                 {
                     status = AuthStatus.Success,
+                    company = item,
                     access_token = Auth.generateToken(Configuration),
                     token_type = "bearer"
                 });
@@ -84,6 +85,7 @@ namespace Main.Controllers
                 new
                 {
                     status = AuthStatus.Success,
+                    user = item,
                     access_token = Auth.generateToken(Configuration),
                     token_type = "bearer"
                 });
