@@ -49,7 +49,6 @@ namespace Main.Controllers
 
 
         [HttpGet("image/{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> GeCompanyAvatar(int id)
         {
             var item = await Context.Company

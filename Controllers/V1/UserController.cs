@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace Main.Controllers
 {
@@ -54,6 +55,33 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetOffersByUser(int id)
         {
+            var user = await Context.User.SingleOrDefaultAsync(user => user.Id == id);
+
+            if (user == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            var offers = await Context.Offer
+                .Where(
+                    offer =>
+                        (offer.ForMan == user.isMan || offer.ForWoman == !user.isMan) &&
+                        Enumerable
+                            .Range(offer.LowerAgeLimit, offer.UpperAgeLimit)
+                            .Contains(DateTime.Now.Year - user.BirthYear.Year)
+                )
+                .Include(offer => offer.Company)
+                    .ThenInclude(company => company.ProductСategory)
+                .ToListAsync();
+
+            return Ok(offers);
+        }
+
+        [HttpGet("{id}/favarite-offer")]
+        [Authorize(Policy = "ValidAccessToken")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetFavariteOffersByUser(int id)
+        {
             var item = await Context.User
                 .Include(offer => offer.Favorites)
                 .SingleOrDefaultAsync(user => user.Id == id);
@@ -82,7 +110,6 @@ namespace Main.Controllers
         }
 
         [HttpGet("image/{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> GetUserAvatar(int id)
         {
             var item = await Context.User
