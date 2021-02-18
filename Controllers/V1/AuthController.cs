@@ -9,6 +9,7 @@ using System;
 using Microsoft.Extensions.Configuration;
 
 using Main.Function;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Main.Controllers
 {
@@ -57,6 +58,19 @@ namespace Main.Controllers
                 {
                     status = AuthStatus.Success,
                     company = item,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                });
+        }
+
+        [HttpGet("refresh-token")]
+        [Authorize(Policy = "ValidAccessToken")]
+        public IActionResult RefreshToken()
+        {
+            return Ok(
+                new
+                {
+                    status = AuthStatus.Success,
                     access_token = Auth.generateToken(Configuration),
                     token_type = "bearer"
                 });

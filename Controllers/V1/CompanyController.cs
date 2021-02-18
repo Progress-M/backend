@@ -193,22 +193,7 @@ namespace Main.Controllers
                 .Where(offer => offer.Company.Id == item.Id)
                 .ToListAsync();
 
-            for (int i = 0; i < items.Count; i++)
-            {
-                await deleteOfferUserByUser(Context, items[i]);
-            }
-
             Context.Offer.RemoveRange(items);
-            await Context.SaveChangesAsync();
-        }
-
-        public static async Task deleteOfferUserByUser(KindContext Context, Offer offer)
-        {
-            var items = await Context.OfferUser
-                .Where(offer => offer.Offer.Id == offer.Id)
-                .ToListAsync();
-
-            Context.OfferUser.RemoveRange(items);
             await Context.SaveChangesAsync();
         }
     }

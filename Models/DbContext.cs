@@ -22,7 +22,6 @@ namespace Main.PostgreSQL
         public DbSet<Company> Company { get; set; }
         public DbSet<Offer> Offer { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<OfferUser> OfferUser { get; set; }
         public DbSet<ProductCategory> ProductCategory { get; set; }
         public DbSet<EmailCode> EmailCode { get; set; }
     }
@@ -141,22 +140,5 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public string code { get; set; }
         public string email { get; set; }
-    }
-
-    public class OfferUser
-    {
-        public OfferUser() { }
-        public OfferUser(Offer offer, User user)
-        {
-            Offer = offer;
-            User = user;
-            Date = DateTime.Now;
-        }
-
-        [Key]
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public Offer Offer { get; set; }
-        public User User { get; set; }
     }
 }
