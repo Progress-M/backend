@@ -133,6 +133,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("image/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetUserAvatar(int id)
         {
             var item = await Context.User
