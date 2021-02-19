@@ -81,6 +81,8 @@ namespace Main.PostgreSQL
             ForMan = request.forMan;
             ForWoman = request.forWoman;
             SendingTime = request.sendingTime;
+            UpperAgeLimit = request.UpperAgeLimit;
+            LowerAgeLimit = request.LowerAgeLimit;
         }
 
         [Key]

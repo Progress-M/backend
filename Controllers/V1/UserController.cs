@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using Main.Models;
 
 namespace Main.Controllers
 {
@@ -62,19 +63,30 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
+            var age = DateTime.Now.Year - user.BirthYear.Year;
+
             var offers = await Context.Offer
                 .Where(
                     offer =>
                         (offer.ForMan == user.isMan || offer.ForWoman == !user.isMan) &&
-                        Enumerable
-                            .Range(offer.LowerAgeLimit, offer.UpperAgeLimit)
-                            .Contains(DateTime.Now.Year - user.BirthYear.Year)
+                        offer.LowerAgeLimit <= age && age <= offer.UpperAgeLimit
                 )
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductСategory)
                 .ToListAsync();
 
-            return Ok(offers);
+            var preOffer = offers.Where(offer => offer.TimeStart > DateTime.UtcNow);
+            var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd < DateTime.UtcNow);
+            var inactiveOffer = offers.Where(offer => offer.TimeEnd >= DateTime.UtcNow);
+
+            return Ok(
+                new OfferByUserResponse
+                {
+                    preOffer = preOffer,
+                    activeOffer = activeOffer,
+                    inactiveOffer = inactiveOffer
+                }
+            );
         }
 
         [HttpGet("{id}/favarite-offer")]
@@ -99,7 +111,18 @@ namespace Main.Controllers
                     .ThenInclude(company => company.ProductСategory)
                 .ToListAsync();
 
-            return Ok(offers);
+            var preOffer = offers.Where(offer => offer.TimeStart > DateTime.UtcNow);
+            var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd < DateTime.UtcNow);
+            var inactiveOffer = offers.Where(offer => offer.TimeEnd >= DateTime.UtcNow);
+
+            return Ok(
+                new OfferByUserResponse
+                {
+                    preOffer = preOffer,
+                    activeOffer = activeOffer,
+                    inactiveOffer = inactiveOffer
+                }
+            );
         }
 
         [HttpGet]
@@ -157,14 +180,14 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
-            item.PlayerId = oldUser.PlayerId;
-            item.Email = oldUser.Email;
-            item.Password = oldUser.Password;
-            item.Name = oldUser.Name;
+            item.PlayerId = oldUser.playerId;
+            item.Email = oldUser.email;
+            item.Password = oldUser.password;
+            item.Name = oldUser.name;
             item.isMan = oldUser.isMan;
-            item.EmailConfirmed = oldUser.EmailConfirmed;
-            item.BirthYear = oldUser.BirthYear;
-            item.PlayerId = oldUser.PlayerId;
+            item.EmailConfirmed = oldUser.emailConfirmed;
+            item.BirthYear = oldUser.birthYear;
+            item.PlayerId = oldUser.playerId;
 
             await Context.SaveChangesAsync();
             return Ok(item);

@@ -17,13 +17,13 @@ namespace Main.PostgreSQL
 
     public class UserUpdateRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Name { get; set; }
+        public string email { get; set; }
+        public string password { get; set; }
+        public string name { get; set; }
         public bool isMan { get; set; }
-        public bool EmailConfirmed { get; set; }
-        public DateTime BirthYear { get; set; }
-        public string PlayerId { get; set; }
+        public bool emailConfirmed { get; set; }
+        public DateTime birthYear { get; set; }
+        public string playerId { get; set; }
     }
 
     public class UserImageRequest
