@@ -22,6 +22,20 @@ namespace Main.Models
         public IEnumerable<Offer> preOffer { get; set; }
         public IEnumerable<Offer> activeOffer { get; set; }
         public IEnumerable<Offer> inactiveOffer { get; set; }
+
+    }
+    public class CreateCompanyResponse
+    {
+        public Company accaunt { get; set; }
+        public System.String access_token { get; set; }
+        public System.String token_type { get; set; }
+    }
+
+    public class CreateUserResponse
+    {
+        public User accaunt { get; set; }
+        public System.String access_token { get; set; }
+        public System.String token_type { get; set; }
     }
 
     static class AuthStatus

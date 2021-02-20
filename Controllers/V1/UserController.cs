@@ -14,26 +14,29 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using Main.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Main.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
+    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class UserController : Controller
     {
         readonly KindContext Context;
         readonly ILogger<UserController> _logger;
+        public IConfiguration Configuration { get; }
 
-        public UserController(KindContext KindContext, ILogger<UserController> logger)
+        public UserController(KindContext KindContext, ILogger<UserController> logger, IConfiguration configuration)
         {
             Context = KindContext;
             _logger = logger;
+            Configuration = configuration;
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetUser(int id)
         {
@@ -52,7 +55,6 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}/offer")]
-        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetOffersByUser(int id)
         {
@@ -90,7 +92,6 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}/favarite-offer")]
-        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetFavariteOffersByUser(int id)
         {
@@ -157,6 +158,7 @@ namespace Main.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateUser([FromForm] UserRequest user)
         {
@@ -166,11 +168,17 @@ namespace Main.Controllers
             item.AvatarName = await Utils.saveFile(user.image, @"\image\user\", item.Id);
             await Context.SaveChangesAsync();
 
-            return Ok(item);
+            return Ok(
+                new CreateUserResponse
+                {
+                    accaunt = item,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                }
+            );
         }
 
         [HttpPut("{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> UserUpdate(int id, UserUpdateRequest oldUser)
         {
             var item = await Context.User
@@ -196,7 +204,6 @@ namespace Main.Controllers
 
         [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> UserImageUpdate(int id, [FromForm] UserImageRequest oldUser)
         {
             var item = await Context.User
@@ -219,7 +226,6 @@ namespace Main.Controllers
 
         [HttpPut("{id}/favorite/{favoriteId}")]
         [DisableRequestSizeLimit]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> AddUserFavorite(int id, int favoriteId)
         {
             var item = await Context.User

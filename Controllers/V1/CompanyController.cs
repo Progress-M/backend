@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
-using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 using System.Linq;
 using System.Collections.Generic;
@@ -11,26 +10,32 @@ using System.IO;
 using System.Reflection;
 using Main.Function;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
+
+using Main.Models;
+using Main.PostgreSQL;
 
 namespace Main.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
+    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class CompanyController : Controller
     {
         readonly KindContext Context;
         readonly ILogger<CompanyController> _logger;
+        public IConfiguration Configuration { get; }
 
-        public CompanyController(KindContext KindContext, ILogger<CompanyController> logger)
+        public CompanyController(KindContext KindContext, ILogger<CompanyController> logger, IConfiguration configuration)
         {
             Context = KindContext;
             _logger = logger;
+            Configuration = configuration;
         }
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult> GetCompany(int id)
         {
@@ -73,7 +78,6 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}/offer")]
-        [Authorize(Policy = "ValidAccessToken")]
         [Produces("application/json")]
         public async Task<ActionResult<System.Collections.Generic.List<Offer>>> GetOfferByCompany(int id)
         {
@@ -106,6 +110,7 @@ namespace Main.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateCompany([FromForm] CompanyRequest companyRequest)
         {
@@ -132,11 +137,18 @@ namespace Main.Controllers
             company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company", company.Id);
             await Context.SaveChangesAsync();
 
-            return Ok(company);
+
+            return Ok(
+                new CreateCompanyResponse
+                {
+                    accaunt = company,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                }
+            );
         }
 
         [HttpPut]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<IActionResult> UpdateCompany(Company company)
         {
             var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == company.Id);
@@ -152,7 +164,6 @@ namespace Main.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> DeleteCompany(int id)
         {
             var item = await Context.Company.FindAsync(id);
@@ -168,7 +179,6 @@ namespace Main.Controllers
         }
 
         [HttpDelete("cascade/{id}")]
-        [Authorize(Policy = "ValidAccessToken")]
         public async Task<ActionResult> CascadeDeleteCompany(int id)
         {
             var item = await Context.Company.FindAsync(id);
