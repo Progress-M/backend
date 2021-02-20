@@ -134,7 +134,7 @@ namespace Main.Controllers
             Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
-            company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company", company.Id);
+            company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company\", company.Id);
             await Context.SaveChangesAsync();
 
 
