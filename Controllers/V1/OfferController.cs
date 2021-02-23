@@ -105,6 +105,26 @@ namespace Main.Controllers
             return new FileStreamResult(stream, "image/jpeg");
         }
 
+        [HttpPut("image/{id}")]
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> UpdateOfferImage(int id, [FromForm] ImageRequest imageRequest)
+        {
+            var item = await Context.Offer
+                .SingleOrDefaultAsync(offer => offer.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found offer with id = {id}");
+            }
+
+            Utils.deleteFile(@"\image\offer\", item.ImageName);
+            item.ImageName = await Utils.saveFile(imageRequest.image, @"\image\offer\", item.Id);
+            Console.WriteLine(item.ImageName);
+            await Context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         [HttpPost]
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateOffer([FromForm] OfferRequest offerRequest)

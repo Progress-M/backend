@@ -30,10 +30,11 @@ namespace Main.Controllers
         }
         public IConfiguration Configuration { get; }
 
-        [HttpPost("token")]
+        [HttpPost("company")]
         public async Task<IActionResult> AccessToken(AuthRequest auth)
         {
             var item = await Context.Company
+                .Include(c => c.ProductСategory)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(
                     company =>
@@ -105,19 +106,22 @@ namespace Main.Controllers
                 });
         }
 
-        [HttpPost]
+        [HttpPost("user")]
         [Produces("application/json")]
         public async Task<ActionResult<AuthUserResponse>> SignInUser(AuthRequest auth)
         {
             try
             {
                 var item = await Context.User
+                    .Include(u => u.Favorites)
+                        .ThenInclude(c => c.ProductСategory)
                     .AsNoTracking()
                     .SingleOrDefaultAsync(user => user.Email == auth.username && user.Password == auth.password);
 
+
                 if (item == null)
                 {
-                    return Ok(
+                    return Unauthorized(
                         new AuthUserResponse
                         {
                             status = AuthStatus.Fail,

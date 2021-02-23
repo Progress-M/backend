@@ -225,7 +225,6 @@ namespace Main.Controllers
         }
 
         [HttpPut("{id}/favorite/{favoriteId}")]
-        [DisableRequestSizeLimit]
         public async Task<ActionResult> AddUserFavorite(int id, int favoriteId)
         {
             var item = await Context.User
@@ -250,6 +249,38 @@ namespace Main.Controllers
             }
 
             item.Favorites.Add(favorite);
+            await Context.SaveChangesAsync();
+
+            return Ok(item);
+        }
+
+
+        [HttpDelete("{id}/favorite/{favoriteId}")]
+        public async Task<ActionResult> RemoveUserFavorite(int id, int favoriteId)
+        {
+            var item = await Context.User
+                .Include(u => u.Favorites)
+                .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            if (item.Favorites == null)
+            {
+                item.Favorites = new HashSet<Company>();
+                await Context.SaveChangesAsync();
+            }
+
+            var favorite = item.Favorites.SingleOrDefault(c => c.Id == favoriteId);
+
+            if (favorite == null)
+            {
+                return NotFound($"Not found favorite company with id = {id}");
+            }
+
+            item.Favorites.Remove(favorite);
             await Context.SaveChangesAsync();
 
             return Ok(item);

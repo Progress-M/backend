@@ -56,6 +56,11 @@ namespace Main.PostgreSQL
         public IFormFile image { get; set; }
     }
 
+    public class ImageRequest
+    {
+        public IFormFile image { get; set; }
+    }
+
     public class LikeRequest
     {
         public int offerId { get; set; }

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 
 using Main.Models;
 using Main.PostgreSQL;
+using System;
 
 namespace Main.Controllers
 {
@@ -77,6 +78,26 @@ namespace Main.Controllers
             return new FileStreamResult(stream, "image/jpeg");
         }
 
+        [HttpPut("image/{id}")]
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> UpdateCompanyAvatar(int id, [FromForm] ImageRequest companyRequest)
+        {
+            var company = await Context.Company
+                .SingleOrDefaultAsync(company => company.Id == id);
+
+            if (company == null)
+            {
+                return NotFound($"Not found company with id = {id}");
+            }
+
+            Utils.deleteFile(@"\image\company\", company.AvatarName);
+            company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company\", company.Id);
+            Console.WriteLine(company.AvatarName);
+            await Context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         [HttpGet("{id}/offer")]
         [Produces("application/json")]
         public async Task<ActionResult<System.Collections.Generic.List<Offer>>> GetOfferByCompany(int id)
@@ -96,7 +117,18 @@ namespace Main.Controllers
                 .Where(offer => offer.Company.Id == id)
                 .ToListAsync();
 
-            return Ok(offers);
+            var preOffer = offers.Where(offer => offer.TimeStart > DateTime.UtcNow);
+            var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd < DateTime.UtcNow);
+            var inactiveOffer = offers.Where(offer => offer.TimeEnd >= DateTime.UtcNow);
+
+            return Ok(
+                new OfferByUserResponse
+                {
+                    preOffer = preOffer,
+                    activeOffer = activeOffer,
+                    inactiveOffer = inactiveOffer
+                }
+            );
         }
 
         [HttpGet]
