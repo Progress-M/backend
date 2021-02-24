@@ -162,16 +162,34 @@ namespace Main.Controllers
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateUser([FromForm] UserRequest user)
         {
+            var old = await Context.User
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.PlayerId == user.playerId);
+
+            if (old == null)
+            {
+                return BadRequest($"User with playerId = {old.PlayerId} alreadty exist");
+            }
+
             var item = new User(user);
             Context.User.Add(item);
             await Context.SaveChangesAsync();
-            item.AvatarName = await Utils.saveFile(user.image, @"\image\user\", item.Id);
+
+            if (user.image != null)
+            {
+                item.AvatarName = await Utils.saveFile(user.image, @"\image\user\", item.Id);
+            }
+            else
+            {
+                item.AvatarName = "";
+            }
             await Context.SaveChangesAsync();
 
             return Ok(
                 new CreateUserResponse
                 {
-                    accaunt = item,
+                    status = AuthStatus.Success,
+                    user = item,
                     access_token = Auth.generateToken(Configuration),
                     token_type = "bearer"
                 }
@@ -179,7 +197,8 @@ namespace Main.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UserUpdate(int id, UserUpdateRequest oldUser)
+        [DisableRequestSizeLimit]
+        public async Task<ActionResult> UserUpdate(int id, [FromForm] UserRequest oldUser)
         {
             var item = await Context.User
               .SingleOrDefaultAsync(user => user.Id == id);
@@ -190,12 +209,9 @@ namespace Main.Controllers
             }
 
             item.PlayerId = oldUser.playerId;
-            item.Email = oldUser.email;
-            item.Password = oldUser.password;
-            item.Name = oldUser.name;
+            item.Name = oldUser.Name;
             item.isMan = oldUser.isMan;
-            item.EmailConfirmed = oldUser.emailConfirmed;
-            item.BirthYear = oldUser.birthYear;
+            item.BirthYear = oldUser.BirthYear;
             item.PlayerId = oldUser.playerId;
 
             await Context.SaveChangesAsync();

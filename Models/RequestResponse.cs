@@ -33,7 +33,8 @@ namespace Main.Models
 
     public class CreateUserResponse
     {
-        public User accaunt { get; set; }
+        public System.String status { get; set; }
+        public User user { get; set; }
         public System.String access_token { get; set; }
         public System.String token_type { get; set; }
     }

@@ -81,6 +81,8 @@ namespace Main.Controllers
         public async Task<IActionResult> AccessTokenUser(string playerId)
         {
             var item = await Context.User
+                .Include(u => u.Favorites)
+                    .ThenInclude(c => c.ProductСategory)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(user => user.PlayerId == playerId);
 
@@ -105,54 +107,5 @@ namespace Main.Controllers
                     token_type = "bearer"
                 });
         }
-
-        [HttpPost("user")]
-        [Produces("application/json")]
-        public async Task<ActionResult<AuthUserResponse>> SignInUser(AuthRequest auth)
-        {
-            try
-            {
-                var item = await Context.User
-                    .Include(u => u.Favorites)
-                        .ThenInclude(c => c.ProductСategory)
-                    .AsNoTracking()
-                    .SingleOrDefaultAsync(user => user.Email == auth.username && user.Password == auth.password);
-
-
-                if (item == null)
-                {
-                    return Unauthorized(
-                        new AuthUserResponse
-                        {
-                            status = AuthStatus.Fail,
-                            message = "Authentication failed"
-                        }
-                    );
-                }
-
-                return Ok(
-                    new
-                    {
-                        user = item,
-                        status = AuthStatus.Success,
-                        message = "",
-                        access_token = Auth.generateToken(Configuration),
-                        token_type = "bearer"
-                    }
-                );
-            }
-            catch (InvalidOperationException e)
-            {
-                _logger.LogError($"Error: {e}");
-                return Ok(
-                    new AuthUserResponse
-                    {
-                        status = AuthStatus.Fail,
-                        message = $"Authentication failed: 'InvalidOperationException'"
-                    }
-                );
-            }
-        }
-
     }
 }

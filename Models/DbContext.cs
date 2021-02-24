@@ -107,11 +107,8 @@ namespace Main.PostgreSQL
         public User() { }
         public User(UserRequest user)
         {
-            Email = user.Email;
-            Password = user.Password;
             Name = user.Name;
             isMan = user.isMan;
-            EmailConfirmed = false;
             BirthYear = user.BirthYear;
             AvatarName = "";
             PlayerId = user.playerId;
@@ -121,11 +118,8 @@ namespace Main.PostgreSQL
 
         [Key]
         public int Id { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
         public string Name { get; set; }
         public bool isMan { get; set; }
-        public bool EmailConfirmed { get; set; }
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
