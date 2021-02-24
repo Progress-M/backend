@@ -77,9 +77,9 @@ namespace Main.Controllers
                     .ThenInclude(company => company.ProductСategory)
                 .ToListAsync();
 
-            var preOffer = offers.Where(offer => offer.TimeStart > DateTime.UtcNow);
-            var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd < DateTime.UtcNow);
-            var inactiveOffer = offers.Where(offer => offer.TimeEnd >= DateTime.UtcNow);
+            var preOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow);
+            var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd > DateTime.UtcNow);
+            var inactiveOffer = offers.Where(offer => offer.TimeEnd <= DateTime.UtcNow);
 
             return Ok(
                 new OfferByUserResponse
