@@ -173,7 +173,7 @@ namespace Main.Controllers
                 .AsNoTracking()
                 .SingleOrDefaultAsync(u => u.PlayerId == user.playerId);
 
-            if (old == null)
+            if (old != null)
             {
                 return BadRequest($"User with playerId = {old.PlayerId} alreadty exist");
             }
