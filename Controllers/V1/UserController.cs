@@ -51,7 +51,14 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
-            return Ok(item);
+            return Ok(
+                new
+                {
+                    status = AuthStatus.Success,
+                    user = item,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                });
         }
 
         [HttpGet("{id}/offer")]
@@ -212,10 +219,13 @@ namespace Main.Controllers
             item.Name = oldUser.Name;
             item.isMan = oldUser.isMan;
             item.BirthYear = oldUser.BirthYear;
-            item.PlayerId = oldUser.playerId;
 
             await Context.SaveChangesAsync();
-            return Ok(item);
+            return Ok(new
+            {
+                status = AuthStatus.Success,
+                user = item
+            });
         }
 
         [HttpPut("{id}/image")]
