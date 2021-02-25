@@ -26,7 +26,8 @@ namespace Main.Models
     }
     public class CreateCompanyResponse
     {
-        public Company accaunt { get; set; }
+        public System.String status { get; set; }
+        public Company company { get; set; }
         public System.String access_token { get; set; }
         public System.String token_type { get; set; }
     }

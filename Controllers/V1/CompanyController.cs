@@ -173,7 +173,8 @@ namespace Main.Controllers
             return Ok(
                 new CreateCompanyResponse
                 {
-                    accaunt = company,
+                    status = AuthStatus.Success,
+                    company = company,
                     access_token = Auth.generateToken(Configuration),
                     token_type = "bearer"
                 }
