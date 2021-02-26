@@ -41,10 +41,11 @@ namespace Main.Controllers
         public async Task<ActionResult> GetUser(int id)
         {
             var item = await Context.User
-               .AsNoTracking()
-               .Include(user => user.LikedPosts)
-               .Include(user => user.Favorites)
-               .SingleOrDefaultAsync(user => user.Id == id);
+                .AsNoTracking()
+                .Include(user => user.LikedPosts)
+                .Include(user => user.Favorites)
+                    .ThenInclude(company => company.ProductСategory)
+                .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
             {
