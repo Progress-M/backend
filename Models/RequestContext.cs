@@ -54,6 +54,15 @@ namespace Main.PostgreSQL
         public int userId { get; set; }
     }
 
+    public class ChatMessage
+    {
+        public string text { get; set; }
+        public int companyId { get; set; }
+        public int userId { get; set; }
+        public bool isUserMessage { get; set; }
+
+    }
+
     public class OfferRequest
     {
         public string text { get; set; }

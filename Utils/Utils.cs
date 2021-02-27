@@ -9,6 +9,8 @@ using MimeKit;
 using System;
 using System.Net;
 using System.Text;
+using System.Collections.Generic;
+using Main.PostgreSQL;
 
 namespace Main.Function
 {
@@ -182,6 +184,19 @@ namespace Main.Function
             }
 
             System.Diagnostics.Debug.WriteLine(responseContent);
+        }
+    }
+
+    public class CompanyComparer : IEqualityComparer<Company>
+    {
+        public bool Equals(Company x, Company y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(Company x)
+        {
+            return x.Id.GetHashCode();
         }
     }
 }

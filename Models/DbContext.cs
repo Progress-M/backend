@@ -24,7 +24,9 @@ namespace Main.PostgreSQL
         public DbSet<User> User { get; set; }
         public DbSet<ProductCategory> ProductCategory { get; set; }
         public DbSet<EmailCode> EmailCode { get; set; }
+        public DbSet<Message> Message { get; set; }
     }
+
 
     public class ProductCategory
     {
@@ -32,6 +34,7 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public string Name { get; set; }
     }
+
 
     public class Company
     {
@@ -136,5 +139,29 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public string code { get; set; }
         public string email { get; set; }
+    }
+
+    public class Message
+    {
+        public Message()
+        {
+            sendingTime = DateTime.UtcNow;
+        }
+        public Message(User user, Company company, bool isUserMessage, string text)
+        {
+            this.user = user;
+            this.company = company;
+            this.isUserMessage = isUserMessage;
+            this.text = text;
+            sendingTime = DateTime.UtcNow;
+        }
+
+        [Key]
+        public int Id { get; set; }
+        public DateTime sendingTime { get; set; }
+        public bool isUserMessage { get; set; }
+        public User user { get; set; }
+        public Company company { get; set; }
+        public string text { get; set; }
     }
 }
