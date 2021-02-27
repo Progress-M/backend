@@ -53,8 +53,20 @@ namespace Main.Controllers
             return Ok(item);
         }
 
+        [HttpGet("{id}/notification")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetCompanyNotification(int id)
+        {
+            var items = await Context.CompanyNotification
+               .AsNoTracking()
+               .Where(cn => cn.company.Id == id)
+               .ToListAsync();
 
-        [HttpGet("image/{id}")]
+            return Ok(items);
+        }
+
+
+        [HttpGet("{id}/image")]
         [AllowAnonymous]
         public async Task<ActionResult> GeCompanyAvatar(int id)
         {
@@ -78,7 +90,7 @@ namespace Main.Controllers
             return new FileStreamResult(stream, "image/jpeg");
         }
 
-        [HttpPut("image/{id}")]
+        [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
         public async Task<ActionResult> UpdateCompanyAvatar(int id, [FromForm] ImageRequest companyRequest)
         {

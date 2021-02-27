@@ -141,7 +141,7 @@ namespace Main.Controllers
             return Ok(await Context.User.Include(u => u.Favorites).ToListAsync());
         }
 
-        [HttpGet("image/{id}")]
+        [HttpGet("{id}/image")]
         [AllowAnonymous]
         public async Task<ActionResult> GetUserAvatar(int id)
         {

@@ -25,6 +25,7 @@ namespace Main.PostgreSQL
         public DbSet<ProductCategory> ProductCategory { get; set; }
         public DbSet<EmailCode> EmailCode { get; set; }
         public DbSet<Message> Message { get; set; }
+        public DbSet<CompanyNotification> CompanyNotification { get; set; }
     }
 
 
@@ -162,6 +163,28 @@ namespace Main.PostgreSQL
         public bool isUserMessage { get; set; }
         public User user { get; set; }
         public Company company { get; set; }
+        public string text { get; set; }
+    }
+
+    public class CompanyNotification
+    {
+        public CompanyNotification()
+        {
+            createTime = DateTime.UtcNow;
+        }
+        public CompanyNotification(User user, Company company, string title, string text)
+        {
+            this.company = company;
+            this.title = title;
+            this.text = text;
+            createTime = DateTime.UtcNow;
+        }
+
+        [Key]
+        public int Id { get; set; }
+        public DateTime createTime { get; set; }
+        public Company company { get; set; }
+        public string title { get; set; }
         public string text { get; set; }
     }
 }

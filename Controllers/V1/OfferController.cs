@@ -81,7 +81,7 @@ namespace Main.Controllers
             );
         }
 
-        [HttpGet("image/{id}")]
+        [HttpGet("{id}/image")]
         [AllowAnonymous]
         public async Task<ActionResult> GetOfferImage(int id)
         {
@@ -105,7 +105,7 @@ namespace Main.Controllers
             return new FileStreamResult(stream, "image/jpeg");
         }
 
-        [HttpPut("image/{id}")]
+        [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
         public async Task<ActionResult> UpdateOfferImage(int id, [FromForm] ImageRequest imageRequest)
         {
