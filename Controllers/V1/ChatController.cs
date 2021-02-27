@@ -68,6 +68,47 @@ namespace Main.Controllers
             });
         }
 
+        [HttpGet("company/{companyId}")]
+        public async Task<IActionResult> GetCompanyChats(int companyId, int lastId = -1)
+        {
+            var company = await Context.Company
+                .AsNoTracking()
+                .SingleOrDefaultAsync(c => c.Id == companyId);
+
+            if (company == null)
+            {
+                return NotFound($"Not found user with id = {companyId}");
+            }
+
+            var messages = await Context.Message
+                    .AsNoTracking()
+                    .Include(m => m.user)
+                    .Where(message => message.Id > lastId && message.company.Id == companyId)
+                    .ToListAsync();
+
+            var comparer = new UserComparer();
+
+            var groups = messages
+                    .GroupBy(message => message.user, comparer)
+                    .Select(messages =>
+                    {
+                        var last = messages.ToList().Last();
+                        return new
+                        {
+                            User = messages.Key,
+                            LastMessage = last.text,
+                            dateTime = last.sendingTime,
+                        };
+                    })
+                    .OrderByDescending(messages => messages.dateTime);
+
+            return Ok(new
+            {
+                chats = groups,
+                lastId = messages?.Last()?.Id
+            });
+        }
+
         [HttpGet("message")]
         public async Task<IActionResult> GetMessages(int userId, int companyId, int lastMessageId = -1)
         {

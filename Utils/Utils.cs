@@ -199,4 +199,17 @@ namespace Main.Function
             return x.Id.GetHashCode();
         }
     }
+
+    public class UserComparer : IEqualityComparer<User>
+    {
+        public bool Equals(User x, User y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(User x)
+        {
+            return x.Id.GetHashCode();
+        }
+    }
 }
