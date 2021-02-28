@@ -127,6 +127,7 @@ namespace Main.Controllers
                     .AsNoTracking()
                     .Include(m => m.company)
                     .Include(m => m.user)
+                    .Where(message => message.user.Id == userId && message.Id > lastMessageId && message.company.Id == companyId)
                     .ToListAsync()
             );
 
