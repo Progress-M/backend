@@ -22,7 +22,7 @@ namespace Main.Function
             {
                 var filePath = Path
                     .GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                    .Replace(@"/bin/Debug/netcoreapp5.0", "");
+                    .Replace(Utils.subfolder, "");
                 Directory.CreateDirectory($@"{filePath}{path}");
 
                 using (var stream = System.IO.File.Create($@"{filePath}{path}{userId}-{file.FileName}"))
@@ -38,13 +38,17 @@ namespace Main.Function
 
         public static void deleteFile(string path, string fileName)
         {
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                .Replace(Utils.subfolder, "");
+
             Directory.CreateDirectory($@"{filePath}{path}");
             if (File.Exists($@"{filePath}{path}{fileName}"))
             {
                 File.Delete($@"{filePath}{path}{fileName}");
             }
         }
+
+        public const string subfolder = "/bin/Debug/netcoreapp5.0";
 
         private const string emailServerURL = "smtp.mail.ru";
         private const int emailServerPort = 465;
@@ -73,7 +77,7 @@ namespace Main.Function
 
             var filePath = Path
                 .GetDirectoryName(Assembly.GetCallingAssembly().Location)
-                .Replace(@"/bin/Debug/netcoreapp5.0", "");
+                .Replace(Utils.subfolder, "");
             var body = System.IO.File.ReadAllText($"{filePath}/EmailTemplates/confirm.html").Replace("CONFIRM_CODE", code);
 
             BodyBuilder bodyBuilder = new BodyBuilder();
