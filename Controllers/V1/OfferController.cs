@@ -24,6 +24,7 @@ namespace Main.Controllers
     public class OfferController : Controller
     {
         readonly KindContext Context;
+        readonly string subfolder = @"/image/offer/";
         readonly ILogger<OfferController> _logger;
 
         public OfferController(KindContext KindContext, ILogger<OfferController> logger)
@@ -96,12 +97,12 @@ namespace Main.Controllers
 
             var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            if (!System.IO.File.Exists(@$"{filePath}\image\offer\{item.ImageName}"))
+            if (!System.IO.File.Exists($"{filePath}{subfolder}{item.ImageName}"))
             {
                 return NotFound($"Not found file with name = '{item.ImageName}'");
             }
 
-            var stream = System.IO.File.OpenRead(@$"{filePath}\image\offer\{item.ImageName}");
+            var stream = System.IO.File.OpenRead($"{filePath}{subfolder}{item.ImageName}");
             return new FileStreamResult(stream, "image/jpeg");
         }
 
@@ -117,8 +118,8 @@ namespace Main.Controllers
                 return NotFound($"Not found offer with id = {id}");
             }
 
-            Utils.deleteFile(@"\image\offer\", item.ImageName);
-            item.ImageName = await Utils.saveFile(imageRequest.image, @"\image\offer\", item.Id);
+            Utils.deleteFile($"{subfolder}", item.ImageName);
+            item.ImageName = await Utils.saveFile(imageRequest.image, $"{subfolder}", item.Id);
             Console.WriteLine(item.ImageName);
             await Context.SaveChangesAsync();
 
@@ -148,7 +149,7 @@ namespace Main.Controllers
             await Context.SaveChangesAsync();
             if (offerRequest.image != null)
             {
-                offer.ImageName = await Utils.saveFile(offerRequest.image, @"\image\offer\", offer.Id);
+                offer.ImageName = await Utils.saveFile(offerRequest.image, $"{subfolder}", offer.Id);
                 await Context.SaveChangesAsync();
             }
 

@@ -27,6 +27,7 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<CompanyController> _logger;
+        readonly string subfolder = @"/image/company/";
         public IConfiguration Configuration { get; }
 
         public CompanyController(KindContext KindContext, ILogger<CompanyController> logger, IConfiguration configuration)
@@ -92,12 +93,12 @@ namespace Main.Controllers
 
             var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            if (!System.IO.File.Exists(@$"{filePath}\image\company\{item.AvatarName}"))
+            if (!System.IO.File.Exists($"{filePath}{subfolder}{item.AvatarName}"))
             {
                 return NotFound($"Not found file with name = '{item.AvatarName}'");
             }
 
-            var stream = System.IO.File.OpenRead(@$"{filePath}\image\company\{item.AvatarName}");
+            var stream = System.IO.File.OpenRead($"{filePath}{subfolder}{item.AvatarName}");
             return new FileStreamResult(stream, "image/jpeg");
         }
 
@@ -113,8 +114,8 @@ namespace Main.Controllers
                 return NotFound($"Not found company with id = {id}");
             }
 
-            Utils.deleteFile(@"\image\company\", company.AvatarName);
-            company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company\", company.Id);
+            Utils.deleteFile(@"{subfolder}", company.AvatarName);
+            company.AvatarName = await Utils.saveFile(companyRequest.image, $"{subfolder}", company.Id);
             Console.WriteLine(company.AvatarName);
             await Context.SaveChangesAsync();
 
@@ -189,7 +190,7 @@ namespace Main.Controllers
             Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
-            company.AvatarName = await Utils.saveFile(companyRequest.image, @"\image\company\", company.Id);
+            company.AvatarName = await Utils.saveFile(companyRequest.image, $"{subfolder}", company.Id);
             await Context.SaveChangesAsync();
 
 
@@ -232,8 +233,8 @@ namespace Main.Controllers
 
             if (company.image != null)
             {
-                Utils.deleteFile(@"\image\company\", aliveCompany.AvatarName);
-                aliveCompany.AvatarName = await Utils.saveFile(company.image, @"\image\company\", aliveCompany.Id);
+                Utils.deleteFile($"{subfolder}", aliveCompany.AvatarName);
+                aliveCompany.AvatarName = await Utils.saveFile(company.image, $"{subfolder}", aliveCompany.Id);
             }
 
             await Context.SaveChangesAsync();

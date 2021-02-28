@@ -27,6 +27,7 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<UserController> _logger;
+        readonly string subfolder = @"/image/user/";
         public IConfiguration Configuration { get; }
 
         public UserController(KindContext KindContext, ILogger<UserController> logger, IConfiguration configuration)
@@ -156,12 +157,12 @@ namespace Main.Controllers
 
             var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            if (!System.IO.File.Exists(@$"{filePath}\image\user\{item.AvatarName}"))
+            if (!System.IO.File.Exists(@$"{filePath}{subfolder}{item.AvatarName}"))
             {
                 return NotFound($"Not found file with name = '{item.AvatarName}'");
             }
 
-            var stream = System.IO.File.OpenRead(@$"{filePath}\image\user\{item.AvatarName}");
+            var stream = System.IO.File.OpenRead(@$"{filePath}{subfolder}{item.AvatarName}");
             return new FileStreamResult(stream, "image/jpeg");
         }
 
@@ -185,7 +186,7 @@ namespace Main.Controllers
 
             if (user.image != null)
             {
-                item.AvatarName = await Utils.saveFile(user.image, @"\image\user\", item.Id);
+                item.AvatarName = await Utils.saveFile(user.image, $"{subfolder}", item.Id);
             }
             else
             {
@@ -241,10 +242,10 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
-            Utils.deleteFile(@"\image\user\", item.AvatarName);
+            Utils.deleteFile($"{subfolder}", item.AvatarName);
             if (oldUser.image != null)
             {
-                item.AvatarName = await Utils.saveFile(oldUser.image, @"\image\user\", item.Id);
+                item.AvatarName = await Utils.saveFile(oldUser.image, @"{subfolder}", item.Id);
                 await Context.SaveChangesAsync();
             }
 
