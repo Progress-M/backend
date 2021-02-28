@@ -14,7 +14,7 @@ namespace Main.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
-    [Authorize(Policy = "ValidAccessToken")]
+    // [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class ChatController : Controller
     {
