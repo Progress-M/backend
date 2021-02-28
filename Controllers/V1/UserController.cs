@@ -155,7 +155,8 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                .Replace(Utils.subfolder, "");
 
             if (!System.IO.File.Exists(@$"{filePath}{subfolder}{item.AvatarName}"))
             {
