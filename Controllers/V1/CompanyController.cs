@@ -65,6 +65,17 @@ namespace Main.Controllers
             return Ok(items);
         }
 
+        [HttpGet("{id}/number-of-favorites")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetNumberOfAdditionsToTheFavorites(int id)
+        {
+            var items = await Context.User
+               .AsNoTracking()
+               .Where(cn => cn.Favorites.Any(c => c.Id == id))
+               .ToListAsync();
+
+            return Ok(items.Count);
+        }
 
         [HttpGet("{id}/image")]
         [AllowAnonymous]
