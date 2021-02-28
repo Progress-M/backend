@@ -122,7 +122,13 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {userId}");
             }
 
-            return Ok(await Context.Message.ToListAsync());
+            return Ok(
+                await Context.Message
+                    .AsNoTracking()
+                    .Include(m => m.company)
+                    .Include(m => m.user)
+                    .ToListAsync()
+            );
 
             var messages = (await Context.Message
                     .AsNoTracking()
