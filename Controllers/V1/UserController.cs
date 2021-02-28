@@ -246,7 +246,7 @@ namespace Main.Controllers
             Utils.deleteFile($"{subfolder}", item.AvatarName);
             if (oldUser.image != null)
             {
-                item.AvatarName = await Utils.saveFile(oldUser.image, @"{subfolder}", item.Id);
+                item.AvatarName = await Utils.saveFile(oldUser.image, subfolder, item.Id);
                 await Context.SaveChangesAsync();
             }
 
