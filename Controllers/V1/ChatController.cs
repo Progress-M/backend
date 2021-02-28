@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Main.Function;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace Main.Controllers
 {
@@ -131,11 +132,12 @@ namespace Main.Controllers
                     .GroupBy(message => new { message.sendingTime.Year, message.sendingTime.Month, message.sendingTime.Day })
                     .Select(messages =>
                     {
-                        var last = messages.ToList().Last();
+                        Console.WriteLine(messages);
+                        var last = messages?.ToList()?.Last();
                         return new
                         {
                             Messages = messages,
-                            Day = last.sendingTime,
+                            Day = last?.sendingTime,
                         };
                     });
 
