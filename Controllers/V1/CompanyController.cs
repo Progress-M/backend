@@ -204,16 +204,38 @@ namespace Main.Controllers
             );
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateCompany(Company company)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCompany(int id, [FromForm] CompanyRequest company)
         {
-            var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == company.Id);
+            var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == id);
             if (aliveCompany == null)
             {
-                return NotFound(aliveCompany);
+                return NotFound($"Not found company with id = {company.id}");
             }
 
-            aliveCompany.Name = aliveCompany.Name;
+            var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == company.productCategoryId);
+            if (category == null)
+            {
+                return NotFound($"Not found category with id = {company.productCategoryId}");
+            }
+
+            aliveCompany.INN = company.inn;
+            aliveCompany.Name = company.name;
+            aliveCompany.Email = company.email;
+            aliveCompany.Phone = company.phone;
+            aliveCompany.Representative = company.representative;
+            aliveCompany.Password = company.password;
+            aliveCompany.Address = company.address;
+            aliveCompany.TimeOfWork = company.timeOfWork;
+            aliveCompany.PlayerId = company.playerId;
+            aliveCompany.ProductСategory = category;
+
+            if (company.image != null)
+            {
+                Utils.deleteFile(@"\image\company\", aliveCompany.AvatarName);
+                aliveCompany.AvatarName = await Utils.saveFile(company.image, @"\image\company\", aliveCompany.Id);
+            }
+
             await Context.SaveChangesAsync();
 
             return Ok();

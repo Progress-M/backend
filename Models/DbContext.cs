@@ -53,12 +53,14 @@ namespace Main.PostgreSQL
             EmailConfirmed = false;
             AvatarName = "";
             PlayerId = request.playerId;
+            Phone = request.phone;
         }
 
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
         public string Representative { get; set; }
+        public string Phone { get; set; }
         public string Email { get; set; }
         public string INN { get; set; }
         public string Password { get; set; }
@@ -172,7 +174,7 @@ namespace Main.PostgreSQL
         {
             createTime = DateTime.UtcNow;
         }
-        public CompanyNotification(User user, Company company, string title, string text)
+        public CompanyNotification(Company company, string title, string text)
         {
             this.company = company;
             this.title = title;

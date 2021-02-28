@@ -31,8 +31,10 @@ namespace Main.PostgreSQL
 
     public class CompanyRequest
     {
+        public int id { get; set; }
         public string name { get; set; }
         public string representative { get; set; }
+        public string phone { get; set; }
         public string email { get; set; }
         public string inn { get; set; }
         public string password { get; set; }
