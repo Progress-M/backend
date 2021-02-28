@@ -70,7 +70,7 @@ namespace Main.Function
 
             var filePath = Path
                 .GetDirectoryName(Assembly.GetCallingAssembly().Location)
-                .Replace(@"/bin/Debug/netcoreapp3.1", "");
+                .Replace(@"/bin/Debug/netcoreapp5.0", "");
             var body = System.IO.File.ReadAllText(@$"{filePath}/EmailTemplates/confirm.html").Replace("CONFIRM_CODE", code);
 
             BodyBuilder bodyBuilder = new BodyBuilder();

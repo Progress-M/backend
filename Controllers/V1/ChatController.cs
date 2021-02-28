@@ -122,18 +122,6 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {userId}");
             }
 
-            return Ok(
-              (await Context.Message
-                    .AsNoTracking()
-                    .Include(m => m.company)
-                    .Include(m => m.user)
-                    .Where(message => message.user.Id == userId && message.Id > lastMessageId && message.company.Id == companyId)
-                    .ToListAsync())
-                    .OrderBy(message => message.sendingTime)
-                    .GroupBy(message => new { message.sendingTime.Year, message.sendingTime.Month, message.sendingTime.Day })
-                    
-            );
-
             var messages = (await Context.Message
                     .AsNoTracking()
                     .Include(m => m.company)
@@ -144,7 +132,6 @@ namespace Main.Controllers
                     .GroupBy(message => new { message.sendingTime.Year, message.sendingTime.Month, message.sendingTime.Day })
                     .Select(messages =>
                     {
-                        Console.WriteLine(messages);
                         var last = messages?.ToList()?.Last();
                         return new
                         {
