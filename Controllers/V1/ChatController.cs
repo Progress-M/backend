@@ -123,12 +123,15 @@ namespace Main.Controllers
             }
 
             return Ok(
-                await Context.Message
+              (await Context.Message
                     .AsNoTracking()
                     .Include(m => m.company)
                     .Include(m => m.user)
                     .Where(message => message.user.Id == userId && message.Id > lastMessageId && message.company.Id == companyId)
-                    .ToListAsync()
+                    .ToListAsync())
+                    .OrderBy(message => message.sendingTime)
+                    .GroupBy(message => new { message.sendingTime.Year, message.sendingTime.Month, message.sendingTime.Day })
+                    
             );
 
             var messages = (await Context.Message
