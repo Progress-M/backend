@@ -140,6 +140,7 @@ namespace Main.Controllers
             }
 
             var users = (await Context.User
+                .Include(u => u.Stories)
                 .Include(u => u.Favorites)
                 .ToListAsync())
                 .Where(u => u.Favorites != null && u.Favorites.Contains(company) && u.PlayerId != null);
@@ -147,12 +148,13 @@ namespace Main.Controllers
             var offer = new Offer(offerRequest, company);
             await Context.Offer.AddAsync(offer);
 
-            await Context.SaveChangesAsync();
             if (offerRequest.image != null)
             {
                 offer.ImageName = await Utils.saveFile(offerRequest.image, $"{subfolder}", offer.Id);
-                await Context.SaveChangesAsync();
             }
+
+            users.ToList().ForEach(user => user.Stories.Add(offer));
+            await Context.SaveChangesAsync();
 
             Utils.CreateNotificationToFavorites(offer.Text, users.Select(u => u.PlayerId).ToArray());
 

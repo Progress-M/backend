@@ -167,6 +167,51 @@ namespace Main.Controllers
             return new FileStreamResult(stream, "image/jpeg");
         }
 
+        [HttpGet("{id}/stories")]
+        public async Task<ActionResult> GetStories(int id)
+        {
+            var item = await Context.User
+                .AsNoTracking()
+                .Include(u => u.Favorites)
+                .Include(u => u.Stories)
+                    .ThenInclude(o => o.Company)
+                .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+
+            var comparer = new CompanyComparer();
+
+            return Ok(item.Favorites
+            .Select(f => new
+            {
+                Company = f,
+                Stories = item.Stories.Where(s => s.Company.Id == f.Id).ToList()
+            })
+           .OrderByDescending(x => x.Stories.Count));
+        }
+
+        [HttpDelete("{id}/stories/company/{companyId}")]
+        public async Task<ActionResult> DeleteStories(int id, int companyId)
+        {
+            var item = await Context.User
+                .Include(u => u.Favorites)
+                .Include(u => u.Stories)
+                    .ThenInclude(o => o.Company)
+                .SingleOrDefaultAsync(user => user.Id == id);
+
+            if (item == null)
+            {
+                return NotFound($"Not found user with id = {id}");
+            }
+            item.Stories = item.Stories.Where(story => story.Company.Id != companyId).ToList();
+            await Context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [DisableRequestSizeLimit]

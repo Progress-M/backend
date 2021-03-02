@@ -16,6 +16,11 @@ namespace Main.PostgreSQL
             modelBuilder.Entity<Company>()
                .HasIndex(p => new { p.INN })
                .IsUnique(true);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Stories)
+                .WithOne()
+                .HasForeignKey("userId");
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
@@ -120,6 +125,7 @@ namespace Main.PostgreSQL
             PlayerId = user.playerId;
             Favorites = new HashSet<Company>();
             LikedPosts = new HashSet<Offer>();
+            Stories = new HashSet<Offer>();
         }
 
         [Key]
@@ -131,6 +137,7 @@ namespace Main.PostgreSQL
         public string PlayerId { get; set; }
         public ICollection<Company> Favorites { get; set; }
         public ICollection<Offer> LikedPosts { get; set; }
+        public ICollection<Offer> Stories { get; set; }
 
     }
 
