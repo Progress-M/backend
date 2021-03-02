@@ -298,6 +298,35 @@ namespace Main.Controllers
             return Ok(item);
         }
 
+        [HttpGet("{userId}/company/{companyId}/distance")]
+        public async Task<ActionResult> Distance(int userId, int companyId)
+        {
+            var user = await Context.User
+                .AsNoTracking()
+                .SingleOrDefaultAsync(user => user.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound($"Not found user with id = {userId}");
+            }
+
+            var company = await Context.Company
+                .AsNoTracking()
+                .SingleOrDefaultAsync(company => company.Id == companyId);
+
+            if (company == null)
+            {
+                return NotFound($"Not found company with id = {companyId}");
+            }
+
+            return Ok(
+                Utils.CalculateDistance(
+                new Location { Latitude = user.Latitude, Longitude = user.Longitude },
+                new Location { Latitude = company.Latitude, Longitude = company.Longitude }
+                )
+            );
+        }
+
         [HttpPut("{id}/favorite/{favoriteId}")]
         public async Task<ActionResult> AddUserFavorite(int id, int favoriteId)
         {
@@ -334,6 +363,7 @@ namespace Main.Controllers
         {
             var item = await Context.User
                 .Include(u => u.Favorites)
+                .Include(u => u.Stories)
                 .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
@@ -355,6 +385,8 @@ namespace Main.Controllers
             }
 
             item.Favorites.Remove(favorite);
+            item.Stories = item.Stories.Where(s => s.Company.Id != favoriteId).ToList();
+
             await Context.SaveChangesAsync();
 
             return Ok(item);
