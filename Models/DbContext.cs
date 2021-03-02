@@ -59,10 +59,14 @@ namespace Main.PostgreSQL
             AvatarName = "";
             PlayerId = request.playerId;
             Phone = request.phone;
+            Latitude = request.Latitude;
+            Longitude = request.Latitude;
         }
 
         [Key]
         public int Id { get; set; }
+        public string Latitude { get; set; } = "";
+        public string Longitude { get; set; } = "";
         public string Name { get; set; }
         public string Representative { get; set; }
         public string Phone { get; set; }
@@ -120,6 +124,8 @@ namespace Main.PostgreSQL
         {
             Name = user.Name;
             isMan = user.isMan;
+            Latitude = user.Latitude;
+            Longitude = user.Latitude;
             BirthYear = user.BirthYear;
             AvatarName = "";
             PlayerId = user.playerId;
@@ -132,6 +138,8 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public string Name { get; set; }
         public bool isMan { get; set; }
+        public string Latitude { get; set; } = "";
+        public string Longitude { get; set; } = "";
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
