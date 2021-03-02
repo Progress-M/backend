@@ -231,6 +231,8 @@ namespace Main.Controllers
             aliveCompany.TimeOfWork = company.timeOfWork;
             aliveCompany.PlayerId = company.playerId;
             aliveCompany.ProductСategory = category;
+            aliveCompany.Latitude = company.Latitude;
+            aliveCompany.Longitude = company.Longitude;
 
             if (company.image != null)
             {

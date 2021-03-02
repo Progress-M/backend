@@ -264,6 +264,8 @@ namespace Main.Controllers
             }
 
             item.PlayerId = oldUser.playerId;
+            item.Latitude = oldUser.Latitude;
+            item.Longitude = oldUser.Longitude;
             item.Name = oldUser.Name;
             item.isMan = oldUser.isMan;
             item.BirthYear = oldUser.BirthYear;
