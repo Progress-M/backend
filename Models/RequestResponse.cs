@@ -21,6 +21,7 @@ namespace Main.Models
     {
         public IEnumerable<Offer> preOffer { get; set; }
         public IEnumerable<Offer> activeOffer { get; set; }
+        public IEnumerable<Offer> nearbyOffer { get; set; }
         public IEnumerable<Offer> inactiveOffer { get; set; }
 
     }

@@ -34,7 +34,7 @@ namespace Main.Controllers
         public async Task<IActionResult> AccessToken(AuthRequest auth)
         {
             var item = await Context.Company
-                .Include(c => c.ProductСategory)
+                .Include(c => c.ProductCategory)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(
                     company =>
@@ -82,7 +82,7 @@ namespace Main.Controllers
         {
             var item = await Context.User
                 .Include(u => u.Favorites)
-                    .ThenInclude(c => c.ProductСategory)
+                    .ThenInclude(c => c.ProductCategory)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(user => user.PlayerId == playerId);
 

@@ -45,7 +45,7 @@ namespace Main.PostgreSQL
     public class Company
     {
         public Company() { }
-        public Company(CompanyRequest request, ProductCategory productСategory)
+        public Company(CompanyRequest request, ProductCategory productCategory)
         {
             Name = request.name;
             Representative = request.representative;
@@ -54,7 +54,7 @@ namespace Main.PostgreSQL
             Password = request.password;
             Address = request.address;
             TimeOfWork = request.timeOfWork;
-            ProductСategory = productСategory;
+            ProductCategory = productCategory;
             EmailConfirmed = false;
             AvatarName = "";
             PlayerId = request.playerId;
@@ -77,7 +77,7 @@ namespace Main.PostgreSQL
         public string TimeOfWork { get; set; }
         public bool EmailConfirmed { get; set; }
         public string PlayerId { get; set; }
-        public ProductCategory ProductСategory { get; set; }
+        public ProductCategory ProductCategory { get; set; }
         public string AvatarName { get; set; }
     }
 

@@ -40,7 +40,7 @@ namespace Main.Controllers
             var item = await Context.Offer
                 .AsNoTracking()
                 .Include(offer => offer.Company)
-                    .ThenInclude(company => company.ProductСategory)
+                    .ThenInclude(company => company.ProductCategory)
                .SingleOrDefaultAsync(offer => offer.Id == id);
 
             if (item == null)
@@ -58,7 +58,7 @@ namespace Main.Controllers
             return Ok(
                 (await Context.Offer
                     .Include(offer => offer.Company)
-                        .ThenInclude(company => company.ProductСategory)
+                        .ThenInclude(company => company.ProductCategory)
                     .ToListAsync())
                     .Where(offer => offer.SendingTime >= DateTime.UtcNow)
                     .OrderBy(order => order.TimeStart)
@@ -74,8 +74,8 @@ namespace Main.Controllers
             return Ok(
                (await Context.Offer
                     .Include(offer => offer.Company)
-                        .ThenInclude(company => company.ProductСategory)
-                    .Where(offer => offer.Company.ProductСategory == category)
+                        .ThenInclude(company => company.ProductCategory)
+                    .Where(offer => offer.Company.ProductCategory == category)
                     .ToListAsync())
                     .Where(offer => offer.SendingTime >= DateTime.UtcNow)
                     .OrderBy(order => order.TimeStart)

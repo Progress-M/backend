@@ -45,7 +45,7 @@ namespace Main.Controllers
                 .AsNoTracking()
                 .Include(user => user.LikedPosts)
                 .Include(user => user.Favorites)
-                    .ThenInclude(company => company.ProductСategory)
+                    .ThenInclude(company => company.ProductCategory)
                 .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
@@ -83,11 +83,15 @@ namespace Main.Controllers
                         offer.LowerAgeLimit <= age && age <= offer.UpperAgeLimit
                 )
                 .Include(offer => offer.Company)
-                    .ThenInclude(company => company.ProductСategory)
+                    .ThenInclude(company => company.ProductCategory)
                 .ToListAsync();
 
             var preOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow);
             var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd > DateTime.UtcNow);
+            var nearbyOffer = offers.Where(offer => Utils.CalculateDistance(
+                new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
+                new Location { Latitude = user.Latitude, Longitude = user.Longitude }
+                ) < 1500);
             var inactiveOffer = offers.Where(offer => offer.TimeEnd <= DateTime.UtcNow);
 
             return Ok(
@@ -95,6 +99,7 @@ namespace Main.Controllers
                 {
                     preOffer = preOffer,
                     activeOffer = activeOffer,
+                    nearbyOffer = nearbyOffer,
                     inactiveOffer = inactiveOffer
                 }
             );
@@ -118,7 +123,7 @@ namespace Main.Controllers
             var offers = await Context.Offer
                 .Where(offer => favorites.Contains(offer.Company))
                 .Include(offer => offer.Company)
-                    .ThenInclude(company => company.ProductСategory)
+                    .ThenInclude(company => company.ProductCategory)
                 .ToListAsync();
 
             var preOffer = offers.Where(offer => offer.TimeStart > DateTime.UtcNow);

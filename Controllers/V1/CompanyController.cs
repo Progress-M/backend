@@ -43,7 +43,7 @@ namespace Main.Controllers
         {
             var item = await Context.Company
                .AsNoTracking()
-               .Include(company => company.ProductСategory)
+               .Include(company => company.ProductCategory)
                .SingleOrDefaultAsync(lang => lang.Id == id);
 
             if (item == null)
@@ -138,7 +138,7 @@ namespace Main.Controllers
 
             var offers = await Context.Offer
                 .Include(offer => offer.Company)
-                .ThenInclude(company => company.ProductСategory)
+                .ThenInclude(company => company.ProductCategory)
                 .Where(offer => offer.Company.Id == id)
                 .ToListAsync();
 
@@ -161,7 +161,7 @@ namespace Main.Controllers
         public async Task<ActionResult<List<Company>>> GetCompanys()
         {
             return Ok(await Context.Company
-                .Include(company => company.ProductСategory)
+                .Include(company => company.ProductCategory)
                 .ToListAsync()
             );
         }
@@ -230,7 +230,7 @@ namespace Main.Controllers
             aliveCompany.Address = company.address;
             aliveCompany.TimeOfWork = company.timeOfWork;
             aliveCompany.PlayerId = company.playerId;
-            aliveCompany.ProductСategory = category;
+            aliveCompany.ProductCategory = category;
             aliveCompany.Latitude = company.Latitude;
             aliveCompany.Longitude = company.Longitude;
 
