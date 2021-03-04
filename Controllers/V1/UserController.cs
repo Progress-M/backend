@@ -306,7 +306,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("{userId}/company/{companyId}/distance")]
-        public async Task<ActionResult> Distance(int userId, int companyId)
+        public async Task<ActionResult<double>> Distance(int userId, int companyId)
         {
             var user = await Context.User
                 .AsNoTracking()

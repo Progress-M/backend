@@ -147,6 +147,7 @@ namespace Main.Controllers
 
             var offer = new Offer(offerRequest, company);
             await Context.Offer.AddAsync(offer);
+            await Context.SaveChangesAsync();
 
             if (offerRequest.image != null)
             {
