@@ -180,13 +180,13 @@ namespace Main.Controllers
                 return NotFound($"Not found offer with id = {request.offerId}");
             }
 
-            if (user.LikedPosts == null)
+            Context.LikedOffer.Add(new LikedOffer
             {
-                user.LikedPosts = new HashSet<Offer>();
-            }
+                User = user,
+                Offer = offer
+            });
 
             offer.LikeCounter++;
-            user.LikedPosts.Add(offer);
             await Context.SaveChangesAsync();
 
             return Ok(offer);
@@ -195,32 +195,21 @@ namespace Main.Controllers
         [HttpPost("dislike")]
         public async Task<ActionResult> DislikeOffer(LikeRequest request)
         {
-            var user = await Context.User
-                .SingleOrDefaultAsync(user => user.Id == request.userId);
 
-            if (user == null)
+            var like = await Context.LikedOffer
+                .Include(like => like.Offer)
+               .SingleOrDefaultAsync(like => like.UserId == request.userId && like.OfferId == request.offerId);
+
+            if (like == null)
             {
-                return NotFound($"Not found user with id = {request.userId}");
+                return Ok();
             }
 
-            var offer = await Context.Offer
-                .SingleOrDefaultAsync(offer => offer.Id == request.offerId);
-
-            if (offer == null)
-            {
-                return NotFound($"Not found offer with id = {request.offerId}");
-            }
-
-            if (user.LikedPosts == null)
-            {
-                user.LikedPosts = new HashSet<Offer>();
-            }
-
-            offer.LikeCounter--;
-            user.LikedPosts.Remove(offer);
+            like.Offer.LikeCounter--;
+            Context.LikedOffer.Remove(like);
             await Context.SaveChangesAsync();
 
-            return Ok(offer);
+            return Ok();
         }
     }
 }

@@ -43,7 +43,6 @@ namespace Main.Controllers
         {
             var item = await Context.User
                 .AsNoTracking()
-                .Include(user => user.LikedPosts)
                 .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)

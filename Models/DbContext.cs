@@ -45,6 +45,7 @@ namespace Main.PostgreSQL
         public DbSet<EmailCode> EmailCode { get; set; }
         public DbSet<Message> Message { get; set; }
         public DbSet<CompanyNotification> CompanyNotification { get; set; }
+        public DbSet<LikedOffer> LikedOffer { get; set; }
         public DbSet<FavoriteCompany> FavoriteCompany { get; set; }
     }
 
@@ -54,7 +55,6 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public string Name { get; set; }
     }
-
 
     public class Company
     {
@@ -143,8 +143,6 @@ namespace Main.PostgreSQL
             BirthYear = user.BirthYear;
             AvatarName = "";
             PlayerId = user.playerId;
-            Favorites = new HashSet<Company>();
-            LikedPosts = new HashSet<Offer>();
             Stories = new HashSet<Offer>();
         }
 
@@ -157,7 +155,6 @@ namespace Main.PostgreSQL
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
-        public virtual ICollection<Offer> LikedPosts { get; set; }
         public virtual ICollection<Offer> Stories { get; set; }
 
     }
@@ -173,6 +170,7 @@ namespace Main.PostgreSQL
         public int CompanyId { get; set; }
         public virtual Company Company { get; set; }
     }
+
     public class LikedOffer
     {
         public LikedOffer() { }
