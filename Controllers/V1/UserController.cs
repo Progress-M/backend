@@ -184,12 +184,18 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
+            var favorites = Context.FavoriteCompany
+                .Include(fc => fc.Company)
+                .Where(fc => fc.UserId == id);
+
+
             var comparer = new CompanyComparer();
 
-            return Ok(item.Favorites
+            return Ok(
+            favorites
             .Select(f => new
             {
-                Company = f,
+                Company = f.Company,
                 Stories = item.Stories.Where(s => s.Company.Id == f.Id).ToList()
             })
            .OrderByDescending(x => x.Stories.Count));
