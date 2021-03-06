@@ -21,7 +21,7 @@ namespace Main.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
-    [Authorize(Policy = "ValidAccessToken")]
+    // [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class CompanyController : Controller
     {
@@ -70,9 +70,9 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetNumberOfAdditionsToTheFavorites(int id)
         {
-            var items = await Context.User
+            var items = await Context.FavoriteCompany
                .AsNoTracking()
-               .Where(cn => cn.Favorites.Any(c => c.Id == id))
+               .Where(c => c.Id == id)
                .ToListAsync();
 
             return Ok(items.Count);
@@ -212,7 +212,7 @@ namespace Main.Controllers
             var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == id);
             if (aliveCompany == null)
             {
-                return NotFound($"Not found company with id = {company.id}");
+                return NotFound($"Not found company with id = {id}");
             }
 
             var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == company.productCategoryId);

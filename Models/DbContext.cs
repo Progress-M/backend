@@ -2,11 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Main.PostgreSQL
 {
     public class KindContext : DbContext
     {
+
+        public readonly ILoggerFactory MyLoggerFactory;
+
+        public KindContext()
+        {
+            MyLoggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseLoggerFactory(MyLoggerFactory);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Company>()
@@ -31,8 +45,8 @@ namespace Main.PostgreSQL
         public DbSet<EmailCode> EmailCode { get; set; }
         public DbSet<Message> Message { get; set; }
         public DbSet<CompanyNotification> CompanyNotification { get; set; }
+        public DbSet<FavoriteCompany> FavoriteCompany { get; set; }
     }
-
 
     public class ProductCategory
     {
@@ -143,10 +157,32 @@ namespace Main.PostgreSQL
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
-        public ICollection<Company> Favorites { get; set; }
-        public ICollection<Offer> LikedPosts { get; set; }
-        public ICollection<Offer> Stories { get; set; }
+        public virtual ICollection<Offer> LikedPosts { get; set; }
+        public virtual ICollection<Offer> Stories { get; set; }
 
+    }
+
+    public class FavoriteCompany
+    {
+        public FavoriteCompany() { }
+
+        [Key]
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
+        public int CompanyId { get; set; }
+        public virtual Company Company { get; set; }
+    }
+    public class LikedOffer
+    {
+        public LikedOffer() { }
+
+        [Key]
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
+        public int OfferId { get; set; }
+        public virtual Offer Offer { get; set; }
     }
 
     public class EmailCode

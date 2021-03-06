@@ -5,15 +5,17 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SignalRChat.Hubs;
 
-using Main.PostgreSQL;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+
+using Main.PostgreSQL;
+using Bdobr.Logging;
 
 namespace Main
 {
@@ -124,6 +126,8 @@ namespace Main
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            app.UseMiddleware<RequestLoggingMiddleware>();
 
             app.UseHttpsRedirection();
 

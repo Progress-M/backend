@@ -44,8 +44,6 @@ namespace Main.Controllers
             var item = await Context.User
                 .AsNoTracking()
                 .Include(user => user.LikedPosts)
-                .Include(user => user.Favorites)
-                    .ThenInclude(company => company.ProductCategory)
                 .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
@@ -109,19 +107,20 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetFavariteOffersByUser(int id)
         {
-            var item = await Context.User
-                .Include(offer => offer.Favorites)
-                .SingleOrDefaultAsync(user => user.Id == id);
+            var item = Context.FavoriteCompany
+                .Include(fc => fc.User)
+                .Include(fc => fc.Company)
+                .Where(fc => fc.User.Id == id);
 
             if (item == null)
             {
                 return NotFound($"Not found user with id = {id}");
             }
 
-            var favorites = item.Favorites.ToList();
+            var favorites = item.ToList();
 
             var offers = await Context.Offer
-                .Where(offer => favorites.Contains(offer.Company))
+                .Where(offer => favorites.Any(fc => fc.Company.Id == offer.Company.Id))
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
                 .ToListAsync();
@@ -144,7 +143,7 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetUser()
         {
-            return Ok(await Context.User.Include(u => u.Favorites).ToListAsync());
+            return Ok(await Context.User.ToListAsync());
         }
 
         [HttpGet("{id}/image")]
@@ -177,7 +176,6 @@ namespace Main.Controllers
         {
             var item = await Context.User
                 .AsNoTracking()
-                .Include(u => u.Favorites)
                 .Include(u => u.Stories)
                     .ThenInclude(o => o.Company)
                 .SingleOrDefaultAsync(user => user.Id == id);
@@ -202,7 +200,6 @@ namespace Main.Controllers
         public async Task<ActionResult> DeleteStories(int id, int companyId)
         {
             var item = await Context.User
-                .Include(u => u.Favorites)
                 .Include(u => u.Stories)
                     .ThenInclude(o => o.Company)
                 .SingleOrDefaultAsync(user => user.Id == id);
@@ -346,19 +343,14 @@ namespace Main.Controllers
             }
 
             var favorite = await Context.Company
-              .SingleOrDefaultAsync(favorite => favorite.Id == favoriteId);
+              .SingleOrDefaultAsync(c => c.Id == favoriteId);
 
             if (item == null)
             {
                 return NotFound($"Not found company with id = {id}");
             }
 
-            if (item.Favorites == null)
-            {
-                item.Favorites = new HashSet<Company>();
-            }
-
-            item.Favorites.Add(favorite);
+            Context.FavoriteCompany.Add(new FavoriteCompany { User = item, Company = favorite });
             await Context.SaveChangesAsync();
 
             return Ok(item);
@@ -368,35 +360,18 @@ namespace Main.Controllers
         [HttpDelete("{id}/favorite/{favoriteId}")]
         public async Task<ActionResult> RemoveUserFavorite(int id, int favoriteId)
         {
-            var item = await Context.User
-                .Include(u => u.Favorites)
-                .Include(u => u.Stories)
-                .SingleOrDefaultAsync(user => user.Id == id);
+            var fc = await Context.FavoriteCompany
+              .SingleOrDefaultAsync(fc => fc.UserId == id && fc.CompanyId == favoriteId);
 
-            if (item == null)
+            if (fc == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return Ok();
             }
 
-            if (item.Favorites == null)
-            {
-                item.Favorites = new HashSet<Company>();
-                await Context.SaveChangesAsync();
-            }
-
-            var favorite = item.Favorites.SingleOrDefault(c => c.Id == favoriteId);
-
-            if (favorite == null)
-            {
-                return NotFound($"Not found favorite company with id = {id}");
-            }
-
-            item.Favorites.Remove(favorite);
-            item.Stories = item.Stories.Where(s => s.Company.Id != favoriteId).ToList();
-
+            Context.FavoriteCompany.Remove(fc);
             await Context.SaveChangesAsync();
 
-            return Ok(item);
+            return Ok();
         }
     }
 

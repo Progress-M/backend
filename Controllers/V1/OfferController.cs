@@ -139,11 +139,10 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            var users = (await Context.User
-                .Include(u => u.Stories)
-                .Include(u => u.Favorites)
-                .ToListAsync())
-                .Where(u => u.Favorites != null && u.Favorites.Contains(company) && u.PlayerId != null);
+            var favoriteCompanies = Context.FavoriteCompany
+                 .Include(fc => fc.Company)
+                 .Include(fc => fc.User)
+                 .Where(fc => fc.Company.Id == company.Id && fc.User.PlayerId != null);
 
             var offer = new Offer(offerRequest, company);
             await Context.Offer.AddAsync(offer);
@@ -154,10 +153,10 @@ namespace Main.Controllers
                 offer.ImageName = await Utils.saveFile(offerRequest.image, $"{subfolder}", offer.Id);
             }
 
-            users.ToList().ForEach(user => user.Stories.Add(offer));
+            favoriteCompanies.ToList().ForEach(fc => fc.User.Stories.Add(offer));
             await Context.SaveChangesAsync();
 
-            Utils.CreateNotificationToFavorites(offer.Text, users.Select(u => u.PlayerId).ToArray());
+            Utils.CreateNotificationToFavorites(offer.Text, favoriteCompanies.Select(fc => fc.User.PlayerId).ToArray());
 
             return Ok(offer);
         }

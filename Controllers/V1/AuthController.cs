@@ -81,8 +81,6 @@ namespace Main.Controllers
         public async Task<IActionResult> AccessTokenUser(string playerId)
         {
             var item = await Context.User
-                .Include(u => u.Favorites)
-                    .ThenInclude(c => c.ProductCategory)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(user => user.PlayerId == playerId);
 
