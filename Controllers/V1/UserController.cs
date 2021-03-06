@@ -193,6 +193,7 @@ namespace Main.Controllers
 
             return Ok(
             favorites
+            .ToList()
             .Select(f => new
             {
                 Company = f.Company,
@@ -336,6 +337,16 @@ namespace Main.Controllers
             );
         }
 
+        [HttpGet("{id}/favorite")]
+        public ActionResult GetUserFavorite(int id)
+        {
+            var item = Context.FavoriteCompany
+                .Include(fc => fc.Company)
+                .Where(fc => fc.UserId == id);
+
+            return Ok(item.ToList().Select(fc => fc.Company));
+        }
+
         [HttpPut("{id}/favorite/{favoriteId}")]
         public async Task<ActionResult> AddUserFavorite(int id, int favoriteId)
         {
@@ -353,6 +364,11 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound($"Not found company with id = {id}");
+            }
+
+            if (Context.FavoriteCompany.Any(fc => fc.CompanyId == favoriteId && fc.UserId == id))
+            {
+                return BadRequest("Already exist");
             }
 
             Context.FavoriteCompany.Add(new FavoriteCompany { User = item, Company = favorite });
