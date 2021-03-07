@@ -10,7 +10,6 @@ using System.IO;
 using System.Reflection;
 using Main.Function;
 using System.Linq;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using System;
 
@@ -61,7 +60,7 @@ namespace Main.Controllers
                         .ThenInclude(company => company.ProductCategory)
                     .ToListAsync())
                     .Where(offer => offer.SendingTime >= DateTime.UtcNow)
-                    .OrderBy(order => order.TimeStart)
+                    .OrderBy(order => order.DateStart)
             );
         }
 
@@ -78,7 +77,7 @@ namespace Main.Controllers
                     .Where(offer => offer.Company.ProductCategory == category)
                     .ToListAsync())
                     .Where(offer => offer.SendingTime >= DateTime.UtcNow)
-                    .OrderBy(order => order.TimeStart)
+                    .OrderBy(order => order.DateStart)
             );
         }
 
@@ -139,10 +138,12 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
-            var favoriteCompanies = Context.FavoriteCompany
+            var favoriteCompanies = await Context.FavoriteCompany
                  .Include(fc => fc.Company)
                  .Include(fc => fc.User)
-                 .Where(fc => fc.Company.Id == company.Id && fc.User.PlayerId != null);
+                    .ThenInclude(u => u.Stories)
+                 .Where(fc => fc.CompanyId == company.Id && fc.User.PlayerId != null)
+                 .ToListAsync();
 
             var offer = new Offer(offerRequest, company);
             await Context.Offer.AddAsync(offer);
@@ -153,7 +154,7 @@ namespace Main.Controllers
                 offer.ImageName = await Utils.saveFile(offerRequest.image, $"{subfolder}", offer.Id);
             }
 
-            favoriteCompanies.ToList().ForEach(fc => fc.User.Stories.Add(offer));
+            favoriteCompanies.ForEach(fc => fc.User.Stories.Add(offer));
             await Context.SaveChangesAsync();
 
             Utils.CreateNotificationToFavorites(offer.Text, favoriteCompanies.Select(fc => fc.User.PlayerId).ToArray());

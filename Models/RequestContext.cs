@@ -35,6 +35,7 @@ namespace Main.PostgreSQL
     {
         public int id { get; set; }
         public string name { get; set; }
+        public string nameOfficial { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string representative { get; set; }
@@ -72,7 +73,10 @@ namespace Main.PostgreSQL
     public class OfferRequest
     {
         public string text { get; set; }
+        public string timeRange { get; set; }
         public DateTime sendingTime { get; set; }
+        public DateTime dateStart { get; set; }
+        public DateTime dateEnd { get; set; }
         public DateTime timeStart { get; set; }
         public DateTime timeEnd { get; set; }
         public int companyId { get; set; }

@@ -62,6 +62,7 @@ namespace Main.PostgreSQL
         public Company(CompanyRequest request, ProductCategory productCategory)
         {
             Name = request.name;
+            NameOfficial = request.nameOfficial;
             Representative = request.representative;
             Email = request.email;
             INN = request.inn;
@@ -81,6 +82,7 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string NameOfficial { get; set; }
         public string Name { get; set; }
         public string Representative { get; set; }
         public string Phone { get; set; }
@@ -101,6 +103,8 @@ namespace Main.PostgreSQL
         public Offer(OfferRequest request, Company company)
         {
             Text = request.text;
+            DateStart = request.dateStart;
+            DateEnd = request.dateEnd;
             TimeStart = request.timeStart;
             TimeEnd = request.timeEnd;
             Percentage = request.percentage;
@@ -120,6 +124,8 @@ namespace Main.PostgreSQL
         public string Text { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime SendingTime { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
         public DateTime TimeStart { get; set; }
         public DateTime TimeEnd { get; set; }
         public Company Company { get; set; }

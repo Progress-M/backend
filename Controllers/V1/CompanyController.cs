@@ -142,9 +142,17 @@ namespace Main.Controllers
                 .Where(offer => offer.Company.Id == id)
                 .ToListAsync();
 
-            var preOffer = offers.Where(offer => offer.TimeStart > DateTime.UtcNow);
-            var activeOffer = offers.Where(offer => offer.TimeStart < DateTime.UtcNow && offer.TimeEnd > DateTime.UtcNow);
-            var inactiveOffer = offers.Where(offer => offer.TimeEnd < DateTime.UtcNow);
+            var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
+            var activeOffer = offers.Where(offer =>
+            {
+                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.Now.DayOfYear)
+                {
+                    return true;
+                }
+
+                return offer.DateEnd > DateTime.UtcNow;
+            });
+            var inactiveOffer = offers.Where(offer => offer.DateEnd < DateTime.UtcNow);
 
             return Ok(
                 new OfferByUserResponse
