@@ -72,7 +72,7 @@ namespace Main.Controllers
         {
             var items = await Context.FavoriteCompany
                .AsNoTracking()
-               .Where(c => c.Id == id)
+               .Where(c => c.CompanyId == id)
                .ToListAsync();
 
             return Ok(items.Count);
