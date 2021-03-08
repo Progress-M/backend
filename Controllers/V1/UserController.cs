@@ -73,7 +73,7 @@ namespace Main.Controllers
 
             var age = DateTime.Now.Year - user.BirthYear.Year;
 
-            var offers = await Context.Offer
+            var offers = (await Context.Offer
                 .Where(
                     offer =>
                         (offer.ForMan == user.isMan || offer.ForWoman == !user.isMan) &&
@@ -81,7 +81,31 @@ namespace Main.Controllers
                 )
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
-                .ToListAsync();
+                .ToListAsync())
+                .OrderByDescending(it => it.CreateDate)
+                .Select(offer =>
+                {
+                    return new
+                    {
+                        Id = offer.Id,
+                        Text = offer.Text,
+                        DateStart = offer.DateStart,
+                        DateEnd = offer.DateEnd,
+                        TimeStart = offer.TimeStart,
+                        TimeEnd = offer.TimeEnd,
+                        Percentage = offer.Percentage,
+                        Company = offer.Company,
+                        ImageName = offer.ImageName,
+                        CreateDate = offer.CreateDate,
+                        ForMan = offer.ForMan,
+                        LikeCounter = offer.LikeCounter,
+                        ForWoman = offer.ForWoman,
+                        SendingTime = offer.SendingTime,
+                        UpperAgeLimit = offer.UpperAgeLimit,
+                        LowerAgeLimit = offer.LowerAgeLimit,
+                        UserLike = Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)
+                    };
+                });
 
             var preOffer = offers.Where(offer => offer.DateStart < DateTime.UtcNow);
             var activeOffer = offers.Where(offer =>
@@ -100,7 +124,7 @@ namespace Main.Controllers
             var inactiveOffer = offers.Where(offer => offer.DateEnd <= DateTime.UtcNow);
 
             return Ok(
-                new OfferByUserResponse
+                new
                 {
                     preOffer = preOffer,
                     activeOffer = activeOffer,

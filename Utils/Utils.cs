@@ -170,7 +170,8 @@ namespace Main.Function
             var obj = new
             {
                 app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
-                contents = new { en = "English Message", ru = message },
+                url = "bdobr.ru",
+                contents = new { en = message, ru = message },
                 headings = new { en = "Bdobr", ru = "Будьдобр" },
                 channel_for_external_user_ids = "push",
                 include_player_ids = favorites

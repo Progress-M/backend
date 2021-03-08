@@ -136,11 +136,12 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {id}");
             }
 
-            var offers = await Context.Offer
+            var offers = (await Context.Offer
                 .Include(offer => offer.Company)
                 .ThenInclude(company => company.ProductCategory)
                 .Where(offer => offer.Company.Id == id)
-                .ToListAsync();
+                .OrderByDescending(it => it.CreateDate)
+                .ToListAsync());
 
             var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
             var activeOffer = offers.Where(offer =>

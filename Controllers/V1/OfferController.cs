@@ -197,17 +197,16 @@ namespace Main.Controllers
         public async Task<ActionResult> DislikeOffer(LikeRequest request)
         {
 
-            var like = await Context.LikedOffer
+            var likes = await Context.LikedOffer
                 .Include(like => like.Offer)
-               .SingleOrDefaultAsync(like => like.UserId == request.userId && like.OfferId == request.offerId);
+                .Where(like => like.UserId == request.userId && like.OfferId == request.offerId)
+                .ToListAsync();
 
-            if (like == null)
+            likes.ForEach(it =>
             {
-                return Ok();
-            }
-
-            like.Offer.LikeCounter--;
-            Context.LikedOffer.Remove(like);
+                it.Offer.LikeCounter--;
+                Context.LikedOffer.Remove(it);
+            });
             await Context.SaveChangesAsync();
 
             return Ok();
