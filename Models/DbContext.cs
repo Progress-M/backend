@@ -51,9 +51,17 @@ namespace Main.PostgreSQL
 
     public class ProductCategory
     {
+        public ProductCategory() { }
+        public ProductCategory(ProductCategoryRequest request)
+        {
+            Name = request.name;
+            ImageName = "";
+        }
+
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
+        public string ImageName { get; set; }
     }
 
     public class Company

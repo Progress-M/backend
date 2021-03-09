@@ -93,7 +93,8 @@ namespace Main.Controllers
                     .GroupBy(message => message.user, comparer)
                     .Select(messages =>
                     {
-                        var last = messages.ToList().Last();
+                        var list = messages.ToList();
+                        var last = list.Count > 0 ? list.Last() : null;
                         return new
                         {
                             User = messages.Key,

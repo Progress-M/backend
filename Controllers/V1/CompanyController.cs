@@ -66,6 +66,30 @@ namespace Main.Controllers
             return Ok(items);
         }
 
+        [HttpGet("top")]
+        [Produces("application/json")]
+        public ActionResult GetCompanyTop()
+        {
+            var RESULT_LIMIT = 3;
+
+            var comparer = new CompanyComparer();
+
+            var items = Context.FavoriteCompany
+              .AsNoTracking()
+              .Include(fc => fc.Company)
+              .ToList()
+              .GroupBy(fc => fc.Company, comparer)
+              .OrderByDescending(fc => fc.ToList().Count)
+              .Select(fc => new
+              {
+                  Company = fc.Key,
+                  Count = fc.ToList().Count
+              })
+              .Take(RESULT_LIMIT);
+
+            return Ok(items);
+        }
+
         [HttpGet("{id}/number-of-favorites")]
         [Produces("application/json")]
         public async Task<ActionResult> GetNumberOfAdditionsToTheFavorites(int id)
@@ -151,9 +175,9 @@ namespace Main.Controllers
                     return true;
                 }
 
-                return offer.DateEnd > DateTime.UtcNow;
+                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear;
             });
-            var inactiveOffer = offers.Where(offer => offer.DateEnd < DateTime.UtcNow);
+            var inactiveOffer = offers.Where(offer => offer.DateEnd.DayOfYear < DateTime.UtcNow.DayOfYear);
 
             return Ok(
                 new OfferByUserResponse

@@ -31,6 +31,12 @@ namespace Main.PostgreSQL
         public string email { get; set; }
     }
 
+    public class ProductCategoryRequest
+    {
+        public string name { get; set; }
+        public IFormFile image { get; set; }
+    }
+
     public class CompanyRequest
     {
         public int id { get; set; }

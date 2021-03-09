@@ -50,6 +50,23 @@ namespace Main.Controllers
             return Ok(item);
         }
 
+        [HttpGet("top")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetOfferTop()
+        {
+            var RESULT_LIMIT = 3;
+            var item = await Context.Offer
+                .AsNoTracking()
+                .Include(offer => offer.Company)
+                    .ThenInclude(company => company.ProductCategory)
+               .Where(offer => offer.LikeCounter > 0)
+               .OrderByDescending(offer => offer.LikeCounter)
+               .Take(RESULT_LIMIT)
+               .ToListAsync();
+
+            return Ok(item);
+        }
+
         [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult> GetOffers()

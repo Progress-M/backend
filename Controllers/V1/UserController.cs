@@ -115,7 +115,7 @@ namespace Main.Controllers
                     return true;
                 }
 
-                return offer.DateEnd > DateTime.UtcNow;
+                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear;
             });
             var nearbyOffer = offers.Where(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
@@ -164,7 +164,7 @@ namespace Main.Controllers
                     return true;
                 }
 
-                return offer.DateEnd > DateTime.UtcNow;
+                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear;
             });
             var inactiveOffer = offers.Where(offer => offer.DateEnd >= DateTime.UtcNow);
 
