@@ -189,6 +189,20 @@ namespace Main.Controllers
             );
         }
 
+        [HttpGet("category/{id}")]
+        [Produces("application/json")]
+        public async Task<ActionResult> GetOffersByCategory(int id)
+        {
+            var category = await Context.ProductCategory.SingleOrDefaultAsync(c => c.Id == id);
+
+            return Ok(
+               await Context.Company
+                    .Include(company => company.ProductCategory)
+                    .Where(company => company.ProductCategory.Id == id)
+                    .ToListAsync()
+            );
+        }
+
         [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult<List<Company>>> GetCompanys()
