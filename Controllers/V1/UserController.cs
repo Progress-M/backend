@@ -238,7 +238,7 @@ namespace Main.Controllers
                 Stories = Context.Stories
                     .Include(s => s.Offer)
                     .ThenInclude(offer => offer.Company)
-                    .Where(s => s.Offer.Company.Id == f.Company.Id)
+                    .Where(s => s.Offer.Company.Id == f.CompanyId && s.UserId == id)
                     .Select(s => s.Offer)
                     .ToList()
             })
@@ -260,7 +260,7 @@ namespace Main.Controllers
                 Context.Stories
                     .Include(s => s.Offer)
                     .ThenInclude(offer => offer.Company)
-                    .Where(s => s.Offer.Company.Id == companyId)
+                    .Where(s => s.Offer.Company.Id == companyId && s.UserId == id)
                     .ToList()
             );
 

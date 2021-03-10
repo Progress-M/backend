@@ -158,7 +158,7 @@ namespace Main.Controllers
             var favoriteCompanies = await Context.FavoriteCompany
                  .Include(fc => fc.Company)
                  .Include(fc => fc.User)
-                 .Where(fc => fc.CompanyId == company.Id && fc.User.PlayerId != null)
+                 .Where(fc => fc.CompanyId == company.Id)
                  .ToListAsync();
 
             var offer = new Offer(offerRequest, company);
