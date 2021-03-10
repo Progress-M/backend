@@ -117,7 +117,7 @@ namespace Main.Controllers
 
                 return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear && offer.DateStart < DateTime.UtcNow;
             });
-            var nearbyOffer = offers.Where(offer => Utils.CalculateDistance(
+            var nearbyOffer = activeOffer.Where(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
                 new Location { Latitude = user.Latitude, Longitude = user.Longitude }
                 ) < 5000);
