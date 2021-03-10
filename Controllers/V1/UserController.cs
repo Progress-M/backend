@@ -107,7 +107,7 @@ namespace Main.Controllers
                     };
                 });
 
-            var preOffer = offers.Where(offer => offer.DateStart < DateTime.UtcNow);
+            var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
             var activeOffer = offers.Where(offer =>
             {
                 if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.Now.DayOfYear)
@@ -115,7 +115,7 @@ namespace Main.Controllers
                     return true;
                 }
 
-                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear;
+                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear && offer.DateStart < DateTime.UtcNow;
             });
             var nearbyOffer = offers.Where(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
