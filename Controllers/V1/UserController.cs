@@ -120,7 +120,7 @@ namespace Main.Controllers
             var nearbyOffer = offers.Where(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
                 new Location { Latitude = user.Latitude, Longitude = user.Longitude }
-                ) < 1500);
+                ) < 5000);
             var inactiveOffer = offers.Where(offer => offer.DateEnd <= DateTime.UtcNow);
 
             return Ok(
