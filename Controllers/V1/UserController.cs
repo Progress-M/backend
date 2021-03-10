@@ -211,13 +211,11 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}/stories")]
-        public async Task<ActionResult> GetStories(int id)
+        public ActionResult GetStories(int id)
         {
-            var item = await Context.User
+            var item = Context.User
                 .AsNoTracking()
-                .Include(u => u.Stories)
-                    .ThenInclude(o => o.Company)
-                .SingleOrDefaultAsync(user => user.Id == id);
+                .SingleOrDefault(user => user.Id == id);
 
             if (item == null)
             {
@@ -237,26 +235,36 @@ namespace Main.Controllers
             .Select(f => new
             {
                 Company = f.Company,
-                Stories = item.Stories.Where(s => s.Company.Id == f.Id).ToList()
+                Stories = Context.Stories
+                    .Include(s => s.Offer)
+                    .ThenInclude(offer => offer.Company)
+                    .Where(s => s.Offer.Company.Id == f.Company.Id)
+                    .Select(s => s.Offer)
+                    .ToList()
             })
            .OrderByDescending(x => x.Stories.Count));
         }
 
         [HttpDelete("{id}/stories/company/{companyId}")]
-        public async Task<ActionResult> DeleteStories(int id, int companyId)
+        public ActionResult DeleteStories(int id, int companyId)
         {
-            var item = await Context.User
-                .Include(u => u.Stories)
-                    .ThenInclude(o => o.Company)
-                .SingleOrDefaultAsync(user => user.Id == id);
+            var item = Context.User
+                .SingleOrDefault(user => user.Id == id);
 
             if (item == null)
             {
                 return NotFound($"Not found user with id = {id}");
             }
-            item.Stories = item.Stories.Where(story => story.Company.Id != companyId).ToList();
-            await Context.SaveChangesAsync();
 
+            Context.Stories.RemoveRange(
+                Context.Stories
+                    .Include(s => s.Offer)
+                    .ThenInclude(offer => offer.Company)
+                    .Where(s => s.Offer.Company.Id == companyId)
+                    .ToList()
+            );
+
+            Context.SaveChanges();
             return Ok();
         }
 

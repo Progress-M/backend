@@ -30,11 +30,6 @@ namespace Main.PostgreSQL
             modelBuilder.Entity<Company>()
                .HasIndex(p => new { p.INN })
                .IsUnique(true);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Stories)
-                .WithOne()
-                .HasForeignKey("userId");
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
@@ -47,6 +42,7 @@ namespace Main.PostgreSQL
         public DbSet<CompanyNotification> CompanyNotification { get; set; }
         public DbSet<LikedOffer> LikedOffer { get; set; }
         public DbSet<FavoriteCompany> FavoriteCompany { get; set; }
+        public DbSet<Stories> Stories { get; set; }
     }
 
     public class ProductCategory
@@ -157,7 +153,6 @@ namespace Main.PostgreSQL
             BirthYear = user.BirthYear;
             AvatarName = "";
             PlayerId = user.playerId;
-            Stories = new HashSet<Offer>();
         }
 
         [Key]
@@ -169,8 +164,6 @@ namespace Main.PostgreSQL
         public DateTime BirthYear { get; set; }
         public string AvatarName { get; set; }
         public string PlayerId { get; set; }
-        public virtual ICollection<Offer> Stories { get; set; }
-
     }
 
     public class FavoriteCompany
@@ -188,6 +181,18 @@ namespace Main.PostgreSQL
     public class LikedOffer
     {
         public LikedOffer() { }
+
+        [Key]
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
+        public int OfferId { get; set; }
+        public virtual Offer Offer { get; set; }
+    }
+
+    public class Stories
+    {
+        public Stories() { }
 
         [Key]
         public int Id { get; set; }
