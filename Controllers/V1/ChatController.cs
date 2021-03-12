@@ -167,7 +167,7 @@ namespace Main.Controllers
             await Context.Message.AddAsync(message);
             await Context.SaveChangesAsync();
 
-            Utils.CreateNotificationToFavorites(messageRequest.text, new string[1] { messageRequest.isUserMessage ? user.PlayerId : company.PlayerId });
+            Utils.CreateNotificationToFavorites(messageRequest.text, new string[1] { messageRequest.isUserMessage ? company.PlayerId : user.PlayerId });
 
             return Ok(message);
         }
