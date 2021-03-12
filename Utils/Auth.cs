@@ -18,7 +18,7 @@ namespace Main.Function
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, "")
+                    new Claim(ClaimTypes.Name, Guid.NewGuid().ToString())
                 }),
                 Expires = DateTime.Now.AddMinutes(Int32.Parse(Configuration["TokenOptions:Expires"])),
                 Issuer = Configuration["TokenOptions:Issuer"],
