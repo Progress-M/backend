@@ -29,6 +29,7 @@ namespace Main.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [Produces("application/json")]
         public async Task<ActionResult> GetProductCategory(int id)
         {
@@ -45,6 +46,7 @@ namespace Main.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Produces("application/json")]
         public async Task<ActionResult> GetProductCategory()
         {
@@ -110,7 +112,7 @@ namespace Main.Controllers
 
         [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
-        public async Task<ActionResult> UpdatImage(int id, [FromForm] ImageRequest imageRequest)
+        public async Task<ActionResult> UpdateImage(int id, [FromForm] ImageRequest imageRequest)
         {
             var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
