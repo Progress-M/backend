@@ -77,6 +77,39 @@ namespace Main.Controllers
                 });
         }
 
+        [HttpPost("token/company/{playerId}")]
+        public async Task<IActionResult> AccessTokenUser(string playerId)
+        {
+            var item = await Context.Company
+               .Include(c => c.ProductCategory)
+               .AsNoTracking()
+               .SingleOrDefaultAsync(
+                   company =>
+                       company.PlayerId == playerId
+           );
+
+            if (item == null)
+            {
+                return Unauthorized(
+                    new
+                    {
+                        status = AuthStatus.Fail,
+                        message = "Authentication failed"
+                    }
+                );
+            }
+
+            // Returns the 'access_token' and the type in lower case
+            return Ok(
+                new
+                {
+                    status = AuthStatus.Success,
+                    company = item,
+                    access_token = Auth.generateToken(Configuration),
+                    token_type = "bearer"
+                });
+        }
+
         [HttpPost("token/user/{playerId}")]
         public async Task<IActionResult> AccessTokenUser(string playerId)
         {
