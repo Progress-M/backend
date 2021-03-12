@@ -108,7 +108,9 @@ namespace Main.Controllers
                 });
 
             var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
-            var activeOffer = offers.Where(offer =>
+            var activeOffer = offers
+                .OrderByDescending(offer => offer.CreateDate)
+                .Where(offer =>
             {
                 if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.Now.DayOfYear)
                 {
@@ -117,10 +119,10 @@ namespace Main.Controllers
 
                 return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear && offer.DateStart < DateTime.UtcNow;
             });
-            var nearbyOffer = activeOffer.Where(offer => Utils.CalculateDistance(
+            var nearbyOffer = activeOffer.OrderBy(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
                 new Location { Latitude = user.Latitude, Longitude = user.Longitude }
-                ) < 5000);
+                ));
             var inactiveOffer = offers.Where(offer => offer.DateEnd <= DateTime.UtcNow);
 
             return Ok(
@@ -437,6 +439,13 @@ namespace Main.Controllers
                 return Ok();
             }
 
+            Context.Stories.RemoveRange(
+                            Context.Stories
+                                .Include(s => s.Offer)
+                                .ThenInclude(offer => offer.Company)
+                                .Where(s => s.Offer.Company.Id == favoriteId && s.UserId == id)
+                                .ToList()
+                        );
             Context.FavoriteCompany.Remove(fc);
             await Context.SaveChangesAsync();
 
