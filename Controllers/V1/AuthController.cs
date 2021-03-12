@@ -78,7 +78,7 @@ namespace Main.Controllers
         }
 
         [HttpPost("token/company/{playerId}")]
-        public async Task<IActionResult> AccessTokenUser(string playerId)
+        public async Task<IActionResult> AccessTokenCompany(string playerId)
         {
             var item = await Context.Company
                .Include(c => c.ProductCategory)
