@@ -71,7 +71,7 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
-            var age = DateTime.Now.Year - user.BirthYear.Year;
+            var age = DateTime.UtcNow.Year - user.BirthYear.Year;
 
             var offers = (await Context.Offer
                 .Where(
@@ -112,7 +112,7 @@ namespace Main.Controllers
                 .OrderByDescending(offer => offer.CreateDate)
                 .Where(offer =>
             {
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.Now.DayOfYear)
+                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.UtcNow.DayOfYear)
                 {
                     return true;
                 }
@@ -161,7 +161,7 @@ namespace Main.Controllers
             var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
             var activeOffer = offers.Where(offer =>
             {
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.Now.DayOfYear)
+                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.UtcNow.DayOfYear)
                 {
                     return true;
                 }

@@ -170,7 +170,7 @@ namespace Main.Controllers
             var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
             var activeOffer = offers.Where(offer =>
             {
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.Now.DayOfYear)
+                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.UtcNow.DayOfYear)
                 {
                     return true;
                 }
