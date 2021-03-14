@@ -166,9 +166,9 @@ namespace Main.Controllers
                     return true;
                 }
 
-                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear;
+                return offer.DateEnd >= DateTime.UtcNow && DateTime.UtcNow >= offer.DateStart;
             });
-            var inactiveOffer = offers.Where(offer => offer.DateEnd >= DateTime.UtcNow);
+            var inactiveOffer = offers.Where(offer => offer.DateEnd < DateTime.UtcNow);
 
             return Ok(
                 new OfferByUserResponse
