@@ -103,11 +103,11 @@ namespace Main.Controllers
                         };
                     })
                     .OrderByDescending(messages => messages.dateTime);
-
+            
             return Ok(new
             {
                 chats = groups,
-                lastId = messages?.Last()?.Id
+                lastId = !messages.Any() ? null : messages?.Last()?.Id
             });
         }
 

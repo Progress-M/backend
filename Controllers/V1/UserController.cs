@@ -62,7 +62,7 @@ namespace Main.Controllers
 
         [HttpGet("{id}/offer")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetOffersByUser(int id)
+        public async Task<ActionResult<OfferByUserResponse>> GetOffersByUser(int id)
         {
             var user = await Context.User.SingleOrDefaultAsync(user => user.Id == id);
 
@@ -85,7 +85,7 @@ namespace Main.Controllers
                 .OrderByDescending(it => it.CreateDate)
                 .Select(offer =>
                 {
-                    return new
+                    return new OfferResponse
                     {
                         Id = offer.Id,
                         Text = offer.Text,
@@ -105,40 +105,28 @@ namespace Main.Controllers
                         LowerAgeLimit = offer.LowerAgeLimit,
                         UserLike = Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)
                     };
-                });
+                }).ToList();
 
-            var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
-            var activeOffer = offers
-                .OrderByDescending(offer => offer.CreateDate)
-                .Where(offer =>
-            {
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.UtcNow.DayOfYear)
-                {
-                    return true;
-                }
-
-                return offer.DateEnd.DayOfYear > DateTime.UtcNow.DayOfYear && offer.DateStart < DateTime.UtcNow;
-            });
-            var nearbyOffer = activeOffer.OrderBy(offer => Utils.CalculateDistance(
+            var groups = OfferUtils.GroupByRelevance(offers);
+            var nearbyOffer = groups.activeOffer.OrderBy(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
                 new Location { Latitude = user.Latitude, Longitude = user.Longitude }
                 ));
-            var inactiveOffer = offers.Where(offer => offer.DateEnd <= DateTime.UtcNow);
 
             return Ok(
-                new
+                new OfferByUserResponse
                 {
-                    preOffer = preOffer,
-                    activeOffer = activeOffer,
+                    preOffer = groups.preOffer,
+                    activeOffer = groups.activeOffer,
                     nearbyOffer = nearbyOffer,
-                    inactiveOffer = inactiveOffer
+                    inactiveOffer = groups.inactiveOffer
                 }
             );
         }
 
         [HttpGet("{id}/favarite-offer")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetFavariteOffersByUser(int id)
+        public ActionResult<OfferByUserResponse> GetFavariteOffersByUser(int id)
         {
             var item = Context.FavoriteCompany
                 .Include(fc => fc.User)
@@ -152,30 +140,44 @@ namespace Main.Controllers
 
             var favorites = item.ToList();
 
-            var offers = await Context.Offer
+            var offers = Context.Offer
                 .Where(offer => favorites.Any(fc => fc.Company.Id == offer.Company.Id))
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
-                .ToListAsync();
-
-            var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
-            var activeOffer = offers.Where(offer =>
-            {
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.UtcNow.DayOfYear)
+                .ToList()
+                .Select(offer =>
                 {
-                    return true;
-                }
+                    return new OfferResponse
+                    {
+                        Id = offer.Id,
+                        Text = offer.Text,
+                        DateStart = offer.DateStart,
+                        DateEnd = offer.DateEnd,
+                        TimeStart = offer.TimeStart,
+                        TimeEnd = offer.TimeEnd,
+                        Percentage = offer.Percentage,
+                        Company = offer.Company,
+                        ImageName = offer.ImageName,
+                        CreateDate = offer.CreateDate,
+                        ForMan = offer.ForMan,
+                        LikeCounter = offer.LikeCounter,
+                        ForWoman = offer.ForWoman,
+                        SendingTime = offer.SendingTime,
+                        UpperAgeLimit = offer.UpperAgeLimit,
+                        LowerAgeLimit = offer.LowerAgeLimit,
+                        UserLike = Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)
+                    };
+                }).ToList();
 
-                return offer.DateEnd >= DateTime.UtcNow && DateTime.UtcNow >= offer.DateStart;
-            });
-            var inactiveOffer = offers.Where(offer => offer.DateEnd < DateTime.UtcNow);
+
+            var groups = OfferUtils.GroupByRelevance(offers);
 
             return Ok(
                 new OfferByUserResponse
                 {
-                    preOffer = preOffer,
-                    activeOffer = activeOffer,
-                    inactiveOffer = inactiveOffer
+                    preOffer = groups.preOffer,
+                    activeOffer = groups.activeOffer,
+                    inactiveOffer = groups.inactiveOffer
                 }
             );
         }

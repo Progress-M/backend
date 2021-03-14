@@ -160,31 +160,44 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {id}");
             }
 
-            var offers = (await Context.Offer
+            var offers = Context.Offer
                 .Include(offer => offer.Company)
                 .ThenInclude(company => company.ProductCategory)
                 .Where(offer => offer.Company.Id == id)
                 .OrderByDescending(it => it.CreateDate)
-                .ToListAsync());
-
-            var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
-            var activeOffer = offers.Where(offer =>
-            {
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && offer.DateStart.DayOfYear == DateTime.UtcNow.DayOfYear)
+                .ToList()
+                .Select(offer =>
                 {
-                    return true;
-                }
+                    return new OfferResponse
+                    {
+                        Id = offer.Id,
+                        Text = offer.Text,
+                        DateStart = offer.DateStart,
+                        DateEnd = offer.DateEnd,
+                        TimeStart = offer.TimeStart,
+                        TimeEnd = offer.TimeEnd,
+                        Percentage = offer.Percentage,
+                        Company = offer.Company,
+                        ImageName = offer.ImageName,
+                        CreateDate = offer.CreateDate,
+                        ForMan = offer.ForMan,
+                        LikeCounter = offer.LikeCounter,
+                        ForWoman = offer.ForWoman,
+                        SendingTime = offer.SendingTime,
+                        UpperAgeLimit = offer.UpperAgeLimit,
+                        LowerAgeLimit = offer.LowerAgeLimit,
+                        UserLike = false
+                    };
+                }).ToList();
 
-                return offer.DateEnd >= DateTime.UtcNow && DateTime.UtcNow >= offer.DateStart;
-            });
-            var inactiveOffer = offers.Where(offer => offer.DateEnd < DateTime.UtcNow);
+            var groups = OfferUtils.GroupByRelevance(offers);
 
             return Ok(
                 new OfferByUserResponse
                 {
-                    preOffer = preOffer,
-                    activeOffer = activeOffer,
-                    inactiveOffer = inactiveOffer
+                    preOffer = groups.preOffer,
+                    activeOffer = groups.activeOffer,
+                    inactiveOffer = groups.inactiveOffer
                 }
             );
         }

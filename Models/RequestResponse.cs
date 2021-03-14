@@ -19,10 +19,10 @@ namespace Main.Models
 
     public class OfferByUserResponse
     {
-        public IEnumerable<Offer> preOffer { get; set; }
-        public IEnumerable<Offer> activeOffer { get; set; }
-        public IEnumerable<Offer> nearbyOffer { get; set; }
-        public IEnumerable<Offer> inactiveOffer { get; set; }
+        public IEnumerable<OfferResponse> preOffer { get; set; }
+        public IEnumerable<OfferResponse> activeOffer { get; set; }
+        public IEnumerable<OfferResponse> nearbyOffer { get; set; }
+        public IEnumerable<OfferResponse> inactiveOffer { get; set; }
 
     }
     public class CreateCompanyResponse
