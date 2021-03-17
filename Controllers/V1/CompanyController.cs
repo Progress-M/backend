@@ -196,7 +196,7 @@ namespace Main.Controllers
                 new OfferByUserResponse
                 {
                     preOffer = groups.preOffer,
-                    activeOffer = groups.activeOffer,
+                    activeOffer = groups.preOffer.Concat(groups.activeOffer),
                     inactiveOffer = groups.inactiveOffer
                 }
             );
