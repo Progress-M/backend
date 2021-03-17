@@ -65,7 +65,7 @@ namespace Main.Controllers
             return Ok(new
             {
                 chats = groups,
-                lastId = messages?.Last()?.Id
+                lastId = messages.Any() ? messages?.Last()?.Id : null
             });
         }
 
@@ -103,7 +103,7 @@ namespace Main.Controllers
                         };
                     })
                     .OrderByDescending(messages => messages.dateTime);
-            
+
             return Ok(new
             {
                 chats = groups,

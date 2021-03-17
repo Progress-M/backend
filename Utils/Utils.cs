@@ -124,7 +124,8 @@ namespace Main.Function
             {
                 app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
                 contents = new { en = "English Message", ru = message },
-                headings = new { en = "Bdobr", ru = "Будьдобр" },
+                android_group = "BDOBR",
+                android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
                 channel_for_external_user_ids = "push",
                 included_segments = new string[] { "Subscribed Users" }
             };
@@ -172,7 +173,8 @@ namespace Main.Function
                 app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
                 url = "bdobr.ru",
                 contents = new { en = message, ru = message },
-                headings = new { en = "Bdobr", ru = "Будьдобр" },
+                android_group = "BDOBR",
+                android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
                 channel_for_external_user_ids = "push",
                 include_player_ids = favorites
             };

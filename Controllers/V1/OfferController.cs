@@ -12,6 +12,7 @@ using Main.Function;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using Main.Models;
 
 namespace Main.Controllers
 {
@@ -52,19 +53,45 @@ namespace Main.Controllers
 
         [HttpGet("top")]
         [Produces("application/json")]
-        public async Task<ActionResult> GetOfferTop()
+        public ActionResult GetOfferTop()
         {
             var RESULT_LIMIT = 3;
-            var item = await Context.Offer
+            var offers = Context.Offer
                 .AsNoTracking()
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
                .Where(offer => offer.LikeCounter > 0)
                .OrderByDescending(offer => offer.LikeCounter)
-               .Take(RESULT_LIMIT)
-               .ToListAsync();
+               .ToList()
+                .Select(offer =>
+                {
+                    return new OfferResponse
+                    {
+                        Id = offer.Id,
+                        Text = offer.Text,
+                        DateStart = offer.DateStart,
+                        DateEnd = offer.DateEnd,
+                        TimeStart = offer.TimeStart,
+                        TimeEnd = offer.TimeEnd,
+                        Percentage = offer.Percentage,
+                        Company = offer.Company,
+                        ImageName = offer.ImageName,
+                        CreateDate = offer.CreateDate,
+                        ForMan = offer.ForMan,
+                        LikeCounter = offer.LikeCounter,
+                        ForWoman = offer.ForWoman,
+                        SendingTime = offer.SendingTime,
+                        UpperAgeLimit = offer.UpperAgeLimit,
+                        LowerAgeLimit = offer.LowerAgeLimit,
+                        UserLike = false
+                    };
+                }).ToList();
 
-            return Ok(item);
+            var items = OfferUtils.GroupByRelevance(offers).activeOffer
+               .Take(RESULT_LIMIT)
+               .ToList();
+
+            return Ok(items);
         }
 
         [HttpGet]
