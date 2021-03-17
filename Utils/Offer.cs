@@ -25,7 +25,7 @@ namespace Main.Function
                     return true;
                 }
 
-                return offer.DateEnd >= DateTime.UtcNow && DateTime.UtcNow >= offer.DateStart;
+                return offer.DateEnd >= DateTime.UtcNow;
             });
             var inactiveOffer = offers.Where(offer =>
             {
