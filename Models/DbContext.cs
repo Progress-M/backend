@@ -70,7 +70,7 @@ namespace Main.PostgreSQL
         public int Id { get; set; }
         public string Name { get; set; }
         public int AgeLimit { get; set; } = 0;
-        public int ImageId { get; set; }
+        public int? ImageId { get; set; }
         public virtual FileData Image { get; set; }
     }
 
@@ -111,7 +111,7 @@ namespace Main.PostgreSQL
         public bool EmailConfirmed { get; set; }
         public string PlayerId { get; set; }
         public ProductCategory ProductCategory { get; set; }
-        public int ImageId { get; set; }
+        public int? ImageId { get; set; }
         public virtual FileData Image { get; set; }
     }
 
@@ -146,7 +146,7 @@ namespace Main.PostgreSQL
         public DateTime TimeStart { get; set; }
         public DateTime TimeEnd { get; set; }
         public Company Company { get; set; }
-        public int ImageId { get; set; }
+        public int? ImageId { get; set; }
         public virtual FileData Image { get; set; }
         public int Percentage { get; set; }
         public bool ForMan { get; set; }
@@ -176,7 +176,7 @@ namespace Main.PostgreSQL
         public double Longitude { get; set; }
         public DateTime BirthYear { get; set; }
         public string PlayerId { get; set; }
-        public int ImageId { get; set; }
+        public int? ImageId { get; set; }
         public virtual FileData Image { get; set; }
     }
 
