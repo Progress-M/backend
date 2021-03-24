@@ -61,7 +61,20 @@ namespace Main.Controllers
             Context.ProductCategory.Add(category);
             await Context.SaveChangesAsync();
 
-            category.ImageName = await Utils.saveFile(request.image, $"{subfolder}", category.Id);
+            if (request.image != null)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    request.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    category.Image = file;
+                    await Context.SaveChangesAsync();
+                }
+            }
 
             return Ok(category);
         }
@@ -80,8 +93,21 @@ namespace Main.Controllers
 
             if (request.image != null)
             {
-                Utils.deleteFile($"{subfolder}", category.ImageName);
-                category.ImageName = await Utils.saveFile(request.image, $"{subfolder}", category.Id);
+                if (category.Image != null)
+                {
+                    Context.Files.Remove(category.Image);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    request.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    category.Image = file;
+                    await Context.SaveChangesAsync();
+                }
             }
 
             await Context.SaveChangesAsync();
@@ -92,22 +118,15 @@ namespace Main.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> GetImage(int id)
         {
-            var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == id);
+            var category = await Context.ProductCategory
+                .Include(c => c.Image)
+                .SingleOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
             {
                 return NotFound($"Not found category with id = {id}");
             }
 
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                .Replace(Utils.subfolder, "");
-
-            if (!System.IO.File.Exists($"{filePath}{subfolder}{category.ImageName}"))
-            {
-                return NotFound($"Not found file with name = '{category.ImageName}'");
-            }
-
-            var stream = System.IO.File.OpenRead($"{filePath}{subfolder}{category.ImageName}");
-            return new FileStreamResult(stream, "image/jpeg");
+            return File(category.Image.bytes, "image/png");
         }
 
         [HttpPut("{id}/image")]
@@ -120,9 +139,24 @@ namespace Main.Controllers
                 return NotFound($"Not found category with id = {id}");
             }
 
-            Utils.deleteFile($"{subfolder}", category.ImageName);
-            category.ImageName = await Utils.saveFile(imageRequest.image, $"{subfolder}", category.Id);
-            await Context.SaveChangesAsync();
+            if (imageRequest.image != null)
+            {
+                if (category.Image != null)
+                {
+                    Context.Files.Remove(category.Image);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    imageRequest.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    category.Image = file;
+                    await Context.SaveChangesAsync();
+                }
+            }
 
             return Ok();
         }
