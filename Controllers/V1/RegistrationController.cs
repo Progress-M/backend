@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Main.Function;
+using Main.Models;
 
 namespace Main.Controllers
 {
@@ -28,7 +29,7 @@ namespace Main.Controllers
 
         [HttpPost("email-acceptance")]
         [Produces("application/json")]
-        public async Task<ActionResult> UserAcceptance(UserAcceptance acceptance)
+        public async Task<ActionResult> UserAcceptance(EmailAcceptance acceptance)
         {
             var ue = await Context.EmailCode
                 .SingleOrDefaultAsync(ue => ue.email == acceptance.email);
@@ -43,6 +44,19 @@ namespace Main.Controllers
                 return BadRequest($"Incorrect code");
             }
 
+            var company = await Context.Company
+               .SingleOrDefaultAsync(c => c.Email == acceptance.email);
+
+            if (company == null)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    status = ErrorStatus.SignUpError,
+                    message = $"company with email = '{acceptance.email}' not found"
+                });
+            }
+
+            company.EmailConfirmed = true;
             Context.EmailCode.Remove(ue);
             await Context.SaveChangesAsync();
 
@@ -52,7 +66,7 @@ namespace Main.Controllers
 
         [HttpPost("email-confirmation")]
         [Produces("application/json")]
-        public async Task<ActionResult> EmailСonfirmation(EmailСonfirmation сonfirmation)
+        public async Task<ActionResult> EmailСonfirmation(EmailRequest сonfirmation)
         {
             var code = Utils.RandomCode();
             MimeMessage message = Utils.BuildMessageСonfirmation(сonfirmation.email, code);

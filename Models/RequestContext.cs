@@ -20,15 +20,21 @@ namespace Main.PostgreSQL
         public IFormFile image { get; set; }
     }
 
-    public class UserAcceptance
+    public class EmailAcceptance
     {
         public string email { get; set; }
         public string code { get; set; }
     }
 
-    public class EmailСonfirmation
+    public class EmailRequest
     {
         public string email { get; set; }
+    }
+    public class PasswordRestoreRequest
+    {
+        public string email { get; set; }
+        public string password { get; set; }
+        public string code { get; set; }
     }
 
     public class ProductCategoryRequest
