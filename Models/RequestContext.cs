@@ -34,6 +34,7 @@ namespace Main.PostgreSQL
     public class ProductCategoryRequest
     {
         public string name { get; set; }
+        public int ageLimit { get; set; } = 0;
         public IFormFile image { get; set; }
     }
 

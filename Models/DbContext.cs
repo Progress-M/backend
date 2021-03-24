@@ -63,11 +63,13 @@ namespace Main.PostgreSQL
         public ProductCategory(ProductCategoryRequest request)
         {
             Name = request.name;
+            AgeLimit = request.ageLimit;
         }
 
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
+        public int AgeLimit { get; set; } = 0;
         public int ImageId { get; set; }
         public virtual FileData Image { get; set; }
     }
