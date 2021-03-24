@@ -131,7 +131,7 @@ namespace Main.Controllers
             }
 
             company.EmailConfirmed = true;
-            company.Password = request.password;
+            company.Password = request.newPassword;
             Context.EmailCode.Remove(ue);
             await Context.SaveChangesAsync();
 
