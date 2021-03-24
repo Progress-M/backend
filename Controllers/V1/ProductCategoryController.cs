@@ -4,10 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
-using Main.Function;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
-using System.Reflection;
 
 namespace Main.Controllers
 {
@@ -18,7 +16,6 @@ namespace Main.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class ProductCategoryController : Controller
     {
-        readonly string subfolder = @"/image/product-category/";
         readonly KindContext Context;
         readonly ILogger<ProductCategory> _logger;
 
@@ -58,8 +55,6 @@ namespace Main.Controllers
         public async Task<ActionResult> CreateProductCategory([FromForm] ProductCategoryRequest request)
         {
             var category = new ProductCategory(request);
-            Context.ProductCategory.Add(category);
-            await Context.SaveChangesAsync();
 
             if (request.image != null)
             {
@@ -75,6 +70,8 @@ namespace Main.Controllers
                     await Context.SaveChangesAsync();
                 }
             }
+            Context.ProductCategory.Add(category);
+            await Context.SaveChangesAsync();
 
             return Ok(category);
         }

@@ -7,7 +7,6 @@ using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 
 using System.IO;
-using System.Reflection;
 using Main.Function;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +23,6 @@ namespace Main.Controllers
     public class OfferController : Controller
     {
         readonly KindContext Context;
-        readonly string subfolder = @"/image/offer/";
         readonly ILogger<OfferController> _logger;
 
         public OfferController(KindContext KindContext, ILogger<OfferController> logger)
@@ -193,6 +191,29 @@ namespace Main.Controllers
                 return NotFound($"Not found comapny with id = {offerRequest.companyId}");
             }
 
+            var offerByCompany = Context.Offer
+                .AsNoTracking()
+                .Include(o => o.Company)
+                .OrderByDescending(o => o.CreateDate)
+                .FirstOrDefault();
+
+            if (offerByCompany != null)
+            {
+                double durationSeconds = DateTime.UtcNow.Subtract(offerByCompany.CreateDate).TotalSeconds;
+                TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
+                if (seconds.TotalHours < 24)
+                {
+                    TimeSpan diffTimeSpan = TimeSpan.FromHours(24).Subtract(seconds);
+                    string duration = String.Format(@"{0}:{1:mm\:ss\:fff}", diffTimeSpan.Days * 24.0 + diffTimeSpan.Hours, diffTimeSpan);
+                    return NotFound(new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferTimeError,
+                        message = $"\"{company.NameOfficial}\"-company already created offer in last 24 hours. " +
+                        $"There are {duration} left until the next opportunity to create offer."
+                    });
+                }
+            }
+
             var favoriteCompanies = await Context.FavoriteCompany
                  .Include(fc => fc.Company)
                  .Include(fc => fc.User)
@@ -200,8 +221,6 @@ namespace Main.Controllers
                  .ToListAsync();
 
             var offer = new Offer(offerRequest, company);
-            await Context.Offer.AddAsync(offer);
-            await Context.SaveChangesAsync();
 
             if (offerRequest.image != null)
             {
@@ -214,9 +233,11 @@ namespace Main.Controllers
                     await Context.SaveChangesAsync();
 
                     offer.Image = file;
-                    await Context.SaveChangesAsync();
                 }
             }
+
+            await Context.Offer.AddAsync(offer);
+            await Context.SaveChangesAsync();
 
             favoriteCompanies.ForEach(fc => Context.Stories.Add(new Stories { User = fc.User, Offer = offer }));
             await Context.SaveChangesAsync();

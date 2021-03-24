@@ -290,7 +290,6 @@ namespace Main.Controllers
                     await Context.SaveChangesAsync();
 
                     item.Image = file;
-                    await Context.SaveChangesAsync();
                 }
             }
 

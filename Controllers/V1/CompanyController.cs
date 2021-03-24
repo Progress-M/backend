@@ -7,27 +7,24 @@ using Microsoft.AspNetCore.Cors;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Main.Function;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
 using Main.Models;
 using Main.PostgreSQL;
-using System;
 
 namespace Main.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
     [EnableCors("OpenPolicy")]
-    // [Authorize(Policy = "ValidAccessToken")]
+    [Authorize(Policy = "ValidAccessToken")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class CompanyController : Controller
     {
         readonly KindContext Context;
         readonly ILogger<CompanyController> _logger;
-        readonly string subfolder = @"/image/company/";
         public IConfiguration Configuration { get; }
 
         public CompanyController(KindContext KindContext, ILogger<CompanyController> logger, IConfiguration configuration)
@@ -257,8 +254,6 @@ namespace Main.Controllers
             }
 
             var company = new Company(companyRequest, productCategory);
-            Context.Company.Add(company);
-            await Context.SaveChangesAsync();
 
             if (companyRequest.image != null)
             {
@@ -269,11 +264,11 @@ namespace Main.Controllers
                     var file = new FileData { bytes = ms.ToArray() };
                     Context.Files.Add(file);
                     await Context.SaveChangesAsync();
-
                     company.Image = file;
-                    await Context.SaveChangesAsync();
                 }
             }
+            Context.Company.Add(company);
+            await Context.SaveChangesAsync();
 
             return Ok(
                 new CreateCompanyResponse
