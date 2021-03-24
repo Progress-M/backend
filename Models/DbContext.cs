@@ -43,6 +43,14 @@ namespace Main.PostgreSQL
         public DbSet<LikedOffer> LikedOffer { get; set; }
         public DbSet<FavoriteCompany> FavoriteCompany { get; set; }
         public DbSet<Stories> Stories { get; set; }
+        public DbSet<FileData> Files { get; set; }
+    }
+
+    public class FileData
+    {
+        [Key]
+        public int Id { get; set; }
+        public byte[] bytes { get; set; }
     }
 
     public class ProductCategory
@@ -75,7 +83,6 @@ namespace Main.PostgreSQL
             TimeOfWork = request.timeOfWork;
             ProductCategory = productCategory;
             EmailConfirmed = false;
-            AvatarName = "";
             PlayerId = request.playerId;
             Phone = request.phone;
             Latitude = request.Latitude;
@@ -98,7 +105,8 @@ namespace Main.PostgreSQL
         public bool EmailConfirmed { get; set; }
         public string PlayerId { get; set; }
         public ProductCategory ProductCategory { get; set; }
-        public string AvatarName { get; set; }
+        public int ImageId { get; set; }
+        public virtual FileData Image { get; set; }
     }
 
     public class Offer
@@ -113,7 +121,6 @@ namespace Main.PostgreSQL
             TimeEnd = request.timeEnd;
             Percentage = request.percentage;
             Company = company;
-            ImageName = "";
             CreateDate = DateTime.UtcNow;
             ForMan = request.forMan;
             ForWoman = request.forWoman;
@@ -133,7 +140,8 @@ namespace Main.PostgreSQL
         public DateTime TimeStart { get; set; }
         public DateTime TimeEnd { get; set; }
         public Company Company { get; set; }
-        public string ImageName { get; set; }
+        public int ImageId { get; set; }
+        public virtual FileData Image { get; set; }
         public int Percentage { get; set; }
         public bool ForMan { get; set; }
         public bool ForWoman { get; set; }
@@ -151,7 +159,6 @@ namespace Main.PostgreSQL
             Latitude = user.Latitude;
             Longitude = user.Longitude;
             BirthYear = user.BirthYear;
-            AvatarName = "";
             PlayerId = user.playerId;
         }
 
@@ -162,8 +169,9 @@ namespace Main.PostgreSQL
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public DateTime BirthYear { get; set; }
-        public string AvatarName { get; set; }
         public string PlayerId { get; set; }
+        public int ImageId { get; set; }
+        public virtual FileData Image { get; set; }
     }
 
     public class FavoriteCompany

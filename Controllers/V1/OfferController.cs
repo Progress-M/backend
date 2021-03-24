@@ -75,7 +75,6 @@ namespace Main.Controllers
                         TimeEnd = offer.TimeEnd,
                         Percentage = offer.Percentage,
                         Company = offer.Company,
-                        ImageName = offer.ImageName,
                         CreateDate = offer.CreateDate,
                         ForMan = offer.ForMan,
                         LikeCounter = offer.LikeCounter,
@@ -131,6 +130,7 @@ namespace Main.Controllers
         {
             var item = await Context.Offer
                 .AsNoTracking()
+                .Include(o => o.Image)
                 .SingleOrDefaultAsync(offer => offer.Id == id);
 
             if (item == null)
@@ -138,16 +138,12 @@ namespace Main.Controllers
                 return NotFound($"Not found offer with id = {id}");
             }
 
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                .Replace(Utils.subfolder, "");
-
-            if (!System.IO.File.Exists($"{filePath}{subfolder}{item.ImageName}"))
+            if (item.Image == null)
             {
-                return NotFound($"Not found file with name = '{item.ImageName}'");
+                return NotFound($"Not found offer image with offerId = {id}");
             }
 
-            var stream = System.IO.File.OpenRead($"{filePath}{subfolder}{item.ImageName}");
-            return new FileStreamResult(stream, "image/jpeg");
+            return File(item.Image.bytes, "image/png");
         }
 
         [HttpPut("{id}/image")]
@@ -155,6 +151,7 @@ namespace Main.Controllers
         public async Task<ActionResult> UpdateOfferImage(int id, [FromForm] ImageRequest imageRequest)
         {
             var item = await Context.Offer
+                .Include(o => o.Image)
                 .SingleOrDefaultAsync(offer => offer.Id == id);
 
             if (item == null)
@@ -162,10 +159,24 @@ namespace Main.Controllers
                 return NotFound($"Not found offer with id = {id}");
             }
 
-            Utils.deleteFile($"{subfolder}", item.ImageName);
-            item.ImageName = await Utils.saveFile(imageRequest.image, $"{subfolder}", item.Id);
-            Console.WriteLine(item.ImageName);
-            await Context.SaveChangesAsync();
+            if (imageRequest.image != null)
+            {
+                if (item.Image != null)
+                {
+                    Context.Files.Remove(item.Image);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    imageRequest.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    item.Image = file;
+                    await Context.SaveChangesAsync();
+                }
+            }
 
             return Ok();
         }
@@ -194,7 +205,17 @@ namespace Main.Controllers
 
             if (offerRequest.image != null)
             {
-                offer.ImageName = await Utils.saveFile(offerRequest.image, $"{subfolder}", offer.Id);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    offerRequest.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    offer.Image = file;
+                    await Context.SaveChangesAsync();
+                }
             }
 
             favoriteCompanies.ForEach(fc => Context.Stories.Add(new Stories { User = fc.User, Offer = offer }));

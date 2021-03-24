@@ -115,21 +115,17 @@ namespace Main.Controllers
                 return NotFound($"Not found company with id = {id}");
             }
 
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                .Replace(Utils.subfolder, "");
-
-            if (!System.IO.File.Exists($"{filePath}{subfolder}{item.AvatarName}"))
+            if (item.Image == null)
             {
-                return NotFound($"Not found file with name = '{item.AvatarName}'");
+                return NotFound($"Not found company image with companyId = {id}");
             }
 
-            var stream = System.IO.File.OpenRead($"{filePath}{subfolder}{item.AvatarName}");
-            return new FileStreamResult(stream, "image/jpeg");
+            return File(item.Image.bytes, "image/png");
         }
 
         [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
-        public async Task<ActionResult> UpdateCompanyAvatar(int id, [FromForm] ImageRequest companyRequest)
+        public async Task<ActionResult> UpdateCompanyAvatar(int id, [FromForm] ImageRequest imageRequest)
         {
             var company = await Context.Company
                 .SingleOrDefaultAsync(company => company.Id == id);
@@ -139,10 +135,24 @@ namespace Main.Controllers
                 return NotFound($"Not found company with id = {id}");
             }
 
-            Utils.deleteFile(@"{subfolder}", company.AvatarName);
-            company.AvatarName = await Utils.saveFile(companyRequest.image, $"{subfolder}", company.Id);
-            Console.WriteLine(company.AvatarName);
-            await Context.SaveChangesAsync();
+            if (imageRequest.image != null)
+            {
+                if (company.Image != null)
+                {
+                    Context.Files.Remove(company.Image);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    imageRequest.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    company.Image = file;
+                    await Context.SaveChangesAsync();
+                }
+            }
 
             return Ok();
         }
@@ -178,7 +188,6 @@ namespace Main.Controllers
                         TimeEnd = offer.TimeEnd,
                         Percentage = offer.Percentage,
                         Company = offer.Company,
-                        ImageName = offer.ImageName,
                         CreateDate = offer.CreateDate,
                         ForMan = offer.ForMan,
                         LikeCounter = offer.LikeCounter,
@@ -251,9 +260,20 @@ namespace Main.Controllers
             Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
-            company.AvatarName = await Utils.saveFile(companyRequest.image, $"{subfolder}", company.Id);
-            await Context.SaveChangesAsync();
+            if (companyRequest.image != null)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    companyRequest.image.CopyTo(ms);
 
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    company.Image = file;
+                    await Context.SaveChangesAsync();
+                }
+            }
 
             return Ok(
                 new CreateCompanyResponse
@@ -296,8 +316,21 @@ namespace Main.Controllers
 
             if (company.image != null)
             {
-                Utils.deleteFile($"{subfolder}", aliveCompany.AvatarName);
-                aliveCompany.AvatarName = await Utils.saveFile(company.image, $"{subfolder}", aliveCompany.Id);
+                if (aliveCompany.Image != null)
+                {
+                    Context.Files.Remove(aliveCompany.Image);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    company.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    aliveCompany.Image = file;
+                    await Context.SaveChangesAsync();
+                }
             }
 
             await Context.SaveChangesAsync();

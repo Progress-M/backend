@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Cors;
 
 using System.Linq;
 using System.IO;
-using System.Reflection;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using Main.Models;
@@ -27,7 +25,6 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<UserController> _logger;
-        readonly string subfolder = @"/image/user/";
         public IConfiguration Configuration { get; }
 
         public UserController(KindContext KindContext, ILogger<UserController> logger, IConfiguration configuration)
@@ -95,7 +92,6 @@ namespace Main.Controllers
                         TimeEnd = offer.TimeEnd,
                         Percentage = offer.Percentage,
                         Company = offer.Company,
-                        ImageName = offer.ImageName,
                         CreateDate = offer.CreateDate,
                         ForMan = offer.ForMan,
                         LikeCounter = offer.LikeCounter,
@@ -157,7 +153,6 @@ namespace Main.Controllers
                         TimeEnd = offer.TimeEnd,
                         Percentage = offer.Percentage,
                         Company = offer.Company,
-                        ImageName = offer.ImageName,
                         CreateDate = offer.CreateDate,
                         ForMan = offer.ForMan,
                         LikeCounter = offer.LikeCounter,
@@ -195,6 +190,7 @@ namespace Main.Controllers
         {
             var item = await Context.User
                 .AsNoTracking()
+                .Include(u => u.Image)
                 .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
@@ -202,16 +198,12 @@ namespace Main.Controllers
                 return NotFound($"Not found user with id = {id}");
             }
 
-            var filePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                .Replace(Utils.subfolder, "");
-
-            if (!System.IO.File.Exists(@$"{filePath}{subfolder}{item.AvatarName}"))
+            if (item.Image == null)
             {
-                return NotFound($"Not found file with name = '{item.AvatarName}'");
+                return NotFound($"Not found user image with userId = {id}");
             }
 
-            var stream = System.IO.File.OpenRead(@$"{filePath}{subfolder}{item.AvatarName}");
-            return new FileStreamResult(stream, "image/jpeg");
+            return File(item.Image.bytes, "image/png");
         }
 
         [HttpGet("{id}/stories")]
@@ -287,17 +279,22 @@ namespace Main.Controllers
             }
 
             var item = new User(user);
-            Context.User.Add(item);
-            await Context.SaveChangesAsync();
-
             if (user.image != null)
             {
-                item.AvatarName = await Utils.saveFile(user.image, $"{subfolder}", item.Id);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    user.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    item.Image = file;
+                    await Context.SaveChangesAsync();
+                }
             }
-            else
-            {
-                item.AvatarName = "";
-            }
+
+            Context.User.Add(item);
             await Context.SaveChangesAsync();
 
             return Ok(
@@ -340,21 +337,34 @@ namespace Main.Controllers
 
         [HttpPut("{id}/image")]
         [DisableRequestSizeLimit]
-        public async Task<ActionResult> UserImageUpdate(int id, [FromForm] UserImageRequest oldUser)
+        public async Task<ActionResult> UserImageUpdate(int id, [FromForm] UserImageRequest newUser)
         {
             var item = await Context.User
-              .SingleOrDefaultAsync(user => user.Id == id);
+                .Include(u => u.Image)
+                .SingleOrDefaultAsync(user => user.Id == id);
 
             if (item == null)
             {
                 return NotFound($"Not found user with id = {id}");
             }
 
-            Utils.deleteFile($"{subfolder}", item.AvatarName);
-            if (oldUser.image != null)
+            if (newUser.image != null)
             {
-                item.AvatarName = await Utils.saveFile(oldUser.image, subfolder, item.Id);
-                await Context.SaveChangesAsync();
+                if (item.Image != null)
+                {
+                    Context.Files.Remove(item.Image);
+                }
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    newUser.image.CopyTo(ms);
+
+                    var file = new FileData { bytes = ms.ToArray() };
+                    Context.Files.Add(file);
+                    await Context.SaveChangesAsync();
+
+                    item.Image = file;
+                    await Context.SaveChangesAsync();
+                }
             }
 
             return Ok(item);
