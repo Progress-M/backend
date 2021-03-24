@@ -28,8 +28,12 @@ namespace Main.PostgreSQL
                 .IsUnique(true);
 
             modelBuilder.Entity<Company>()
-               .HasIndex(p => new { p.INN })
-               .IsUnique(true);
+                .HasIndex(p => new { p.PlayerId })
+                .IsUnique(true);
+
+            modelBuilder.Entity<Company>()
+               .HasIndex(p => new { p.INN, p.Address })
+               .IsUnique();
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
