@@ -3,8 +3,9 @@ WORKDIR /app
 
 EXPOSE 80
 
+RUN mkdir /EmailTemplates/
 COPY EmailTemplates/ /EmailTemplates/
-RUN ls -la /
+
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
