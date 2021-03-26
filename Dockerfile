@@ -3,7 +3,7 @@ WORKDIR /app
 
 EXPOSE 80
 
-ADD EmailTemplates/ /EmailTemplates/
+ADD EmailTemplates/ /app/EmailTemplates/
 
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
