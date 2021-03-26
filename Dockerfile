@@ -7,7 +7,6 @@ ADD EmailTemplates/ /app/EmailTemplates/
 
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
-COPY confirm.html ./
 RUN dotnet restore
 
 # Copy everything else and build
