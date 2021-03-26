@@ -3,11 +3,11 @@ WORKDIR /app
 
 EXPOSE 80
 
-RUN mkdir /EmailTemplates/
 ADD EmailTemplates/ /EmailTemplates/
 
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
+COPY confirm.html ./
 RUN dotnet restore
 
 # Copy everything else and build
