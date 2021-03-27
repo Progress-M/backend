@@ -115,7 +115,7 @@ namespace Main.Controllers
 
             double durationSeconds = DateTime.UtcNow.Subtract(ue.createdDateTime).TotalSeconds;
             TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
-            if (seconds.TotalMinutes > 15)
+            if (seconds.TotalMinutes > 2)
             {
                 return BadRequest(
                     new ErrorResponse
