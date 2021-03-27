@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Main.Function;
 using Microsoft.AspNetCore.Authorization;
 using MimeKit;
+using System;
 
 namespace Main.Controllers
 {
@@ -108,6 +109,19 @@ namespace Main.Controllers
                     {
                         status = ErrorStatus.SignInError,
                         message = $"Не найден email = {request.email} или некорректный код."
+                    }
+                );
+            }
+
+            double durationSeconds = DateTime.UtcNow.Subtract(ue.createdDateTime).TotalSeconds;
+            TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
+            if (seconds.TotalMinutes > 15)
+            {
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.SignInError,
+                        message = $"Время жизни кода истекло."
                     }
                 );
             }

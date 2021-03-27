@@ -218,12 +218,16 @@ namespace Main.PostgreSQL
 
     public class EmailCode
     {
-        public EmailCode() { }
+        public EmailCode()
+        {
+            createdDateTime = DateTime.UtcNow;
+        }
 
         [Key]
         public int Id { get; set; }
         public string code { get; set; }
         public string email { get; set; }
+        public DateTime createdDateTime { get; set; }
     }
 
     public class Message

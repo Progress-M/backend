@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Main.Function;
 using Main.Models;
+using System;
 
 namespace Main.Controllers
 {
@@ -41,6 +42,18 @@ namespace Main.Controllers
                     {
                         status = ErrorStatus.RegistrationError,
                         message = $"Не найден email = {acceptance.email} или некорректный код."
+                    }
+                );
+            }
+            double durationSeconds = DateTime.UtcNow.Subtract(ue.createdDateTime).TotalSeconds;
+            TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
+            if (seconds.TotalMinutes > 15)
+            {
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.RegistrationError,
+                        message = $"Время жизни кода истекло."
                     }
                 );
             }
