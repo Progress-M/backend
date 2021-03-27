@@ -11,6 +11,7 @@ namespace Main.Models
         public static string OfferTimeError = "OFFER_TIME_ERROR";
         public static string SignUpError = "SIGN_UP_ERROR";
         public static string SignInError = "SIGN_IN_ERROR";
+        public static string FileError = "FILE_ERROR";
     }
 
     public class ErrorResponse
