@@ -45,10 +45,10 @@ namespace Main.Controllers
             if (item == null || !item.EmailConfirmed)
             {
                 return Unauthorized(
-                    new
+                    new ErrorResponse
                     {
                         status = AuthStatus.Fail,
-                        message = "Authentication failed"
+                        message = $"Такой компании не существует или аккаунт не подтверждён."
                     }
                 );
             }
@@ -75,7 +75,7 @@ namespace Main.Controllers
                     new ErrorResponse
                     {
                         status = ErrorStatus.SignInError,
-                        message = $"Company with email = '{request.email}' not found"
+                        message = $"Компания с email = '{request.email}' не найдена."
                     }
                 );
             }
@@ -101,22 +101,15 @@ namespace Main.Controllers
             var ue = await Context.EmailCode
                   .SingleOrDefaultAsync(ue => ue.email == request.email);
 
-            if (ue == null)
+            if (ue == null || ue.code != request.code)
             {
-                return NotFound(new ErrorResponse
-                {
-                    status = ErrorStatus.SignInError,
-                    message = $"Not found email-confirmation to user with email = {request.email}"
-                });
-            }
-
-            if (ue.code != request.code)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    status = ErrorStatus.SignInError,
-                    message = $"Incorrect code"
-                });
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.SignInError,
+                        message = $"Не найден email = {request.email} или некорректный код."
+                    }
+                );
             }
 
             var company = await Context.Company.SingleOrDefaultAsync(c => c.Email == request.email);
@@ -126,7 +119,7 @@ namespace Main.Controllers
                 return BadRequest(new ErrorResponse
                 {
                     status = ErrorStatus.SignUpError,
-                    message = $"company with email = '{request.email}' not found"
+                    message = $"Компания с email = '{request.email}' не найдена."
                 });
             }
 
@@ -165,10 +158,10 @@ namespace Main.Controllers
             if (item == null || !item.EmailConfirmed)
             {
                 return Unauthorized(
-                    new
+                    new ErrorResponse
                     {
                         status = AuthStatus.Fail,
-                        message = "Authentication failed"
+                        message = $"Компания с playerId = '{playerId}' не существует, либо у неё не подтвежден email."
                     }
                 );
             }
@@ -194,10 +187,10 @@ namespace Main.Controllers
             if (item == null)
             {
                 return Unauthorized(
-                    new
+                    new ErrorResponse
                     {
                         status = AuthStatus.Fail,
-                        message = "Authentication failed"
+                        message = $"Пользователя с playerId = '{playerId}' не существует."
                     }
                 );
             }

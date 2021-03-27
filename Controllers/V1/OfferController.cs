@@ -43,7 +43,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found offer with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найдена акция с id = '{id}'"
+                    }
+                );
             }
 
             return Ok(item);
@@ -133,12 +139,24 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found offer with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найдена акция с id = '{id}'"
+                    }
+                );
             }
 
             if (item.Image == null)
             {
-                return NotFound($"Not found offer image with offerId = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найдена картинка акции с id = '{id}'"
+                    }
+                );
             }
 
             return File(item.Image.bytes, "image/png");
@@ -154,7 +172,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found offer with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найдена акция с id = '{id}'"
+                    }
+                );
             }
 
             if (imageRequest.image != null)
@@ -188,7 +212,13 @@ namespace Main.Controllers
 
             if (company == null)
             {
-                return NotFound($"Not found comapny with id = {offerRequest.companyId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найдена компания с id = '{offerRequest.companyId}'"
+                    }
+                );
             }
 
             var offerByCompany = Context.Offer
@@ -208,8 +238,8 @@ namespace Main.Controllers
                     return NotFound(new ErrorResponse
                     {
                         status = ErrorStatus.OfferTimeError,
-                        message = $"\"{company.NameOfficial}\"-company already created offer in last 24 hours. " +
-                        $"There are {duration} left until the next opportunity to create offer."
+                        message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию за последние 24 часа. " +
+                        $"Осталось {duration} до следующей возможности создать акцию."
                     });
                 }
             }
@@ -255,7 +285,13 @@ namespace Main.Controllers
 
             if (user == null)
             {
-                return NotFound($"Not found user with id = {request.userId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найден пользователь с id = '{request.userId}'"
+                    }
+                );
             }
 
             var offer = await Context.Offer
@@ -263,7 +299,13 @@ namespace Main.Controllers
 
             if (offer == null)
             {
-                return NotFound($"Not found offer with id = {request.offerId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.OfferError,
+                        message = $"Не найдена акция с id = '{request.offerId}'"
+                    }
+                );
             }
 
             Context.LikedOffer.Add(new LikedOffer

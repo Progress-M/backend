@@ -9,6 +9,7 @@ using System.Linq;
 using Main.Function;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using Main.Models;
 
 namespace Main.Controllers
 {
@@ -37,7 +38,13 @@ namespace Main.Controllers
 
             if (user == null)
             {
-                return NotFound($"Not found user with id = {userId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ChatError,
+                        message = $"Не найден пользователь с id = {userId}."
+                    }
+                );
             }
 
             var messages = await Context.Message
@@ -78,7 +85,13 @@ namespace Main.Controllers
 
             if (company == null)
             {
-                return NotFound($"Not found user with id = {companyId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ChatError,
+                        message = $"Не найдена компания с id = {companyId}."
+                    }
+                );
             }
 
             var messages = await Context.Message
@@ -120,7 +133,13 @@ namespace Main.Controllers
 
             if (user == null)
             {
-                return NotFound($"Not found user with id = {userId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ChatError,
+                        message = $"Не найден пользователь с id = {userId}"
+                    }
+                );
             }
 
             var messages = (await Context.Message
@@ -152,7 +171,13 @@ namespace Main.Controllers
 
             if (company == null)
             {
-                return NotFound($"Not found comapny with id = {messageRequest.companyId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ChatError,
+                        message = $"Не найдена компания с id = {messageRequest.companyId}"
+                    }
+                );
             }
 
             var user = await Context.User
@@ -160,7 +185,13 @@ namespace Main.Controllers
 
             if (user == null)
             {
-                return NotFound($"Not found user with id = {messageRequest.userId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ChatError,
+                        message = $"Не найден пользователь с id = {messageRequest.userId}"
+                    }
+                );
             }
 
             var message = new Message(user, company, messageRequest.isUserMessage, messageRequest.text);

@@ -6,6 +6,7 @@ using Main.PostgreSQL;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
+using Main.Models;
 
 namespace Main.Controllers
 {
@@ -36,7 +37,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found product category with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ProductCategoryError,
+                        message = $"Не найдена категория с id = '{id}'"
+                    }
+                );
             }
 
             return Ok(item);
@@ -83,7 +90,13 @@ namespace Main.Controllers
             var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
             {
-                return NotFound($"Not found category with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ProductCategoryError,
+                        message = $"Не найдена категория с id = '{id}'"
+                    }
+                );
             }
 
             category.Name = request.name;
@@ -120,7 +133,13 @@ namespace Main.Controllers
                 .SingleOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
             {
-                return NotFound($"Not found category with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ProductCategoryError,
+                        message = $"Не найдена категория с id = '{id}'"
+                    }
+                );
             }
 
             return File(category.Image.bytes, "image/png");
@@ -133,7 +152,13 @@ namespace Main.Controllers
             var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
             {
-                return NotFound($"Not found category with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.ProductCategoryError,
+                        message = $"Не найдена категория с id = '{id}'"
+                    }
+                );
             }
 
             if (imageRequest.image != null)

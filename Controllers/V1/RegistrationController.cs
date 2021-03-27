@@ -34,14 +34,15 @@ namespace Main.Controllers
             var ue = await Context.EmailCode
                 .SingleOrDefaultAsync(ue => ue.email == acceptance.email);
 
-            if (ue == null)
+            if (ue == null || ue.code != acceptance.code)
             {
-                return NotFound($"Not found email-confirmation to user with email = {acceptance.email}");
-            }
-
-            if (ue.code != acceptance.code)
-            {
-                return BadRequest($"Incorrect code");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.RegistrationError,
+                        message = $"Не найден email = {acceptance.email} или некорректный код."
+                    }
+                );
             }
 
             var company = await Context.Company
@@ -52,7 +53,7 @@ namespace Main.Controllers
                 return BadRequest(new ErrorResponse
                 {
                     status = ErrorStatus.SignUpError,
-                    message = $"company with email = '{acceptance.email}' not found"
+                    message = $"Компания с id = '{acceptance.email}' не найдена"
                 });
             }
 

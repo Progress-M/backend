@@ -45,7 +45,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found comapny with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена компания с id = {id}"
+                    }
+                );
             }
 
             return Ok(item);
@@ -109,12 +115,24 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found company with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена компания с id = {id}"
+                    }
+                );
             }
 
             if (item.Image == null)
             {
-                return NotFound($"Not found company image with companyId = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найден аватар компании с id = {id}"
+                    }
+                );
             }
 
             return File(item.Image.bytes, "image/png");
@@ -129,7 +147,13 @@ namespace Main.Controllers
 
             if (company == null)
             {
-                return NotFound($"Not found company with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена компания с id = {id}"
+                    }
+                );
             }
 
             if (imageRequest.image != null)
@@ -164,7 +188,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found comapny with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена компания с id = {id}"
+                    }
+                );
             }
 
             var offers = Context.Offer
@@ -243,14 +273,26 @@ namespace Main.Controllers
 
             if (exist != null)
             {
-                return BadRequest($"Company with INN = '{companyRequest.inn}' or Email = '{companyRequest.email}' already exist.");
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Комания с ИНН = '{companyRequest.inn}' и/или email = '{companyRequest.email}' уже существует."
+                    }
+                );
             }
 
             var productCategory = await Context.ProductCategory
                 .SingleOrDefaultAsync(cp => cp.Id == companyRequest.productCategoryId);
             if (productCategory == null)
             {
-                return NotFound($"Not found productCategory with id = {companyRequest.productCategoryId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена категория с id = '{companyRequest.productCategoryId}'"
+                    }
+                );
             }
 
             var company = new Company(companyRequest, productCategory);
@@ -287,13 +329,25 @@ namespace Main.Controllers
             var aliveCompany = await Context.Company.SingleOrDefaultAsync(cp => cp.Id == id);
             if (aliveCompany == null)
             {
-                return NotFound($"Not found company with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена компания с id = '{id}'"
+                    }
+                );
             }
 
             var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == company.productCategoryId);
             if (category == null)
             {
-                return NotFound($"Not found category with id = {company.productCategoryId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.CompanyError,
+                        message = $"Не найдена категория с id = '{company.productCategoryId}'"
+                    }
+                );
             }
 
             aliveCompany.INN = company.inn;

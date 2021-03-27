@@ -44,7 +44,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             return Ok(
@@ -65,7 +71,13 @@ namespace Main.Controllers
 
             if (user == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             var age = DateTime.UtcNow.Year - user.BirthYear.Year;
@@ -131,7 +143,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             var favorites = item.ToList();
@@ -195,12 +213,24 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             if (item.Image == null)
             {
-                return NotFound($"Not found user image with userId = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден аватар пользвателя с id = '{id}'"
+                    }
+                );
             }
 
             return File(item.Image.bytes, "image/png");
@@ -215,7 +245,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             var favorites = Context.FavoriteCompany
@@ -249,7 +285,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             Context.Stories.RemoveRange(
@@ -275,7 +317,13 @@ namespace Main.Controllers
 
             if (old != null)
             {
-                return BadRequest($"User with playerId = {old.PlayerId} alreadty exist");
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Пользователь с playerId = '{old.PlayerId}' уже существует"
+                    }
+                );
             }
 
             var item = new User(user);
@@ -316,7 +364,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
             }
 
             item.PlayerId = oldUser.playerId;
@@ -344,7 +398,13 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                    );
             }
 
             if (newUser.image != null)
@@ -378,7 +438,12 @@ namespace Main.Controllers
 
             if (user == null)
             {
-                return NotFound($"Not found user with id = {userId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользватель с id = '{userId}'"
+                    });
             }
 
             var company = await Context.Company
@@ -387,7 +452,13 @@ namespace Main.Controllers
 
             if (company == null)
             {
-                return NotFound($"Not found company with id = {companyId}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найдена компания с id = '{companyId}'"
+                    }
+                );
             }
 
             return Ok(
@@ -416,7 +487,12 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found user with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найден пользователь с id = '{id}'"
+                    });
             }
 
             var favorite = await Context.Company
@@ -424,12 +500,23 @@ namespace Main.Controllers
 
             if (item == null)
             {
-                return NotFound($"Not found company with id = {id}");
+                return NotFound(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Не найдена компания с id = '{favoriteId}'"
+                    });
             }
 
             if (Context.FavoriteCompany.Any(fc => fc.CompanyId == favoriteId && fc.UserId == id))
             {
-                return BadRequest("Already exist");
+                return BadRequest(
+                    new ErrorResponse
+                    {
+                        status = ErrorStatus.UserError,
+                        message = $"Компания с id = '{favoriteId}' уже в избранном у пользователя с id = '{id}'"
+                    }
+                );
             }
 
             Context.FavoriteCompany.Add(new FavoriteCompany { User = item, Company = favorite });
