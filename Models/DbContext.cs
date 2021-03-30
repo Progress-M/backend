@@ -162,8 +162,8 @@ namespace Main.PostgreSQL
         {
             Name = user.Name;
             isMan = user.isMan;
-            Latitude = user.Latitude;
-            Longitude = user.Longitude;
+            Latitude = double.Parse(user.Latitude.Replace('.', ','));
+            Longitude = double.Parse(user.Longitude.Replace('.', ','));
             BirthYear = user.BirthYear;
             PlayerId = user.playerId;
         }

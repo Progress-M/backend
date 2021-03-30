@@ -374,8 +374,8 @@ namespace Main.Controllers
             }
 
             item.PlayerId = oldUser.playerId;
-            item.Latitude = oldUser.Latitude;
-            item.Longitude = oldUser.Longitude;
+            item.Latitude = double.Parse(oldUser.Latitude.Replace('.', ','));
+            item.Longitude = double.Parse(oldUser.Longitude.Replace('.', ','));
             item.Name = oldUser.Name;
             item.isMan = oldUser.isMan;
             item.BirthYear = oldUser.BirthYear;
