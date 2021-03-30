@@ -10,6 +10,7 @@ using System.Linq;
 using Main.Function;
 using Main.Models;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace Main.Controllers
 {
@@ -21,11 +22,13 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<AuthController> _logger;
+        readonly IConfiguration _configuration;
 
-        public RegistrationController(KindContext KindContext, ILogger<AuthController> logger)
+        public RegistrationController(KindContext KindContext, ILogger<AuthController> logger, IConfiguration Configuration)
         {
             Context = KindContext;
             _logger = logger;
+            _configuration = Configuration;
         }
 
         [HttpPost("email-acceptance")]
@@ -47,7 +50,8 @@ namespace Main.Controllers
             }
             double durationSeconds = DateTime.UtcNow.Subtract(ue.createdDateTime).TotalSeconds;
             TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
-            if (seconds.TotalMinutes > 2)
+            var EmailCodeTimeLife = Int32.Parse(_configuration["EmailCodeTimeLife"]);
+            if (seconds.TotalMinutes > EmailCodeTimeLife)
             {
                 return BadRequest(
                     new ErrorResponse
@@ -58,19 +62,6 @@ namespace Main.Controllers
                 );
             }
 
-            var company = await Context.Company
-               .SingleOrDefaultAsync(c => c.Email == acceptance.email);
-
-            if (company == null)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    status = ErrorStatus.SignUpError,
-                    message = $"Компания с id = '{acceptance.email}' не найдена"
-                });
-            }
-
-            company.EmailConfirmed = true;
             Context.EmailCode.Remove(ue);
             await Context.SaveChangesAsync();
 

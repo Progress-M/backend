@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 using Main.Models;
 using Main.PostgreSQL;
+using System;
 
 namespace Main.Controllers
 {
@@ -111,6 +112,7 @@ namespace Main.Controllers
         {
             var item = await Context.Company
                 .AsNoTracking()
+                .Include(c => c.Image)
                 .SingleOrDefaultAsync(company => company.Id == id);
 
             if (item == null)
@@ -143,6 +145,7 @@ namespace Main.Controllers
         public async Task<ActionResult> UpdateCompanyAvatar(int id, [FromForm] ImageRequest imageRequest)
         {
             var company = await Context.Company
+                .Include(c => c.Image)
                 .SingleOrDefaultAsync(company => company.Id == id);
 
             if (company == null)
@@ -296,6 +299,7 @@ namespace Main.Controllers
             }
 
             var company = new Company(companyRequest, productCategory);
+            company.EmailConfirmed = true;
 
             if (companyRequest.image != null)
             {
@@ -360,8 +364,8 @@ namespace Main.Controllers
             aliveCompany.TimeOfWork = company.timeOfWork;
             aliveCompany.PlayerId = company.playerId;
             aliveCompany.ProductCategory = category;
-            aliveCompany.Latitude = company.Latitude;
-            aliveCompany.Longitude = company.Longitude;
+            aliveCompany.Latitude = double.Parse(company.Latitude.Replace('.', ','));
+            aliveCompany.Longitude = double.Parse(company.Longitude.Replace('.', ','));
 
             if (company.image != null)
             {

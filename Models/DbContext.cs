@@ -91,8 +91,8 @@ namespace Main.PostgreSQL
             EmailConfirmed = false;
             PlayerId = request.playerId;
             Phone = request.phone;
-            Latitude = request.Latitude;
-            Longitude = request.Longitude;
+            Latitude = double.Parse(request.Latitude.Replace('.', ','));
+            Longitude = double.Parse(request.Longitude.Replace('.', ','));
         }
 
         [Key]

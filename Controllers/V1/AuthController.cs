@@ -22,14 +22,14 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<User> _logger;
+        public IConfiguration _configuration { get; }
 
-        public AuthController(KindContext KindContext, ILogger<User> logger, IConfiguration configuration)
+        public AuthController(KindContext KindContext, ILogger<User> logger, IConfiguration Configuration)
         {
             Context = KindContext;
             _logger = logger;
-            Configuration = configuration;
+            _configuration = Configuration;
         }
-        public IConfiguration Configuration { get; }
 
         [HttpPost("company")]
         public async Task<IActionResult> AccessToken(AuthRequest auth)
@@ -60,7 +60,7 @@ namespace Main.Controllers
                 {
                     status = AuthStatus.Success,
                     company = item,
-                    access_token = Auth.generateToken(Configuration),
+                    access_token = Auth.generateToken(_configuration),
                     token_type = "bearer"
                 });
         }
@@ -115,7 +115,8 @@ namespace Main.Controllers
 
             double durationSeconds = DateTime.UtcNow.Subtract(ue.createdDateTime).TotalSeconds;
             TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
-            if (seconds.TotalMinutes > 2)
+            var EmailCodeTimeLife = Int32.Parse(_configuration["EmailCodeTimeLife"]);
+            if (seconds.TotalMinutes > EmailCodeTimeLife)
             {
                 return BadRequest(
                     new ErrorResponse
@@ -153,7 +154,7 @@ namespace Main.Controllers
                 new
                 {
                     status = AuthStatus.Success,
-                    access_token = Auth.generateToken(Configuration),
+                    access_token = Auth.generateToken(_configuration),
                     token_type = "bearer"
                 });
         }
@@ -186,7 +187,7 @@ namespace Main.Controllers
                 {
                     status = AuthStatus.Success,
                     company = item,
-                    access_token = Auth.generateToken(Configuration),
+                    access_token = Auth.generateToken(_configuration),
                     token_type = "bearer"
                 });
         }
@@ -215,7 +216,7 @@ namespace Main.Controllers
                 {
                     status = AuthStatus.Success,
                     user = item,
-                    access_token = Auth.generateToken(Configuration),
+                    access_token = Auth.generateToken(_configuration),
                     token_type = "bearer"
                 });
         }
