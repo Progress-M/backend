@@ -364,8 +364,8 @@ namespace Main.Controllers
             aliveCompany.TimeOfWork = company.timeOfWork;
             aliveCompany.PlayerId = company.playerId;
             aliveCompany.ProductCategory = category;
-            aliveCompany.Latitude = double.Parse(company.Latitude.Replace('.', ','));
-            aliveCompany.Longitude = double.Parse(company.Longitude.Replace('.', ','));
+            aliveCompany.Latitude = company.Latitude;
+            aliveCompany.Longitude = company.Longitude;
 
             if (company.image != null)
             {

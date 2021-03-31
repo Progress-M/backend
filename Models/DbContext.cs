@@ -91,8 +91,8 @@ namespace Main.PostgreSQL
             EmailConfirmed = false;
             PlayerId = request.playerId;
             Phone = request.phone;
-            Latitude = double.Parse(request.Latitude.Replace('.', ','));
-            Longitude = double.Parse(request.Longitude.Replace('.', ','));
+            Latitude = request.Latitude;
+            Longitude = request.Longitude;
         }
 
         [Key]
@@ -162,8 +162,8 @@ namespace Main.PostgreSQL
         {
             Name = user.Name;
             isMan = user.isMan;
-            Latitude = double.Parse(user.Latitude.Replace('.', ','));
-            Longitude = double.Parse(user.Longitude.Replace('.', ','));
+            Latitude = user.Latitude;
+            Longitude = user.Longitude;
             BirthYear = user.BirthYear;
             PlayerId = user.playerId;
         }
