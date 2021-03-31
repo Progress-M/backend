@@ -87,7 +87,9 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> UpdateProductCategory(int id, [FromForm] ProductCategoryRequest request)
         {
-            var category = await Context.ProductCategory.SingleOrDefaultAsync(cp => cp.Id == id);
+            var category = await Context.ProductCategory
+                .Include(c => c.Image)
+                .SingleOrDefaultAsync(cp => cp.Id == id);
             if (category == null)
             {
                 return NotFound(
@@ -100,6 +102,7 @@ namespace Main.Controllers
             }
 
             category.Name = request.name;
+            category.AgeLimit = request.ageLimit;
 
             if (request.image != null)
             {
