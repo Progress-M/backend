@@ -225,6 +225,7 @@ namespace Main.Controllers
                 .AsNoTracking()
                 .Include(o => o.Company)
                 .OrderByDescending(o => o.CreateDate)
+                .Where(o => o.Company == company)
                 .FirstOrDefault();
 
             if (offerByCompany != null)
