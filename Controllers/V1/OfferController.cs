@@ -12,6 +12,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using Main.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Main.Controllers
 {
@@ -24,11 +25,13 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<OfferController> _logger;
+        public IConfiguration _configuration { get; }
 
-        public OfferController(KindContext KindContext, ILogger<OfferController> logger)
+        public OfferController(KindContext KindContext, ILogger<OfferController> logger, IConfiguration Configuration)
         {
             Context = KindContext;
             _logger = logger;
+            _configuration = Configuration;
         }
 
         [HttpGet("{id}")]
@@ -228,22 +231,24 @@ namespace Main.Controllers
                 .Where(o => o.Company == company)
                 .FirstOrDefault();
 
-            if (offerByCompany != null)
-            {
-                double durationSeconds = DateTime.UtcNow.Subtract(offerByCompany.CreateDate).TotalSeconds;
-                TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
-                if (seconds.TotalHours < 24)
-                {
-                    TimeSpan diffTimeSpan = TimeSpan.FromHours(24).Subtract(seconds);
-                    string duration = String.Format(@"{0}:{1:mm\:ss\:fff}", diffTimeSpan.Days * 24.0 + diffTimeSpan.Hours, diffTimeSpan);
-                    return NotFound(new ErrorResponse
-                    {
-                        status = ErrorStatus.OfferTimeError,
-                        message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию за последние 24 часа. " +
-                        $"Осталось {duration} до следующей возможности создать акцию."
-                    });
-                }
-            }
+            // if (offerByCompany != null)
+            // {
+            //     double durationSeconds = DateTime.UtcNow.Subtract(offerByCompany.CreateDate).TotalSeconds;
+            //     TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
+            //     var offerTimeout = Int32.Parse(_configuration["OfferTimeout"]);
+
+            //     if (seconds.TotalHours < offerTimeout)
+            //     {
+            //         TimeSpan diffTimeSpan = TimeSpan.FromHours(offerTimeout).Subtract(seconds);
+            //         string duration = String.Format(@"{0}:{1:mm\:ss\:fff}", diffTimeSpan.Days * offerTimeout + diffTimeSpan.Hours, diffTimeSpan);
+            //         return NotFound(new ErrorResponse
+            //         {
+            //             status = ErrorStatus.OfferTimeError,
+            //             message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию за последние {offerTimeout} часа. " +
+            //             $"Осталось {duration} до следующей возможности создать акцию."
+            //         });
+            //     }
+            // }
 
             var favoriteCompanies = await Context.FavoriteCompany
                  .Include(fc => fc.Company)
