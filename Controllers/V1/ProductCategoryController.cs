@@ -38,9 +38,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ProductCategoryError,
+                        status = ResponseStatus.ProductCategoryError,
                         message = $"Не найдена категория с id = '{id}'"
                     }
                 );
@@ -93,9 +93,9 @@ namespace Main.Controllers
             if (category == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ProductCategoryError,
+                        status = ResponseStatus.ProductCategoryError,
                         message = $"Не найдена категория с id = '{id}'"
                     }
                 );
@@ -137,9 +137,9 @@ namespace Main.Controllers
             if (category == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ProductCategoryError,
+                        status = ResponseStatus.ProductCategoryError,
                         message = $"Не найдена категория с id = '{id}'"
                     }
                 );
@@ -156,9 +156,9 @@ namespace Main.Controllers
             if (category == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ProductCategoryError,
+                        status = ResponseStatus.ProductCategoryError,
                         message = $"Не найдена категория с id = '{id}'"
                     }
                 );

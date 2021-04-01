@@ -13,6 +13,26 @@ namespace Main.Models
 
     public class OfferResponse
     {
+        public OfferResponse() { }
+        public OfferResponse(Offer offer, bool like)
+        {
+            Id = offer.Id;
+            Text = offer.Text;
+            DateStart = offer.DateStart;
+            DateEnd = offer.DateEnd;
+            TimeStart = offer.TimeStart;
+            TimeEnd = offer.TimeEnd;
+            Percentage = offer.Percentage;
+            Company = offer.Company;
+            CreateDate = offer.CreateDate;
+            ForMan = offer.ForMan;
+            LikeCounter = offer.LikeCounter;
+            ForWoman = offer.ForWoman;
+            SendingTime = offer.SendingTime;
+            UpperAgeLimit = offer.UpperAgeLimit;
+            LowerAgeLimit = offer.LowerAgeLimit;
+            UserLike = like;
+        }
         public int Id { get; set; }
         public int LikeCounter { get; set; }
         public string Text { get; set; }

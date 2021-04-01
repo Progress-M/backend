@@ -41,9 +41,9 @@ namespace Main.Controllers
             if (ue == null || ue.code != acceptance.code)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.RegistrationError,
+                        status = ResponseStatus.RegistrationError,
                         message = $"Не найден email = {acceptance.email} или некорректный код."
                     }
                 );
@@ -54,9 +54,9 @@ namespace Main.Controllers
             if (seconds.TotalMinutes > EmailCodeTimeLife)
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.RegistrationError,
+                        status = ResponseStatus.RegistrationError,
                         message = $"Время жизни кода истекло."
                     }
                 );

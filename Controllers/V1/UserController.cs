@@ -45,9 +45,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -72,9 +72,9 @@ namespace Main.Controllers
             if (user == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -92,34 +92,15 @@ namespace Main.Controllers
                     .ThenInclude(company => company.ProductCategory)
                 .ToListAsync())
                 .OrderByDescending(it => it.CreateDate)
-                .Select(offer =>
-                {
-                    return new OfferResponse
-                    {
-                        Id = offer.Id,
-                        Text = offer.Text,
-                        DateStart = offer.DateStart,
-                        DateEnd = offer.DateEnd,
-                        TimeStart = offer.TimeStart,
-                        TimeEnd = offer.TimeEnd,
-                        Percentage = offer.Percentage,
-                        Company = offer.Company,
-                        CreateDate = offer.CreateDate,
-                        ForMan = offer.ForMan,
-                        LikeCounter = offer.LikeCounter,
-                        ForWoman = offer.ForWoman,
-                        SendingTime = offer.SendingTime,
-                        UpperAgeLimit = offer.UpperAgeLimit,
-                        LowerAgeLimit = offer.LowerAgeLimit,
-                        UserLike = Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)
-                    };
-                }).ToList();
+                .Select(offer => new OfferResponse(offer, Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)))
+                .ToList();
 
             var groups = OfferUtils.GroupByRelevance(offers);
             var nearbyOffer = groups.activeOffer.OrderBy(offer => Utils.CalculateDistance(
                 new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
                 new Location { Latitude = user.Latitude, Longitude = user.Longitude }
-                ));
+                )
+            );
 
             return Ok(
                 new OfferByUserResponse
@@ -144,9 +125,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -158,29 +139,8 @@ namespace Main.Controllers
                 .Where(offer => favorites.Any(fc => fc.Company.Id == offer.Company.Id))
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
-                .ToList()
-                .Select(offer =>
-                {
-                    return new OfferResponse
-                    {
-                        Id = offer.Id,
-                        Text = offer.Text,
-                        DateStart = offer.DateStart,
-                        DateEnd = offer.DateEnd,
-                        TimeStart = offer.TimeStart,
-                        TimeEnd = offer.TimeEnd,
-                        Percentage = offer.Percentage,
-                        Company = offer.Company,
-                        CreateDate = offer.CreateDate,
-                        ForMan = offer.ForMan,
-                        LikeCounter = offer.LikeCounter,
-                        ForWoman = offer.ForWoman,
-                        SendingTime = offer.SendingTime,
-                        UpperAgeLimit = offer.UpperAgeLimit,
-                        LowerAgeLimit = offer.LowerAgeLimit,
-                        UserLike = Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)
-                    };
-                }).ToList();
+                .Select(offer => new OfferResponse(offer, Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)))
+                .ToList();
 
 
             var groups = OfferUtils.GroupByRelevance(offers);
@@ -214,9 +174,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -225,9 +185,9 @@ namespace Main.Controllers
             if (item.Image == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден аватар пользвателя с id = '{id}'"
                     }
                 );
@@ -246,9 +206,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -286,9 +246,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -318,9 +278,9 @@ namespace Main.Controllers
             if (old != null)
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Пользователь с playerId = '{old.PlayerId}' уже существует"
                     }
                 );
@@ -365,9 +325,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                 );
@@ -399,9 +359,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{id}'"
                     }
                     );
@@ -439,9 +399,9 @@ namespace Main.Controllers
             if (user == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользватель с id = '{userId}'"
                     });
             }
@@ -453,9 +413,9 @@ namespace Main.Controllers
             if (company == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найдена компания с id = '{companyId}'"
                     }
                 );
@@ -488,9 +448,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найден пользователь с id = '{id}'"
                     });
             }
@@ -501,9 +461,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Не найдена компания с id = '{favoriteId}'"
                     });
             }
@@ -511,9 +471,9 @@ namespace Main.Controllers
             if (Context.FavoriteCompany.Any(fc => fc.CompanyId == favoriteId && fc.UserId == id))
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.UserError,
+                        status = ResponseStatus.UserError,
                         message = $"Компания с id = '{favoriteId}' уже в избранном у пользователя с id = '{id}'"
                     }
                 );

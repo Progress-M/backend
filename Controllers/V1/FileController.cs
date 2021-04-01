@@ -30,8 +30,8 @@ namespace Main.Controllers
             if (file == null)
             {
                 return NotFound(
-                    new ErrorResponse {
-                        status = ErrorStatus.FileError,
+                    new BdobrResponse {
+                        status = ResponseStatus.FileError,
                         message = $"Файл с id = '{id}' не найден."
                     }
                 );

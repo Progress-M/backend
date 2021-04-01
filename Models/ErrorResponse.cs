@@ -1,7 +1,8 @@
 namespace Main.Models
 {
-    public class ErrorStatus
+    public class ResponseStatus
     {
+        public static string Success = "SUCCESS";
         public static string ChatError = "CHAT_ERROR";
         public static string UserError = "USER_ERROR";
         public static string RegistrationError = "REGISTRATION_ERROR";
@@ -14,7 +15,7 @@ namespace Main.Models
         public static string FileError = "FILE_ERROR";
     }
 
-    public class ErrorResponse
+    public class BdobrResponse
     {
         public string status { get; set; }
         public string message { get; set; }

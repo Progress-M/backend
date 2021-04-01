@@ -39,9 +39,9 @@ namespace Main.Controllers
             if (user == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ChatError,
+                        status = ResponseStatus.ChatError,
                         message = $"Не найден пользователь с id = {userId}."
                     }
                 );
@@ -86,9 +86,9 @@ namespace Main.Controllers
             if (company == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ChatError,
+                        status = ResponseStatus.ChatError,
                         message = $"Не найдена компания с id = {companyId}."
                     }
                 );
@@ -134,9 +134,9 @@ namespace Main.Controllers
             if (user == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ChatError,
+                        status = ResponseStatus.ChatError,
                         message = $"Не найден пользователь с id = {userId}"
                     }
                 );
@@ -172,9 +172,9 @@ namespace Main.Controllers
             if (company == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ChatError,
+                        status = ResponseStatus.ChatError,
                         message = $"Не найдена компания с id = {messageRequest.companyId}"
                     }
                 );
@@ -186,9 +186,9 @@ namespace Main.Controllers
             if (user == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.ChatError,
+                        status = ResponseStatus.ChatError,
                         message = $"Не найден пользователь с id = {messageRequest.userId}"
                     }
                 );

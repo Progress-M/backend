@@ -47,9 +47,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найдена акция с id = '{id}'"
                     }
                 );
@@ -67,31 +67,10 @@ namespace Main.Controllers
                 .AsNoTracking()
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
-               .Where(offer => offer.LikeCounter > 0)
-               .OrderByDescending(offer => offer.LikeCounter)
-               .ToList()
-                .Select(offer =>
-                {
-                    return new OfferResponse
-                    {
-                        Id = offer.Id,
-                        Text = offer.Text,
-                        DateStart = offer.DateStart,
-                        DateEnd = offer.DateEnd,
-                        TimeStart = offer.TimeStart,
-                        TimeEnd = offer.TimeEnd,
-                        Percentage = offer.Percentage,
-                        Company = offer.Company,
-                        CreateDate = offer.CreateDate,
-                        ForMan = offer.ForMan,
-                        LikeCounter = offer.LikeCounter,
-                        ForWoman = offer.ForWoman,
-                        SendingTime = offer.SendingTime,
-                        UpperAgeLimit = offer.UpperAgeLimit,
-                        LowerAgeLimit = offer.LowerAgeLimit,
-                        UserLike = false
-                    };
-                }).ToList();
+                .Where(offer => offer.LikeCounter > 0)
+                .OrderByDescending(offer => offer.LikeCounter)
+                .Select(offer => new OfferResponse(offer, false))
+                .ToList();
 
             var items = OfferUtils.GroupByRelevance(offers).activeOffer
                .Take(RESULT_LIMIT)
@@ -143,9 +122,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найдена акция с id = '{id}'"
                     }
                 );
@@ -154,9 +133,9 @@ namespace Main.Controllers
             if (item.Image == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найдена картинка акции с id = '{id}'"
                     }
                 );
@@ -176,9 +155,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найдена акция с id = '{id}'"
                     }
                 );
@@ -216,9 +195,9 @@ namespace Main.Controllers
             if (company == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найдена компания с id = '{offerRequest.companyId}'"
                     }
                 );
@@ -292,9 +271,9 @@ namespace Main.Controllers
             if (user == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найден пользователь с id = '{request.userId}'"
                     }
                 );
@@ -306,9 +285,9 @@ namespace Main.Controllers
             if (offer == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.OfferError,
+                        status = ResponseStatus.OfferError,
                         message = $"Не найдена акция с id = '{request.offerId}'"
                     }
                 );

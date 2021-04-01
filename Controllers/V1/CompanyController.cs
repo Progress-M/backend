@@ -26,13 +26,13 @@ namespace Main.Controllers
     {
         readonly KindContext Context;
         readonly ILogger<CompanyController> _logger;
-        public IConfiguration Configuration { get; }
+        public IConfiguration _configuration { get; }
 
-        public CompanyController(KindContext KindContext, ILogger<CompanyController> logger, IConfiguration configuration)
+        public CompanyController(KindContext KindContext, ILogger<CompanyController> logger, IConfiguration Configuration)
         {
             Context = KindContext;
             _logger = logger;
-            Configuration = configuration;
+            _configuration = Configuration;
         }
 
         [HttpGet("{id}")]
@@ -47,9 +47,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена компания с id = {id}"
                     }
                 );
@@ -106,6 +106,57 @@ namespace Main.Controllers
             return Ok(items.Count);
         }
 
+        [HttpGet("{id}/offer-limit")]
+        [Produces("application/json")]
+        public async Task<ActionResult> CheckOfferLimit(int companyId)
+        {
+            var company = await Context.Company
+                 .SingleOrDefaultAsync(company => company.Id == companyId);
+
+            if (company == null)
+            {
+                return NotFound(
+                    new BdobrResponse
+                    {
+                        status = ResponseStatus.CompanyError,
+                        message = $"Не найдена компания с id = '{companyId}'"
+                    }
+                );
+            }
+
+            var lastOffer = Context.Offer
+                .AsNoTracking()
+                .Include(o => o.Company)
+                .OrderByDescending(o => o.CreateDate)
+                .Where(o => o.Company == company)
+                .FirstOrDefault();
+
+            if (lastOffer != null)
+            {
+                double durationSeconds = DateTime.UtcNow.Subtract(lastOffer.CreateDate).TotalSeconds;
+                TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
+                var offerTimeout = Int32.Parse(_configuration["OfferTimeout"]);
+
+                if (seconds.TotalHours < offerTimeout)
+                {
+                    TimeSpan diffTimeSpan = TimeSpan.FromHours(offerTimeout).Subtract(seconds);
+                    string duration = String.Format(@"{0}:{1:mm\:ss\:fff}", diffTimeSpan.Days * offerTimeout + diffTimeSpan.Hours, diffTimeSpan);
+                    return BadRequest(new BdobrResponse
+                    {
+                        status = ResponseStatus.CompanyError,
+                        message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию за последние {offerTimeout} часа. " +
+                        $"Осталось {duration} до следующей возможности создать акцию."
+                    });
+                }
+            }
+
+            return Ok(new BdobrResponse
+            {
+                status = ResponseStatus.Success,
+                message = ""
+            });
+        }
+
         [HttpGet("{id}/image")]
         [AllowAnonymous]
         public async Task<ActionResult> GeCompanyAvatar(int id)
@@ -118,9 +169,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена компания с id = {id}"
                     }
                 );
@@ -129,9 +180,9 @@ namespace Main.Controllers
             if (item.Image == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найден аватар компании с id = {id}"
                     }
                 );
@@ -151,9 +202,9 @@ namespace Main.Controllers
             if (company == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена компания с id = {id}"
                     }
                 );
@@ -192,9 +243,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена компания с id = {id}"
                     }
                 );
@@ -206,28 +257,8 @@ namespace Main.Controllers
                 .Where(offer => offer.Company.Id == id)
                 .OrderByDescending(it => it.CreateDate)
                 .ToList()
-                .Select(offer =>
-                {
-                    return new OfferResponse
-                    {
-                        Id = offer.Id,
-                        Text = offer.Text,
-                        DateStart = offer.DateStart,
-                        DateEnd = offer.DateEnd,
-                        TimeStart = offer.TimeStart,
-                        TimeEnd = offer.TimeEnd,
-                        Percentage = offer.Percentage,
-                        Company = offer.Company,
-                        CreateDate = offer.CreateDate,
-                        ForMan = offer.ForMan,
-                        LikeCounter = offer.LikeCounter,
-                        ForWoman = offer.ForWoman,
-                        SendingTime = offer.SendingTime,
-                        UpperAgeLimit = offer.UpperAgeLimit,
-                        LowerAgeLimit = offer.LowerAgeLimit,
-                        UserLike = false
-                    };
-                }).ToList();
+                .Select(offer => new OfferResponse(offer, false))
+                .ToList();
 
             var groups = OfferUtils.GroupByRelevance(offers);
 
@@ -277,9 +308,9 @@ namespace Main.Controllers
             if (exist != null)
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Комания с ИНН = '{companyRequest.inn}' и/или email = '{companyRequest.email}' уже существует."
                     }
                 );
@@ -290,9 +321,9 @@ namespace Main.Controllers
             if (productCategory == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена категория с id = '{companyRequest.productCategoryId}'"
                     }
                 );
@@ -321,7 +352,7 @@ namespace Main.Controllers
                 {
                     status = AuthStatus.Success,
                     company = company,
-                    access_token = Auth.generateToken(Configuration),
+                    access_token = Auth.generateToken(_configuration),
                     token_type = "bearer"
                 }
             );
@@ -334,9 +365,9 @@ namespace Main.Controllers
             if (aliveCompany == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена компания с id = '{id}'"
                     }
                 );
@@ -346,9 +377,9 @@ namespace Main.Controllers
             if (category == null)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.CompanyError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена категория с id = '{company.productCategoryId}'"
                     }
                 );

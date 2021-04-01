@@ -46,7 +46,7 @@ namespace Main.Controllers
             if (item == null || !item.EmailConfirmed)
             {
                 return Unauthorized(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
                         status = AuthStatus.Fail,
                         message = $"Такой компании не существует или аккаунт не подтверждён."
@@ -73,9 +73,9 @@ namespace Main.Controllers
             if (item == null)
             {
                 return Unauthorized(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.SignInError,
+                        status = ResponseStatus.SignInError,
                         message = $"Компания с email = '{request.email}' не найдена."
                     }
                 );
@@ -105,9 +105,9 @@ namespace Main.Controllers
             if (ue == null || ue.code != request.code)
             {
                 return NotFound(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.SignInError,
+                        status = ResponseStatus.SignInError,
                         message = $"Не найден email = {request.email} или некорректный код."
                     }
                 );
@@ -119,9 +119,9 @@ namespace Main.Controllers
             if (seconds.TotalMinutes > EmailCodeTimeLife)
             {
                 return BadRequest(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
-                        status = ErrorStatus.SignInError,
+                        status = ResponseStatus.SignInError,
                         message = $"Время жизни кода истекло."
                     }
                 );
@@ -131,9 +131,9 @@ namespace Main.Controllers
 
             if (company == null)
             {
-                return BadRequest(new ErrorResponse
+                return BadRequest(new BdobrResponse
                 {
-                    status = ErrorStatus.SignUpError,
+                    status = ResponseStatus.SignUpError,
                     message = $"Компания с email = '{request.email}' не найдена."
                 });
             }
@@ -173,7 +173,7 @@ namespace Main.Controllers
             if (item == null || !item.EmailConfirmed)
             {
                 return Unauthorized(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
                         status = AuthStatus.Fail,
                         message = $"Компания с playerId = '{playerId}' не существует, либо у неё не подтвежден email."
@@ -202,7 +202,7 @@ namespace Main.Controllers
             if (item == null)
             {
                 return Unauthorized(
-                    new ErrorResponse
+                    new BdobrResponse
                     {
                         status = AuthStatus.Fail,
                         message = $"Пользователя с playerId = '{playerId}' не существует."
