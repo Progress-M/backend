@@ -89,7 +89,7 @@ namespace Main.Controllers
                         offer.LowerAgeLimit <= age && age <= offer.UpperAgeLimit
                 )
                 .Include(offer => offer.Company)
-                    .ThenInclude(company => company.ProductCategory)
+                .ThenInclude(company => company.ProductCategory)
                 .ToListAsync())
                 .OrderByDescending(it => it.CreateDate)
                 .Select(offer => new OfferResponse(offer, Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)))

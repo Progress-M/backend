@@ -256,17 +256,16 @@ namespace Main.Controllers
                 .ThenInclude(company => company.ProductCategory)
                 .Where(offer => offer.Company.Id == id)
                 .OrderByDescending(it => it.CreateDate)
-                .ToList()
                 .Select(offer => new OfferResponse(offer, false))
                 .ToList();
 
             var groups = OfferUtils.GroupByRelevance(offers);
+            groups.preOffer.AddRange(groups.activeOffer);
 
             return Ok(
                 new OfferByUserResponse
                 {
-                    preOffer = groups.preOffer,
-                    activeOffer = groups.activeOffer,
+                    activeOffer = groups.preOffer,
                     inactiveOffer = groups.inactiveOffer
                 }
             );
