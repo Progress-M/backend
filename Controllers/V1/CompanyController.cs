@@ -260,12 +260,11 @@ namespace Main.Controllers
                 .ToList();
 
             var groups = OfferUtils.GroupByRelevance(offers);
-            groups.preOffer.AddRange(groups.activeOffer);
 
             return Ok(
                 new OfferByUserResponse
                 {
-                    activeOffer = groups.preOffer,
+                    activeOffer = groups.preOffer.Concat(groups.activeOffer),
                     inactiveOffer = groups.inactiveOffer
                 }
             );
