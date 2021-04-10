@@ -93,12 +93,14 @@ namespace Main.PostgreSQL
             Phone = request.phone;
             Latitude = request.Latitude;
             Longitude = request.Longitude;
+            TimeZone = request.TimeZone;
         }
 
         [Key]
         public int Id { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public string TimeZone { get; set; }
         public string NameOfficial { get; set; }
         public string Name { get; set; }
         public string Representative { get; set; }

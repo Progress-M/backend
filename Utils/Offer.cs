@@ -10,30 +10,49 @@ namespace Main.Function
 
         public static OffersByRelevance GroupByRelevance(List<OfferResponse> offers)
         {
-            var ONE_DAY_IN_MILLISECONDS = 86400000;
-            var preOffer = offers.Where(offer => offer.DateStart > DateTime.UtcNow);
-            var activeOffer = offers.Where(offer =>
+            var preOffer = offers.Where(offer =>
             {
-                var utcNow = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-                var offerStartDateTime = offer.DateStart.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(offer.Company.TimeZone);
+                var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+                var start = offer.DateStart.AddHours(offer.TimeStart.Hour).AddMinutes(offer.TimeEnd.Minute);
+                var end = offer.DateEnd.AddHours(offer.TimeEnd.Hour).AddMinutes(offer.TimeEnd.Minute);
 
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && utcNow - offerStartDateTime < ONE_DAY_IN_MILLISECONDS)
+                if (DateTime.Compare(dateTimeTZ, start) >= 0 && DateTime.Compare(end, dateTimeTZ) >= 0)
                 {
-                    return true;
+                    if (dateTimeTZ.TimeOfDay > offer.TimeStart.TimeOfDay && dateTimeTZ.TimeOfDay < offer.TimeEnd.TimeOfDay)
+                    {
+                        return false;
+                    }
                 }
 
-                return offer.DateEnd >= DateTime.UtcNow && DateTime.UtcNow >= offer.DateStart;
-            });
-            var inactiveOffer = offers.Where(offer =>
-            {
-                var utcNow = DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-                var offerStartDateTime = offer.DateStart.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-
-                if (offer.DateStart.CompareTo(offer.DateEnd) == 0 && utcNow - offerStartDateTime < ONE_DAY_IN_MILLISECONDS)
+                if (DateTime.Compare(dateTimeTZ, end) >= 0)
                 {
                     return false;
                 }
-                return offer.DateEnd < DateTime.UtcNow;
+                return true;
+            });
+            var activeOffer = offers.Where(offer =>
+            {
+                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(offer.Company.TimeZone);
+                var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+                var start = offer.DateStart.AddHours(offer.TimeStart.Hour).AddMinutes(offer.TimeEnd.Minute);
+                var end = offer.DateEnd.AddHours(offer.TimeEnd.Hour).AddMinutes(offer.TimeEnd.Minute);
+
+                if (DateTime.Compare(dateTimeTZ, start) >= 0 && DateTime.Compare(end, dateTimeTZ) >= 0)
+                {
+                    if (dateTimeTZ.TimeOfDay > offer.TimeStart.TimeOfDay && dateTimeTZ.TimeOfDay < offer.TimeEnd.TimeOfDay)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            var inactiveOffer = offers.Where(offer =>
+            {
+                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(offer.Company.TimeZone);
+                var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+                var end = offer.DateEnd.AddHours(offer.TimeEnd.Hour).AddMinutes(offer.TimeEnd.Minute);
+                return DateTime.Compare(dateTimeTZ, end) >= 0;
             });
 
 

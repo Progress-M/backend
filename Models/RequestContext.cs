@@ -54,6 +54,7 @@ namespace Main.PostgreSQL
         public string representative { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
+        public string TimeZone { get; set; }
         public string inn { get; set; }
         public string password { get; set; }
         public string address { get; set; }
