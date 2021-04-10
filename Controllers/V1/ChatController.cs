@@ -199,7 +199,7 @@ namespace Main.Controllers
             await Context.SaveChangesAsync();
 
             var name = messageRequest.isUserMessage ? user.Name : company.Name;
-            Utils.CreateNotificationToFavorites($"{name}: {messageRequest.text}", new string[1] { messageRequest.isUserMessage ? company.PlayerId : user.PlayerId });
+            Utils.CreateNotificationToFavorites($"{name}: {messageRequest.text}", new string[1] { messageRequest.isUserMessage ? company.PlayerId : user.PlayerId }, !messageRequest.isUserMessage);
 
             return Ok(message);
         }

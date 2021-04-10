@@ -159,7 +159,7 @@ namespace Main.Function
             System.Diagnostics.Debug.WriteLine(responseContent);
         }
 
-        public static void CreateNotificationToFavorites(string message, string[] favorites)
+        public static void CreateNotificationToFavorites(string message, string[] favorites, bool isCompany = false)
         {
             var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
 
@@ -171,7 +171,7 @@ namespace Main.Function
             var obj = new
             {
                 app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
-                url = "bdobr.ru",
+                url = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 contents = new { en = message, ru = message },
                 android_group = "BDOBR",
                 android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
