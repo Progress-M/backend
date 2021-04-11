@@ -34,6 +34,12 @@ namespace Main.PostgreSQL
             modelBuilder.Entity<Company>()
                .HasIndex(p => new { p.INN, p.Address })
                .IsUnique();
+
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.Property(r => r.TimeZone)
+                .HasDefaultValue("Asia/Novosibirsk");
+            });
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
@@ -77,7 +83,7 @@ namespace Main.PostgreSQL
     public class Company
     {
         public Company() { }
-        public Company(CompanyRequest request, ProductCategory productCategory)
+        public Company(CompanyRequest request, ProductCategory productCategory, string tz)
         {
             Name = request.name;
             NameOfficial = request.nameOfficial;
@@ -93,14 +99,14 @@ namespace Main.PostgreSQL
             Phone = request.phone;
             Latitude = request.Latitude;
             Longitude = request.Longitude;
-            TimeZone = request.TimeZone;
+            TimeZone = tz;
         }
 
         [Key]
         public int Id { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public string TimeZone { get; set; }
+        public string TimeZone { get; set; } = "Asia/Novosibirsk";
         public string NameOfficial { get; set; }
         public string Name { get; set; }
         public string Representative { get; set; }

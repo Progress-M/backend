@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Main.Models;
 using Main.PostgreSQL;
 using System;
+using GeoTimeZone;
 
 namespace Main.Controllers
 {
@@ -327,7 +328,9 @@ namespace Main.Controllers
                 );
             }
 
-            var company = new Company(companyRequest, productCategory);
+            string tz = TimeZoneLookup.GetTimeZone(companyRequest.Latitude, companyRequest.Longitude).Result;  // "Europe/London"
+
+            var company = new Company(companyRequest, productCategory, tz);
             company.EmailConfirmed = true;
 
             if (companyRequest.image != null)
