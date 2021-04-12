@@ -50,7 +50,9 @@ namespace Main.Controllers
             var messages = await Context.Message
                     .AsNoTracking()
                     .Include(m => m.company)
+                    .Include(m => m.user)
                     .Where(message => message.Id > lastId && message.user.Id == userId)
+                    .OrderBy(message => message.sendingTime)
                     .ToListAsync();
 
             var comparer = new CompanyComparer();
