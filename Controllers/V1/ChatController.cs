@@ -148,7 +148,7 @@ namespace Main.Controllers
                     .Include(m => m.user)
                     .Where(message => message.user.Id == userId && message.Id > lastMessageId && message.company.Id == companyId)
                     .ToListAsync())
-                    .OrderByDescending(messages => messages.sendingTime)
+                    .OrderBy(message => message.sendingTime)
                     .GroupBy(message => new { message.sendingTime.Year, message.sendingTime.Month, message.sendingTime.Day })
                     .Select(messages =>
                     {
@@ -156,6 +156,7 @@ namespace Main.Controllers
                         return new
                         {
                             Messages = messages,
+                            LastMessage = last?.text,
                             Day = last?.sendingTime,
                         };
                     });
