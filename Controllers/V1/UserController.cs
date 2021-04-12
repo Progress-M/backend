@@ -216,8 +216,8 @@ namespace Main.Controllers
 
             var favorites = Context.FavoriteCompany
                 .Include(fc => fc.Company)
+                .ThenInclude(fc => fc.ProductCategory)
                 .Where(fc => fc.UserId == id);
-
 
             var comparer = new CompanyComparer();
 
