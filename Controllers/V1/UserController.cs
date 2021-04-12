@@ -113,6 +113,71 @@ namespace Main.Controllers
             );
         }
 
+        [HttpGet("{id}/company/{companyId}/offer")]
+        [Produces("application/json")]
+        public async Task<ActionResult<OfferByUserResponse>> GetOffersByUserAndCompany(int id, int companyId)
+        {
+            var user = await Context.User.SingleOrDefaultAsync(user => user.Id == id);
+
+            if (user == null)
+            {
+                return NotFound(
+                    new BdobrResponse
+                    {
+                        status = ResponseStatus.UserError,
+                        message = $"Не найден пользватель с id = '{id}'"
+                    }
+                );
+            }
+
+            var company = await Context.Company.SingleOrDefaultAsync(company => company.Id == companyId);
+
+            if (company == null)
+            {
+                return NotFound(
+                    new BdobrResponse
+                    {
+                        status = ResponseStatus.UserError,
+                        message = $"Не найдена компания с id = '{companyId}'"
+                    }
+                );
+            }
+
+            var age = DateTime.UtcNow.Year - user.BirthYear.Year;
+
+            var offers = Context.Offer
+                .Include(offer => offer.Company)
+                .ThenInclude(company => company.ProductCategory)
+                .Where(
+                    offer =>
+                        (offer.ForMan == user.isMan || offer.ForWoman == !user.isMan) &&
+                        offer.LowerAgeLimit <= age &&
+                        age <= offer.UpperAgeLimit &&
+                        offer.Company.Id == companyId
+                )
+                .ToList()
+                .OrderByDescending(it => it.CreateDate)
+                .Select(offer => new OfferResponse(offer, Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)))
+                .ToList();
+
+            var groups = OfferUtils.GroupByRelevance(offers);
+            var nearbyOffer = groups.activeOffer.OrderBy(offer => Utils.CalculateDistance(
+                new Location { Latitude = offer.Company.Latitude, Longitude = offer.Company.Longitude },
+                new Location { Latitude = user.Latitude, Longitude = user.Longitude }
+                )
+            );
+
+            return Ok(
+                new OfferByUserResponse
+                {
+                    preOffer = groups.preOffer,
+                    activeOffer = groups.activeOffer,
+                    nearbyOffer = nearbyOffer,
+                    inactiveOffer = groups.inactiveOffer
+                }
+            );
+        }
+
         [HttpGet("{id}/favarite-offer")]
         [Produces("application/json")]
         public ActionResult<OfferByUserResponse> GetFavariteOffersByUser(int id)
