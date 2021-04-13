@@ -293,13 +293,19 @@ namespace Main.Controllers
                 );
             }
 
+            var likes = Context.LikedOffer.Where(lc => lc.UserId == request.userId && lc.OfferId == request.offerId);
+            Context.LikedOffer.RemoveRange(likes);
+
             Context.LikedOffer.Add(new LikedOffer
             {
                 User = user,
                 Offer = offer
             });
 
-            offer.LikeCounter++;
+            if (likes.ToList().Count == 0)
+            {
+                offer.LikeCounter++;
+            }
             await Context.SaveChangesAsync();
 
             return Ok(offer);
