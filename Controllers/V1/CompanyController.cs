@@ -109,10 +109,10 @@ namespace Main.Controllers
 
         [HttpGet("{id}/offer-limit")]
         [Produces("application/json")]
-        public async Task<ActionResult> CheckOfferLimit(int companyId)
+        public async Task<ActionResult> CheckOfferLimit(int id)
         {
             var company = await Context.Company
-                 .SingleOrDefaultAsync(company => company.Id == companyId);
+                 .SingleOrDefaultAsync(company => company.Id == id);
 
             if (company == null)
             {
@@ -120,7 +120,7 @@ namespace Main.Controllers
                     new BdobrResponse
                     {
                         status = ResponseStatus.CompanyError,
-                        message = $"Не найдена компания с id = '{companyId}'"
+                        message = $"Не найдена компания с id = '{id}'"
                     }
                 );
             }
