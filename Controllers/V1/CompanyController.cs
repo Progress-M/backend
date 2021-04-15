@@ -447,7 +447,23 @@ namespace Main.Controllers
                 return NotFound(id);
             }
 
-            await CompanyUtils.deleteOfferByCompany(Context, item);
+            Context.Message.RemoveRange(Context.Message
+               .Where(message => message.company.Id == id)
+               .ToList());
+            await Context.SaveChangesAsync();
+
+            Context.Offer.RemoveRange(Context.Offer
+                .Where(offer => offer.Company.Id == id)
+                .ToList());
+            await Context.SaveChangesAsync();
+
+            Context.Stories.RemoveRange(
+                Context.Stories
+                .Include(s => s.Offer)
+                .ThenInclude(o => o.Company)
+                .Where(story => story.Offer.Company.Id == id)
+                .ToList());
+            await Context.SaveChangesAsync();
 
             Context.Company.Remove(item);
             await Context.SaveChangesAsync();
