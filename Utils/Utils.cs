@@ -125,6 +125,7 @@ namespace Main.Function
                 app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
                 contents = new { en = "English Message", ru = message },
                 android_group = "BDOBR",
+                android_accent_color = "382C6A",
                 android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
                 channel_for_external_user_ids = "push",
                 included_segments = new string[] { "Subscribed Users" }
@@ -174,6 +175,7 @@ namespace Main.Function
                 url = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 contents = new { en = message, ru = message },
                 android_group = "BDOBR",
+                android_accent_color = "382C6A",
                 android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
                 channel_for_external_user_ids = "push",
                 include_player_ids = favorites
