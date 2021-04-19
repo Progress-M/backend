@@ -92,7 +92,8 @@ namespace Main.PostgreSQL
             INN = request.inn;
             Password = request.password;
             Address = request.address;
-            TimeOfWork = request.timeOfWork;
+            TimeOpen = request.timeOpen;
+            TimeClose = request.timeClose;
             ProductCategory = productCategory;
             EmailConfirmed = false;
             PlayerId = request.playerId;
@@ -115,7 +116,8 @@ namespace Main.PostgreSQL
         public string INN { get; set; }
         public string Password { get; set; }
         public string Address { get; set; }
-        public string TimeOfWork { get; set; }
+        public DateTime TimeOpen { get; set; }
+        public DateTime TimeClose { get; set; }
         public bool EmailConfirmed { get; set; }
         public string PlayerId { get; set; }
         public ProductCategory ProductCategory { get; set; }
@@ -131,8 +133,8 @@ namespace Main.PostgreSQL
             Text = request.text;
             DateStart = request.dateStart;
             DateEnd = request.dateEnd;
-            TimeStart = request.timeStart;
-            TimeEnd = request.timeEnd;
+            TimeStart = request.timeStart == null ? company.TimeOpen : request.timeStart;
+            TimeEnd = request.timeEnd == null ? company.TimeClose : request.timeEnd;
             Percentage = request.percentage;
             Company = company;
             CreateDate = DateTime.UtcNow;

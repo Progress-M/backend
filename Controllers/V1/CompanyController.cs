@@ -393,7 +393,8 @@ namespace Main.Controllers
             aliveCompany.Representative = company.representative;
             aliveCompany.Password = company.password;
             aliveCompany.Address = company.address;
-            aliveCompany.TimeOfWork = company.timeOfWork;
+            aliveCompany.TimeOpen = company.timeOpen;
+            aliveCompany.TimeClose = company.timeClose;
             aliveCompany.PlayerId = company.playerId;
             aliveCompany.ProductCategory = category;
             aliveCompany.Latitude = company.Latitude;
