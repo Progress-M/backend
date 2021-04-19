@@ -171,10 +171,10 @@ namespace Main.Function
 
             var obj = new
             {
-                app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
+                app_id = isCompany ? "7f742ce4-48ad-4022-90d7-5475c3891e84" : "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
                 url = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 contents = new { en = message, ru = message },
-                android_group = "BDOBR",
+                android_group = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 android_accent_color = "382C6A",
                 android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
                 channel_for_external_user_ids = "push",
