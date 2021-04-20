@@ -348,6 +348,15 @@ namespace Main.Controllers
             Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
+            Context.CompanyNotification.Add(
+                new CompanyNotification(
+                    company,
+                    "Добро пожаловать",
+                    "Добро пожаловать в сервис «БудьДобр.Бизнес»! Ежедневно создавайте собственные креативные предложения и следите за новостями развития сервиса. Мы предоставляем круглосуточную техническую поддержку, если у вас возникли вопросы пишите нам на support@buddobr.ru и мы обязательно вам ответим"
+                )
+            );
+            Context.SaveChanges();
+
             return Ok(
                 new CreateCompanyResponse
                 {
