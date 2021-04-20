@@ -40,6 +40,18 @@ namespace Main.PostgreSQL
                 entity.Property(r => r.TimeZone)
                 .HasDefaultValue("Asia/Novosibirsk");
             });
+
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.Property(r => r.TimeOpen)
+                .HasDefaultValue("2021-04-16 00:00:00");
+            });
+
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.Property(r => r.TimeClose)
+                .HasDefaultValue("2021-04-16 23:59:59");
+            });
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
