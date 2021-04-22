@@ -10,6 +10,8 @@ using SignalRChat.Hubs;
 
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
@@ -140,6 +142,15 @@ namespace Main
             });
 
             app.UseAuthorization();
+
+            app.UseExceptionHandler(c => c.Run(async context =>
+            {
+                var exception = context.Features
+                    .Get<IExceptionHandlerPathFeature>()
+                    .Error;
+                var response = new { error = exception.Message };
+                await context.Response.WriteAsJsonAsync(response);
+            }));
 
             app.UseEndpoints(endpoints =>
             {

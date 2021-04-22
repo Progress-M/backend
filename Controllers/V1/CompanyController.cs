@@ -442,8 +442,15 @@ namespace Main.Controllers
                 return NotFound(id);
             }
 
+            Context.CompanyNotification
+                .RemoveRange(Context.CompanyNotification
+                    .Where(cn => cn.company == item)
+                    .ToList()
+                );
+
+            Context.SaveChanges();
             Context.Company.Remove(item);
-            await Context.SaveChangesAsync();
+            Context.SaveChanges();
 
             return Ok(item);
         }
@@ -456,6 +463,15 @@ namespace Main.Controllers
             {
                 return NotFound(id);
             }
+
+            Context.CompanyNotification
+                .RemoveRange(Context.CompanyNotification
+                    .Where(cn => cn.company == item)
+                    .ToList()
+                );
+
+            Context.SaveChanges();
+
 
             Context.Message.RemoveRange(Context.Message
                .Where(message => message.company.Id == id)
