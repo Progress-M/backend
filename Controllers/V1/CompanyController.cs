@@ -132,23 +132,13 @@ namespace Main.Controllers
                 .Where(o => o.Company == company)
                 .FirstOrDefault();
 
-            if (lastOffer != null)
+            if (lastOffer != null && lastOffer.CreateDate.Date == DateTime.UtcNow.Date)
             {
-                double durationSeconds = DateTime.UtcNow.Subtract(lastOffer.CreateDate).TotalSeconds;
-                TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
-                var offerTimeout = Int32.Parse(_configuration["OfferTimeout"]);
-
-                if (seconds.TotalHours < offerTimeout)
+                return BadRequest(new BdobrResponse
                 {
-                    TimeSpan diffTimeSpan = TimeSpan.FromHours(offerTimeout).Subtract(seconds);
-                    string duration = String.Format(@"{0}:{1:mm\:ss\:fff}", diffTimeSpan.Days * offerTimeout + diffTimeSpan.Hours, diffTimeSpan);
-                    return BadRequest(new BdobrResponse
-                    {
-                        status = ResponseStatus.CompanyError,
-                        message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию за последние {offerTimeout} часа. " +
-                        $"Осталось {duration} до следующей возможности создать акцию."
-                    });
-                }
+                    status = ResponseStatus.CompanyError,
+                    message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию сегодня. "
+                });
             }
 
             return Ok(new BdobrResponse
