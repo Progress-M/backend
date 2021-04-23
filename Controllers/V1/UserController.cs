@@ -182,12 +182,13 @@ namespace Main.Controllers
         [Produces("application/json")]
         public ActionResult<OfferByUserResponse> GetFavariteOffersByUser(int id)
         {
-            var item = Context.FavoriteCompany
+            var favorites = Context.FavoriteCompany
                 .Include(fc => fc.User)
                 .Include(fc => fc.Company)
-                .Where(fc => fc.User.Id == id);
+                .Where(fc => fc.User.Id == id)
+                .ToList();
 
-            if (item == null)
+            if (favorites == null || !favorites.Any())
             {
                 return NotFound(
                     new BdobrResponse
@@ -198,12 +199,11 @@ namespace Main.Controllers
                 );
             }
 
-            var favorites = item.ToList();
 
             var offers = Context.Offer
-                .Where(offer => favorites.Any(fc => fc.Company.Id == offer.Company.Id))
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
+                .Where(offer => favorites.Any(fc => fc.Company.Id == offer.Company.Id))
                 .Select(offer => new OfferResponse(offer, Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)))
                 .ToList();
 
