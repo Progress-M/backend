@@ -137,7 +137,7 @@ namespace Main.Controllers
                 return BadRequest(new BdobrResponse
                 {
                     status = ResponseStatus.CompanyError,
-                    message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию сегодня. "
+                    message = $"Компания {company.NameOfficial} уже публиковала акцию сегодня. В день можно отправлять только одну акцию. Следующую акцию Вы сможете создать и отправить завтра."
                 });
             }
 
@@ -300,7 +300,7 @@ namespace Main.Controllers
                     new BdobrResponse
                     {
                         status = ResponseStatus.CompanyError,
-                        message = $"Комания с ИНН = '{companyRequest.inn}' и/или email = '{companyRequest.email}' уже существует."
+                        message = $"Компания с ИНН = '{companyRequest.inn}' и/или email = '{companyRequest.email}' уже существует."
                     }
                 );
             }
