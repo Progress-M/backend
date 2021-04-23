@@ -199,11 +199,11 @@ namespace Main.Controllers
                 );
             }
 
-
             var offers = Context.Offer
                 .Include(offer => offer.Company)
                     .ThenInclude(company => company.ProductCategory)
-                .Where(offer => favorites.Any(fc => fc.Company.Id == offer.Company.Id))
+                .ToList()
+                .Where(offer => favorites.Any(fc => fc.CompanyId == offer.Company.Id))
                 .Select(offer => new OfferResponse(offer, Context.LikedOffer.Any(lc => lc.OfferId == offer.Id && lc.UserId == id)))
                 .ToList();
 
