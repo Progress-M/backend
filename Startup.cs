@@ -18,6 +18,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using Main.PostgreSQL;
 using Bdobr.Logging;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using System.Reflection;
 
 namespace Main
 {
@@ -142,6 +145,9 @@ namespace Main
             });
 
             app.UseAuthorization();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseExceptionHandler(c => c.Run(async context =>
             {

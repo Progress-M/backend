@@ -1,0 +1,153 @@
+﻿body {
+  background: #382c6a;
+  position: relative;
+}
+
+header {
+  position: relative;
+  font-size: 14px;
+  overflow: hidden;
+}
+
+header .row {
+  white-space: nowrap;
+}
+
+header:after {
+  content: "";
+  display: block;
+  background-image: linear-gradient(
+    90deg,
+    #382c6a 4.17%,
+    #1ec6ff 22.4%,
+    #7cdd61 41.15%,
+    #ffe123 63.02%,
+    #ff5468 82.81%,
+    #382c6a 100%
+  );
+  height: 5px;
+  background-size: contain;
+  margin-left: -10%;
+  width: 103%;
+}
+
+section.logo {
+  text-align: center;
+  margin-top: 80px;
+}
+
+h1 {
+  display: inline-block;
+  position: relative;
+}
+
+h1:before {
+  content: "";
+  background-image: url("../img/BD_LogoMainWhite.png");
+  width: 350px;
+  height: 56px;
+  display: inline-block;
+  z-index: 100;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+h1:after {
+  content: "Мы объединяем, чтобы быть ближе";
+  display: block;
+  font-size: 16px;
+  font-family: "opensans__regular";
+  font-weight: 300;
+  width: 100%;
+  opacity: 0.5;
+  margin-top: 15px;
+  white-space: normal;
+}
+
+@media (max-width: 768px) {
+  section.logo {
+    margin-top: 0;
+  }
+
+  h1:before {
+    width: 265px;
+    height: 40px;
+  }
+
+  h1:after {
+    font-size: 14px;
+  }
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 300;
+}
+
+.btn {
+  height: 2.4rem;
+  display: inline-block;
+}
+
+.btn.btn-android {
+  width: 8rem;
+  background-image: url(../img/google-rus.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.app-block-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 767px) {
+  .btns .col-sm-12:first-child .app-block-wrapper {
+    align-items: flex-end;
+  }
+
+  .btns .col-sm-12:last-child .app-block-wrapper {
+    align-items: flex-start;
+  }
+}
+
+.row-c > *:first-child {
+  text-align: right;
+}
+
+.row-c > *:last-child {
+  text-align: left;
+}
+
+footer a {
+  text-decoration: underline;
+  font-size: 10px;
+}
+
+footer {
+  text-align: center;
+  /* margin-top: 40px; */
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: auto;
+  font-size: 10px;
+}
+
+@media (max-width: 767px) {
+  .row-c {
+    white-space: normal;
+  }
+
+  .row-c > *,
+  .row-c > *:first-child,
+  .row-c > *:last-child {
+    text-align: center;
+  }
+}
