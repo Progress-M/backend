@@ -171,7 +171,7 @@ namespace Main.Function
 
             var obj = new
             {
-                app_id = isCompany ? "7f742ce4-48ad-4022-90d7-5475c3891e84" : "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
+                app_id = !isCompany ? "7f742ce4-48ad-4022-90d7-5475c3891e84" : "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
                 url = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 contents = new { en = message, ru = message },
                 android_group = isCompany ? "business.bdobr.ru" : "bdobr.ru",
