@@ -91,8 +91,8 @@ namespace Main.PostgreSQL
         public DateTime sendingTime { get; set; }
         public DateTime dateStart { get; set; }
         public DateTime dateEnd { get; set; }
-        public DateTime timeStart { get; set; }
-        public DateTime timeEnd { get; set; }
+        public DateTime? timeStart { get; set; }
+        public DateTime? timeEnd { get; set; }
         public int companyId { get; set; }
         public IFormFile image { get; set; }
         public int percentage { get; set; }

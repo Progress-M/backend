@@ -145,8 +145,8 @@ namespace Main.PostgreSQL
             Text = request.text;
             DateStart = request.dateStart;
             DateEnd = request.dateEnd;
-            TimeStart = request.timeStart == null ? company.TimeOpen : request.timeStart;
-            TimeEnd = request.timeEnd == null ? company.TimeClose : request.timeEnd;
+            TimeStart = (DateTime)(request.timeStart == null ? company.TimeOpen : request.timeStart);
+            TimeEnd = (DateTime)(request.timeEnd == null ? company.TimeClose : request.timeEnd);
             Percentage = request.percentage;
             Company = company;
             CreateDate = DateTime.UtcNow;
