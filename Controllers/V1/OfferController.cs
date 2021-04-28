@@ -257,7 +257,7 @@ namespace Main.Controllers
             favoriteCompanies.ForEach(fc => Context.Stories.Add(new Stories { User = fc.User, Offer = offer }));
             await Context.SaveChangesAsync();
 
-            Utils.CreateNotificationToFavorites($"{company.Name}: {offer.Text}", favoriteCompanies.Select(fc => fc.User.PlayerId).ToArray());
+            Utils.CreateNotificationToFavorites($"{company.Name}: {offer.Text}", favoriteCompanies.Select(fc => fc.User.PlayerId).ToArray(), true);
 
             return Ok(offer);
         }
