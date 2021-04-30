@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
 using Main.Models;
+using System.Linq;
 
 namespace Main.Controllers
 {
@@ -52,9 +53,9 @@ namespace Main.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Produces("application/json")]
-        public async Task<ActionResult> GetProductCategory()
+        public ActionResult GetProductCategory()
         {
-            return Ok(await Context.ProductCategory.ToListAsync());
+            return Ok(Context.ProductCategory.ToList().OrderBy(pc => pc.Priority));
         }
 
         [HttpPost]
