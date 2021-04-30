@@ -290,6 +290,17 @@ namespace Main.Controllers
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateCompany([FromForm] CompanyRequest companyRequest)
         {
+            if (companyRequest.image == null)
+            {
+                return BadRequest(
+                   new BdobrResponse
+                   {
+                       status = ResponseStatus.CompanyError,
+                       message = $"При регистрации компании необходимо загрузить логотип."
+                   }
+               );
+            }
+
             var exist = await Context.Company
                 .AsNoTracking()
                 .SingleOrDefaultAsync(cp => cp.INN == companyRequest.inn || cp.Email == companyRequest.email);
@@ -323,18 +334,16 @@ namespace Main.Controllers
             var company = new Company(companyRequest, productCategory, tz);
             company.EmailConfirmed = true;
 
-            if (companyRequest.image != null)
+            using (MemoryStream ms = new MemoryStream())
             {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    companyRequest.image.CopyTo(ms);
+                companyRequest.image.CopyTo(ms);
 
-                    var file = new FileData { bytes = ms.ToArray() };
-                    Context.Files.Add(file);
-                    await Context.SaveChangesAsync();
-                    company.Image = file;
-                }
+                var file = new FileData { bytes = ms.ToArray() };
+                Context.Files.Add(file);
+                await Context.SaveChangesAsync();
+                company.Image = file;
             }
+
             Context.Company.Add(company);
             await Context.SaveChangesAsync();
 
