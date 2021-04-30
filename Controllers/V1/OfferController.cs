@@ -189,6 +189,15 @@ namespace Main.Controllers
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateOffer([FromForm] OfferRequest offerRequest)
         {
+            if ((offerRequest.dateEnd - offerRequest.dateStart).TotalDays >= 30)
+            {
+                return BadRequest(new BdobrResponse
+                {
+                    status = ResponseStatus.OfferTimeError,
+                    message = $"Нельзя создавать акции с периодом больше 30 дней"
+                });
+            }
+
             var company = await Context.Company
                 .SingleOrDefaultAsync(company => company.Id == offerRequest.companyId);
 
