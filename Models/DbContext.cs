@@ -52,6 +52,12 @@ namespace Main.PostgreSQL
                 entity.Property(r => r.TimeClose)
                 .HasDefaultValue("2021-04-16 23:59:59");
             });
+
+            modelBuilder.Entity<ProductCategory>(entity =>
+            {
+                entity.Property(r => r.Priority)
+                .HasDefaultValue(1);
+            });
         }
 
         public KindContext(DbContextOptions<KindContext> options) : base(options) { }
@@ -82,12 +88,14 @@ namespace Main.PostgreSQL
         {
             Name = request.name;
             AgeLimit = request.ageLimit;
+            Priority = request.priority;
         }
 
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
         public int AgeLimit { get; set; } = 0;
+        public int Priority { get; set; } = 1;
         public int? ImageId { get; set; }
         public virtual FileData Image { get; set; }
     }

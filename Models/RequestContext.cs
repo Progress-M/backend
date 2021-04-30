@@ -41,6 +41,7 @@ namespace Main.PostgreSQL
     {
         public string name { get; set; }
         public int ageLimit { get; set; } = 0;
+        public int priority { get; set; } = 1;
         public IFormFile image { get; set; }
     }
 

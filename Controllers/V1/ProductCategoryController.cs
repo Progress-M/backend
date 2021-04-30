@@ -103,6 +103,7 @@ namespace Main.Controllers
 
             category.Name = request.name;
             category.AgeLimit = request.ageLimit;
+            category.Priority = request.priority;
 
             if (request.image != null)
             {
