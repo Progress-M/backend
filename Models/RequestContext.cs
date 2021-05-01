@@ -108,6 +108,12 @@ namespace Main.PostgreSQL
         public string password { get; set; }
     }
 
+    public class AuthPinCodeRequest
+    {
+        public string playerId { get; set; }
+        public string pincode { get; set; }
+    }
+
     public class PlayerIdRequest
     {
         public string playerId { get; set; }

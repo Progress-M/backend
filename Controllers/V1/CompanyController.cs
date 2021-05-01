@@ -71,6 +71,31 @@ namespace Main.Controllers
             return Ok(items);
         }
 
+        [HttpGet("{playerId}/haspincode")]
+        [Produces("application/json")]
+        public ActionResult GetCompanyHasPinCode(string playerId)
+        {
+            var company = Context.Company
+               .AsNoTracking()
+               .SingleOrDefault(company => company.PlayerId == playerId);
+
+            if (company == null)
+            {
+                return NotFound(
+                    new BdobrResponse
+                    {
+                        status = ResponseStatus.CompanyError,
+                        message = $"Не найдена компания с playerId = {playerId}"
+                    });
+            }
+
+            return Ok(new BdobrResponse
+            {
+                status = ResponseStatus.Success,
+                haspincode = company.PinCode != null
+            });
+        }
+
         [HttpGet("top")]
         [Produces("application/json")]
         public ActionResult GetCompanyTop()

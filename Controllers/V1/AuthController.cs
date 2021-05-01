@@ -192,6 +192,35 @@ namespace Main.Controllers
                 });
         }
 
+        [HttpPost("pincode/company")]
+        public async Task<IActionResult> AuthCompanyByPinCode(AuthPinCodeRequest request)
+        {
+            var item = await Context.Company
+               .Include(c => c.ProductCategory)
+               .AsNoTracking()
+               .SingleOrDefaultAsync(company => company.PlayerId == request.playerId && company.PinCode == request.pincode);
+
+            if (item == null || !item.EmailConfirmed)
+            {
+                return Unauthorized(
+                    new BdobrResponse
+                    {
+                        status = AuthStatus.Fail,
+                        message = $"Компания с playerId = '{request.playerId}' не существует, либо у неё не подтвежден email."
+                    }
+                );
+            }
+
+            return Ok(
+                new
+                {
+                    status = AuthStatus.Success,
+                    company = item,
+                    access_token = Auth.generateToken(_configuration),
+                    token_type = "bearer"
+                });
+        }
+
         [HttpPost("token/user/{playerId}")]
         public async Task<IActionResult> AccessTokenUser(string playerId)
         {

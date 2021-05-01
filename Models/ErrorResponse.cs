@@ -19,5 +19,6 @@ namespace Main.Models
     {
         public string status { get; set; }
         public string message { get; set; }
+        public bool? haspincode { get; set; }
     }
 }
