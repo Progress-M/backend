@@ -73,6 +73,7 @@ namespace Main.Controllers
 
         [HttpGet("{playerId}/haspincode")]
         [Produces("application/json")]
+        [AllowAnonymous]
         public ActionResult GetCompanyHasPinCode(string playerId)
         {
             var company = Context.Company
