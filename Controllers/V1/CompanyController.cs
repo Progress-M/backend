@@ -158,7 +158,11 @@ namespace Main.Controllers
                 .Where(o => o.Company == company)
                 .FirstOrDefault();
 
-            if (lastOffer != null && lastOffer.CreateDate.Date == DateTime.UtcNow.Date)
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(lastOffer.Company.TimeZone);
+            var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+            var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate.Date, timeZone);
+
+            if (lastOffer != null && CreateDateTZ.Date == dateTimeTZ.Date)
             {
                 return BadRequest(new BdobrResponse
                 {
