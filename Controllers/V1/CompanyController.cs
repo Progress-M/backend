@@ -428,6 +428,7 @@ namespace Main.Controllers
             aliveCompany.Name = company.name;
             aliveCompany.Email = company.email;
             aliveCompany.Phone = company.phone;
+            aliveCompany.SubscriptionActivity = company.SubscriptionActivity;
             aliveCompany.Representative = company.representative;
             aliveCompany.Password = company.password;
             aliveCompany.Address = company.address;

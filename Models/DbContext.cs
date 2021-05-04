@@ -43,6 +43,12 @@ namespace Main.PostgreSQL
 
             modelBuilder.Entity<Company>(entity =>
             {
+                entity.Property(r => r.SubscriptionActivity)
+                .HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<Company>(entity =>
+            {
                 entity.Property(r => r.TimeOpen)
                 .HasDefaultValue("2021-04-16 00:00:00");
             });
@@ -128,6 +134,7 @@ namespace Main.PostgreSQL
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string PinCode { get; set; }
+        public bool SubscriptionActivity { get; set; } = true;
         public string TimeZone { get; set; } = "Asia/Novosibirsk";
         public string NameOfficial { get; set; }
         public string Name { get; set; }

@@ -52,6 +52,7 @@ namespace Main.PostgreSQL
         public string nameOfficial { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public bool SubscriptionActivity { get; set; } = true;
         public string representative { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
