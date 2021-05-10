@@ -160,7 +160,7 @@ namespace Main.Controllers
 
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(lastOffer.Company.TimeZone);
             var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
-            var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate.Date, timeZone);
+            var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate, timeZone);
 
             Console.WriteLine($"timeZone = ${timeZone}");
             Console.WriteLine($"dateTimeTZ = ${dateTimeTZ}");
