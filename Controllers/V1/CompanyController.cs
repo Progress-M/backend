@@ -162,11 +162,6 @@ namespace Main.Controllers
             var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
             var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate, timeZone);
 
-            Console.WriteLine($"timeZone = ${timeZone}");
-            Console.WriteLine($"dateTimeTZ = ${dateTimeTZ}");
-            Console.WriteLine($"lastOffer.CreateDate = ${lastOffer.CreateDate}");
-            Console.WriteLine($"CreateDateTZ = ${CreateDateTZ}");
-
             if (lastOffer != null && CreateDateTZ.Date == dateTimeTZ.Date)
             {
                 return BadRequest(new BdobrResponse
