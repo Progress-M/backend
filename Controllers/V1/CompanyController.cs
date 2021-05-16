@@ -158,6 +158,15 @@ namespace Main.Controllers
                 .Where(o => o.Company == company)
                 .FirstOrDefault();
 
+            if (lastOffer == null)
+            {
+                return Ok(new BdobrResponse
+                {
+                    status = ResponseStatus.Success,
+                    message = ""
+                });
+            }
+
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(lastOffer.Company.TimeZone);
             var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
             var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate, timeZone);
