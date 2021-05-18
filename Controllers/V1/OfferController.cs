@@ -189,6 +189,7 @@ namespace Main.Controllers
         [DisableRequestSizeLimit]
         public async Task<ActionResult> CreateOffer([FromForm] OfferRequest offerRequest)
         {
+
             if ((offerRequest.dateEnd - offerRequest.dateStart).TotalDays >= 30)
             {
                 return BadRequest(new BdobrResponse
@@ -206,11 +207,22 @@ namespace Main.Controllers
                 return NotFound(
                     new BdobrResponse
                     {
-                        status = ResponseStatus.OfferError,
+                        status = ResponseStatus.CompanyError,
                         message = $"Не найдена компания с id = '{offerRequest.companyId}'"
                     }
                 );
             }
+
+            // if (!company.SubscriptionActivity)
+            // {
+            //     return NotFound(
+            //         new BdobrResponse
+            //         {
+            //             status = ResponseStatus.OfferError,
+            //             message = $"У компании '{company.NameOfficial}' не активна подписка."
+            //         }
+            //     );
+            // }
 
             var offerByCompany = Context.Offer
                 .AsNoTracking()
@@ -266,7 +278,7 @@ namespace Main.Controllers
             favoriteCompanies.ForEach(fc => Context.Stories.Add(new Stories { User = fc.User, Offer = offer }));
             await Context.SaveChangesAsync();
 
-            Utils.CreateNotificationToFavorites($"{company.Name}: {offer.Text}", favoriteCompanies.Select(fc => fc.User.PlayerId).ToArray(), true);
+            Utils.CreateOfferNotification($"{company.Name}: {offer.Text}", favoriteCompanies.Select(fc => fc.User.PlayerId).ToArray());
 
             return Ok(offer);
         }

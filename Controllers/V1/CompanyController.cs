@@ -137,54 +137,60 @@ namespace Main.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> CheckOfferLimit(int id)
         {
-            var company = await Context.Company
-                 .SingleOrDefaultAsync(company => company.Id == id);
-
-            if (company == null)
-            {
-                return NotFound(
-                    new BdobrResponse
-                    {
-                        status = ResponseStatus.CompanyError,
-                        message = $"Не найдена компания с id = '{id}'"
-                    }
-                );
-            }
-
-            var lastOffer = Context.Offer
-                .AsNoTracking()
-                .Include(o => o.Company)
-                .OrderByDescending(o => o.CreateDate)
-                .Where(o => o.Company == company)
-                .FirstOrDefault();
-
-            if (lastOffer == null)
-            {
-                return Ok(new BdobrResponse
-                {
-                    status = ResponseStatus.Success,
-                    message = ""
-                });
-            }
-
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(lastOffer.Company.TimeZone);
-            var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
-            var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate, timeZone);
-
-            if (lastOffer != null && CreateDateTZ.Date == dateTimeTZ.Date)
-            {
-                return BadRequest(new BdobrResponse
-                {
-                    status = ResponseStatus.CompanyError,
-                    message = $"Компания {company.NameOfficial} уже публиковала акцию сегодня. В день можно отправлять только одну акцию. Следующую акцию Вы сможете создать и отправить завтра."
-                });
-            }
-
             return Ok(new BdobrResponse
             {
                 status = ResponseStatus.Success,
                 message = ""
             });
+
+            // var company = await Context.Company
+            //      .SingleOrDefaultAsync(company => company.Id == id);
+
+            // if (company == null)
+            // {
+            //     return NotFound(
+            //         new BdobrResponse
+            //         {
+            //             status = ResponseStatus.CompanyError,
+            //             message = $"Не найдена компания с id = '{id}'"
+            //         }
+            //     );
+            // }
+
+            // var lastOffer = Context.Offer
+            //     .AsNoTracking()
+            //     .Include(o => o.Company)
+            //     .OrderByDescending(o => o.CreateDate)
+            //     .Where(o => o.Company == company)
+            //     .FirstOrDefault();
+
+            // if (lastOffer == null)
+            // {
+            //     return Ok(new BdobrResponse
+            //     {
+            //         status = ResponseStatus.Success,
+            //         message = ""
+            //     });
+            // }
+
+            // var timeZone = TimeZoneInfo.FindSystemTimeZoneById(lastOffer.Company.TimeZone);
+            // var dateTimeTZ = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
+            // var CreateDateTZ = TimeZoneInfo.ConvertTimeFromUtc(lastOffer.CreateDate, timeZone);
+
+            // if (lastOffer != null && CreateDateTZ.Date == dateTimeTZ.Date)
+            // {
+            //     return BadRequest(new BdobrResponse
+            //     {
+            //         status = ResponseStatus.CompanyError,
+            //         message = $"Компания {company.NameOfficial} уже публиковала акцию сегодня. В день можно отправлять только одну акцию. Следующую акцию Вы сможете создать и отправить завтра."
+            //     });
+            // }
+
+            // return Ok(new BdobrResponse
+            // {
+            //     status = ResponseStatus.Success,
+            //     message = ""
+            // });
         }
 
         [HttpGet("{id}/image")]

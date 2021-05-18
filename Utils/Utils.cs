@@ -160,6 +160,56 @@ namespace Main.Function
             System.Diagnostics.Debug.WriteLine(responseContent);
         }
 
+        public static void CreateOfferNotification(string message, string[] favorites)
+        {
+            var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
+
+            request.KeepAlive = true;
+            request.Method = "POST";
+            request.ContentType = "application/json; charset=utf-8";
+            request.Headers.Add("authorization", "Basic MWY2MWY4ODctMjU5NC00ZTZjLTgyMWYtZGEzM2M5NmNhYTJh");
+
+            var obj = new
+            {
+                app_id = "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
+                url = "bdobr.ru",
+                contents = new { en = message, ru = message },
+                android_group = "bdobr.ru",
+                android_accent_color = "382C6A",
+                android_group_message = new { en = "You have $[notif_count] new messages", ru = "У вас $[notif_count] новых сообщений" },
+                channel_for_external_user_ids = "push",
+                include_player_ids = favorites
+            };
+
+            var param = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            byte[] byteArray = Encoding.UTF8.GetBytes(param);
+
+            string responseContent = null;
+
+            try
+            {
+                using (var writer = request.GetRequestStream())
+                {
+                    writer.Write(byteArray, 0, byteArray.Length);
+                }
+
+                using (var response = request.GetResponse() as HttpWebResponse)
+                {
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        responseContent = reader.ReadToEnd();
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+            }
+
+            System.Diagnostics.Debug.WriteLine(responseContent);
+        }
+
         public static void CreateNotificationToFavorites(string message, string[] favorites, bool isCompany = false)
         {
             var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
@@ -171,7 +221,7 @@ namespace Main.Function
 
             var obj = new
             {
-                app_id = !isCompany ? "7f742ce4-48ad-4022-90d7-5475c3891e84" : "ae165b6f-ed06-4a28-aab6-37e7a96f9e68",
+                app_id = isCompany ? "ae165b6f-ed06-4a28-aab6-37e7a96f9e68" : "7f742ce4-48ad-4022-90d7-5475c3891e84",
                 url = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 contents = new { en = message, ru = message },
                 android_group = isCompany ? "business.bdobr.ru" : "bdobr.ru",
