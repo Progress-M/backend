@@ -55,6 +55,18 @@ namespace Main.PostgreSQL
 
             modelBuilder.Entity<Company>(entity =>
             {
+                entity.Property(r => r.RegistrationDate)
+                .HasDefaultValue(DateTime.UtcNow);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(r => r.RegistrationDate)
+                .HasDefaultValue(DateTime.UtcNow);
+            });
+
+            modelBuilder.Entity<Company>(entity =>
+            {
                 entity.Property(r => r.TimeClose)
                 .HasDefaultValue("2021-04-16 23:59:59");
             });
@@ -111,6 +123,7 @@ namespace Main.PostgreSQL
         public Company() { }
         public Company(CompanyRequest request, ProductCategory productCategory, string tz)
         {
+            RegistrationDate = DateTime.UtcNow;
             Name = request.name;
             NameOfficial = request.nameOfficial;
             Representative = request.representative;
@@ -131,6 +144,7 @@ namespace Main.PostgreSQL
 
         [Key]
         public int Id { get; set; }
+        public DateTime RegistrationDate { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string PinCode { get; set; }
@@ -198,6 +212,7 @@ namespace Main.PostgreSQL
         public User() { }
         public User(UserRequest user)
         {
+            RegistrationDate = DateTime.UtcNow;
             Name = user.Name;
             isMan = user.isMan;
             Latitude = user.Latitude;
@@ -208,6 +223,7 @@ namespace Main.PostgreSQL
 
         [Key]
         public int Id { get; set; }
+        public DateTime RegistrationDate { get; set; }
         public string Name { get; set; }
         public bool isMan { get; set; }
         public double Latitude { get; set; }
