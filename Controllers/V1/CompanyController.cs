@@ -121,6 +121,38 @@ namespace Main.Controllers
             return Ok(items);
         }
 
+        [HttpGet("new/user/{userId}")]
+        [Produces("application/json")]
+        public ActionResult GetNewCompanyList(int userId)
+        {
+            var RESULT_LIMIT = 3;
+
+            var user = Context.User.SingleOrDefault(user => user.Id == userId);
+
+            if (user == null)
+            {
+                return NotFound(
+                    new BdobrResponse
+                    {
+                        status = ResponseStatus.UserError,
+                        message = $"Не найден пользватель с id = '{userId}'"
+                    }
+                );
+            }
+
+            var items = Context.Company
+              .AsNoTracking()
+            //   .Where(company => Utils.CalculateDistance(
+            //     new Location { Latitude = company.Latitude, Longitude = company.Longitude },
+            //     new Location { Latitude = user.Latitude, Longitude = user.Longitude }
+            //     ) < 40000)
+              .OrderByDescending(fc => fc.RegistrationDate)
+              .Take(RESULT_LIMIT)
+              .ToList();
+
+            return Ok(items);
+        }
+
         [HttpGet("{id}/number-of-favorites")]
         [Produces("application/json")]
         public async Task<ActionResult> GetNumberOfAdditionsToTheFavorites(int id)
