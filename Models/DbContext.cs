@@ -44,7 +44,7 @@ namespace Main.PostgreSQL
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.Property(r => r.SubscriptionActivity)
-                .HasDefaultValue(true);
+                .HasDefaultValue(false);
             });
 
             modelBuilder.Entity<Company>(entity =>

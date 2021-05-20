@@ -231,25 +231,6 @@ namespace Main.Controllers
                 .Where(o => o.Company == company)
                 .FirstOrDefault();
 
-            // if (offerByCompany != null)
-            // {
-            //     double durationSeconds = DateTime.UtcNow.Subtract(offerByCompany.CreateDate).TotalSeconds;
-            //     TimeSpan seconds = TimeSpan.FromSeconds(durationSeconds);
-            //     var offerTimeout = Int32.Parse(_configuration["OfferTimeout"]);
-
-            //     if (seconds.TotalHours < offerTimeout)
-            //     {
-            //         TimeSpan diffTimeSpan = TimeSpan.FromHours(offerTimeout).Subtract(seconds);
-            //         string duration = String.Format(@"{0}:{1:mm\:ss\:fff}", diffTimeSpan.Days * offerTimeout + diffTimeSpan.Hours, diffTimeSpan);
-            //         return NotFound(new ErrorResponse
-            //         {
-            //             status = ErrorStatus.OfferTimeError,
-            //             message = $"Компания \"{company.NameOfficial}\" уже публиковала акцию за последние {offerTimeout} часа. " +
-            //             $"Осталось {duration} до следующей возможности создать акцию."
-            //         });
-            //     }
-            // }
-
             var favoriteCompanies = await Context.FavoriteCompany
                  .Include(fc => fc.Company)
                  .Include(fc => fc.User)
