@@ -523,7 +523,7 @@ namespace Main.Controllers
             var favorite = await Context.Company
               .SingleOrDefaultAsync(c => c.Id == favoriteId);
 
-            if (item == null)
+            if (favorite == null)
             {
                 return NotFound(
                     new BdobrResponse
@@ -533,7 +533,7 @@ namespace Main.Controllers
                     });
             }
 
-            if (Context.FavoriteCompany.Any(fc => fc.CompanyId == favoriteId && fc.UserId == id))
+            if (await Context.FavoriteCompany.AnyAsync(fc => fc.CompanyId == favoriteId && fc.UserId == id))
             {
                 return BadRequest(
                     new BdobrResponse
@@ -554,10 +554,11 @@ namespace Main.Controllers
         [HttpDelete("{id}/favorite/{favoriteId}")]
         public async Task<ActionResult> RemoveUserFavorite(int id, int favoriteId)
         {
-            var fc = await Context.FavoriteCompany
-              .SingleOrDefaultAsync(fc => fc.UserId == id && fc.CompanyId == favoriteId);
+            var fc = Context.FavoriteCompany
+              .Where(fc => fc.UserId == id && fc.CompanyId == favoriteId)
+              .ToList();
 
-            if (fc == null)
+            if (fc == null || fc.Count == 0)
             {
                 return Ok();
             }
@@ -569,7 +570,7 @@ namespace Main.Controllers
                                 .Where(s => s.Offer.Company.Id == favoriteId && s.UserId == id)
                                 .ToList()
                         );
-            Context.FavoriteCompany.Remove(fc);
+            Context.FavoriteCompany.RemoveRange(fc);
             await Context.SaveChangesAsync();
 
             return Ok();
