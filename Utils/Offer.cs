@@ -17,7 +17,7 @@ namespace Main.Function
 
             if (DateTime.Compare(dateTimeTZ, start) >= 0 && DateTime.Compare(end, dateTimeTZ) >= 0)
             {
-                if (dateTimeTZ.TimeOfDay > offer.TimeStart.TimeOfDay && dateTimeTZ.TimeOfDay < offer.TimeEnd.TimeOfDay)
+                if (TimeSpan.Compare(dateTimeTZ.TimeOfDay, offer.TimeStart.TimeOfDay) >= 0 && TimeSpan.Compare(offer.TimeEnd.TimeOfDay, dateTimeTZ.TimeOfDay) >= 0)
                 {
                     return false;
                 }
