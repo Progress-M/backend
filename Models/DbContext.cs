@@ -134,6 +134,7 @@ namespace Main.PostgreSQL
             TimeOpen = request.timeOpen;
             TimeClose = request.timeClose;
             ProductCategory = productCategory;
+            SubscriptionActivity = request.SubscriptionActivity;
             EmailConfirmed = false;
             PlayerId = request.playerId;
             Phone = request.phone;
