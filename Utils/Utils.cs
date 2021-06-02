@@ -222,7 +222,7 @@ namespace Main.Function
             var obj = new
             {
                 app_id = isCompany ? "ae165b6f-ed06-4a28-aab6-37e7a96f9e68" : "7f742ce4-48ad-4022-90d7-5475c3891e84",
-                url = isCompany ? "business.bdobr.ru" : "bdobr.ru",
+                url = isCompany ? "bdobr.ru" : "business.bdobr.ru",
                 contents = new { en = message, ru = message },
                 android_group = isCompany ? "business.bdobr.ru" : "bdobr.ru",
                 android_accent_color = "382C6A",
